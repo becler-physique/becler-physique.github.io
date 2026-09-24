@@ -3,10 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CPGE TPC — Cours-TD</title>
+<title>CPGE TPC — Physique</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<div id="auth-overlay" class="auth-overlay">
+  <form id="auth-form">
+    <label for="auth-pass">Mot de passe</label>
+    <input type="password" id="auth-pass" autocomplete="current-password">
+    <button type="submit">Entrer</button>
+    <p id="auth-error" class="auth-error" hidden>Mot de passe incorrect.</p>
+  </form>
+</div>
+
+<div id="site-content" hidden>
 
 <header class="site-header">
   <div class="site-title">CPGE TPC
@@ -22,18 +33,63 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Rubriques">
     <ul>
-      <li><a href="colles.html">Colles</a></li>
-      <li><a href="index.html" class="current">Cours-TD</a></li>
-      <li><a href="dm-ds.html">DM &amp; DS</a></li>
-      <li><a href="sup.html">Sup</a></li>
-      <li><a href="liens.html">Liens</a></li>
+      <li><a href="#Colles">Colles</a></li>
+      <li><a href="#TD">Cours-TD</a></li>
+      <li><a href="#DMDS">DM &amp; DS</a></li>
+      <li><a href="#Sup">Sup</a></li>
+      <li><a href="#Liens">Liens</a></li>
     </ul>
   </nav>
 
   <main>
     <p class="intro">Cliquez <a href="#">ici</a> pour davantage d'informations concernant la classe et son organisation.</p>
 
-    <h2 class="section-title">Cours-TD</h2>
+    <h2 class="section-title" id="Colles">Colles</h2>
+    <div class="subsection">
+      <ul>
+        <li><a href="#">Colloscope</a></li>
+        <li><a href="#">Programme colle 1 et 2</a></li>
+      </ul>
+    </div>
+
+    <h3>Oraux</h3>
+    <div class="box-row">
+      <div class="box">
+        <h3>Rapports et modalités</h3>
+        <ul>
+          <li><a href="#">Calendrier et modalités</a></li>
+          <li><a href="#">Rapport CCINP</a></li>
+          <li><a href="#">Rapport Mines-Télécom</a></li>
+          <li><a href="#">Rapport Centrale</a></li>
+          <li><a href="#">Rapport Mines-Ponts</a></li>
+          <li><a href="#">Rapport X-ESPCI</a></li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Révisions</h3>
+        <ul>
+          <li><a href="#">1. Mécanique du point et du solide</a></li>
+          <li><a href="#">2. Thermodynamique</a></li>
+          <li><a href="#">3. Électrocinétique</a></li>
+          <li><a href="#">4. Électromagnétisme</a></li>
+          <li><a href="#">5. Optique géométrique et ondulatoire</a></li>
+          <li><a href="#">6. Ondes mécaniques</a></li>
+          <li><a href="#">7. Physique quantique</a></li>
+          <li><a href="#">8. Réactions chimiques</a></li>
+          <li><a href="#">9. Cinétique chimique</a></li>
+          <li><a href="#">10. Divers</a></li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Exercices</h3>
+        <ul>
+          <li><a href="#">Banque CCINP TPC</a></li>
+          <li><a href="#">Exercices types oraux</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="section-title" id="TD">Cours-TD</h2>
     <p class="placeholder">Les rubriques ci-dessous sont à compléter au fil de l'année (une par grand thème du programme de physique-chimie TPC).</p>
 
     <div class="box-row">
@@ -83,12 +139,97 @@
         </ul>
       </div>
     </div>
+
+    <h2 class="section-title" id="DMDS">DM &amp; DS</h2>
+    <div class="subsection">
+      <ul>
+        <li><a href="#">Planning de l'année</a></li>
+        <li><a href="#">Consignes de rédaction</a></li>
+      </ul>
+    </div>
+
+    <div class="subsection">
+      <div class="entry-row">
+        <span class="entry-label">DM1</span>
+        <a href="#">énoncé</a>
+        <a href="#">corr.</a>
+      </div>
+      <div class="entry-row">
+        <span class="entry-label">DS1</span>
+        <a href="#">énoncé</a>
+        <a href="#">corr.</a>
+      </div>
+      <p class="placeholder">— à compléter au fil de l'année —</p>
+    </div>
+
+    <h2 class="section-title" id="Sup">Révisions de sup</h2>
+    <p>Beaucoup de choses se trouvent évidemment sur <a href="#">le site de [collègue]</a>.</p>
+    <p>Sur ma <a href="#">chaîne</a>, vous trouverez diverses vidéos sur des méthodes classiques ou des points précis du programme de première année, les voici réparties par thèmes :</p>
+
+    <div class="box-row">
+      <div class="box">
+        <h3>Méthodes usuelles</h3>
+        <ul class="placeholder">
+          <li>à compléter</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Mécanique</h3>
+        <ul class="placeholder">
+          <li>à compléter</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Électricité</h3>
+        <ul class="placeholder">
+          <li>à compléter</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="section-title" id="Liens">Liens utiles</h2>
+    <div class="subsection">
+      <ul class="placeholder">
+        <li>à compléter</li>
+      </ul>
+    </div>
   </main>
 </div>
 
 <footer class="site-footer">
   <p>Site personnel — mis à jour au fil de l'année.</p>
 </footer>
+
+</div>
+
+<script>
+(function () {
+  var PASS = "tpcdiderot26";
+  var overlay = document.getElementById('auth-overlay');
+  var content = document.getElementById('site-content');
+  var form = document.getElementById('auth-form');
+  var input = document.getElementById('auth-pass');
+  var error = document.getElementById('auth-error');
+
+  if (localStorage.getItem('tpc_auth') === 'ok') {
+    overlay.hidden = true;
+    content.hidden = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value === PASS) {
+      localStorage.setItem('tpc_auth', 'ok');
+      overlay.hidden = true;
+      content.hidden = false;
+    } else {
+      error.hidden = false;
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
