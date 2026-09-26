@@ -81,8 +81,9 @@ nav.top-nav a .icon {
   align-items: center;
   justify-content: center;
 }
-nav.top-nav a .icon-atom {
-  font-size: 2.2em;
+nav.top-nav a .icon-atom svg {
+  width: 1em;
+  height: 1em;
 }
 
 .layout {
