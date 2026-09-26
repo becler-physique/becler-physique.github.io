@@ -58,6 +58,7 @@ header.site-header {
 
 nav.top-nav {
   display: flex;
+  align-items: center;
   gap: 26px;
   margin-left: auto;
   font-family: "IBM Plex Mono", monospace;
@@ -69,6 +70,7 @@ nav.top-nav a {
   border-bottom: none;
   display: inline-flex;
   align-items: center;
+  line-height: 1;
 }
 nav.top-nav a:hover, nav.top-nav a:focus-visible {
   color: var(--accent);
