@@ -72,7 +72,10 @@ nav.top-nav a:hover, nav.top-nav a:focus-visible {
   color: var(--accent);
 }
 nav.top-nav a .icon {
-  margin-right: 6px;
+  margin-right: 8px;
+  font-size: 1.5em;
+  vertical-align: -4px;
+  display: inline-block;
 }
 
 .layout {
