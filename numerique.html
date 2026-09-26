@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPGE TPC — Compétences numériques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="auth-overlay" class="auth-overlay">
+  <form id="auth-form">
+    <label for="auth-pass">Mot de passe</label>
+    <input type="password" id="auth-pass" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="auth-toggle"><input type="checkbox" id="auth-toggle"> Afficher le mot de passe</label>
+    <button type="submit">Entrer</button>
+    <p id="auth-error" class="auth-error" hidden>Mot de passe incorrect.</p>
+  </form>
+</div>
+
+<div id="site-content" hidden>
+
+<header class="site-header">
+  <div class="site-title">CPGE TPC
+    <span class="site-subtitle">Lycée [Nom du lycée]</span>
+  </div>
+  <nav class="top-nav" aria-label="Matières">
+    <a href="index.html"><span class="icon icon-atom">⚛</span>Physique</a>
+    <a href="numerique.html"><span class="icon">💻</span>Compétences numériques</a>
+    <a href="#"><span class="icon">💡</span>Culture scientifique</a>
+  </nav>
+</header>
+
+<div class="layout">
+  <main style="max-width: 780px;">
+    <h2 class="section-title" style="margin-top:0;">Compétences numériques</h2>
+    <p class="intro">Exercices Python à compléter directement dans le navigateur, en lien avec le programme de physique de TPC2. Aucune installation nécessaire : le code s'exécute sur cette page (chargement de l'environnement Python au premier exercice, quelques secondes).</p>
+
+    <div class="exercise">
+      <h3>Exercice 1 — Chute avec frottement fluide (méthode d'Euler)</h3>
+      <div class="statement">
+        <p>Une bille est lâchée sans vitesse initiale dans un fluide visqueux. Elle est soumise à son poids et à une force de frottement fluide linéaire, opposée à la vitesse. L'équation du mouvement s'écrit :</p>
+        <p><code>dv/dt = g − (k/m)·v</code></p>
+        <p>avec <code>g = 9.81 m/s²</code>, <code>k/m = 0.5 s⁻¹</code> et <code>v(0) = 0 m/s</code>.</p>
+        <p>En utilisant la <strong>méthode d'Euler explicite</strong> avec un pas <code>dt = 0.01 s</code>, complétez le code ci-dessous pour calculer la vitesse <code>v</code> à l'instant <code>t = 5 s</code> (soit <code>n = 500</code> pas de temps).</p>
+      </div>
+
+      <textarea id="code-1" spellcheck="false">g = 9.81
+k_sur_m = 0.5
+dt = 0.01
+n = 500  # nombre de pas pour aller de t = 0 s à t = 5 s
+
+v = 0.0
+for i in range(n):
+    # Complétez : calcul de dv/dt à partir de la formule, puis mise à jour de v (Euler explicite)
+    dv_dt = ...
+    v = ...
+
+print("v =", v, "m/s")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-1" disabled>Exécuter et vérifier</button>
+        <span id="status-1" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-1" class="exercise-output" hidden></pre>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <p>Site personnel — mis à jour au fil de l'année.</p>
+</footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
+<script>
+(function () {
+  var PASS = "tpcdiderot26";
+  var overlay = document.getElementById('auth-overlay');
+  var content = document.getElementById('site-content');
+  var form = document.getElementById('auth-form');
+  var input = document.getElementById('auth-pass');
+  var error = document.getElementById('auth-error');
+  var toggle = document.getElementById('auth-toggle');
+
+  toggle.addEventListener('change', function () {
+    input.type = toggle.checked ? 'text' : 'password';
+  });
+
+  if (localStorage.getItem('tpc_auth') === 'ok') {
+    overlay.hidden = true;
+    content.hidden = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value === PASS) {
+      localStorage.setItem('tpc_auth', 'ok');
+      overlay.hidden = true;
+      content.hidden = false;
+    } else {
+      error.hidden = false;
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+
+(function () {
+  var statusEl = document.getElementById('status-1');
+  var runBtn = document.getElementById('run-1');
+  var output = document.getElementById('output-1');
+  var codeEl = document.getElementById('code-1');
+
+  var pyodideReady = (async function () {
+    try {
+      var pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/" });
+      statusEl.textContent = "Prêt.";
+      runBtn.disabled = false;
+      return pyodide;
+    } catch (e) {
+      statusEl.textContent = "Impossible de charger l'environnement Python. Vérifie ta connexion et recharge la page.";
+      throw e;
+    }
+  })();
+
+  runBtn.addEventListener('click', async function () {
+    runBtn.disabled = true;
+    statusEl.textContent = "Exécution…";
+    output.hidden = true;
+    output.className = 'exercise-output';
+
+    var stdout = '';
+    try {
+      var pyodide = await pyodideReady;
+      pyodide.setStdout({ batched: function (s) { stdout += s + "\n"; } });
+      pyodide.runPython(codeEl.value);
+
+      var v = pyodide.globals.get('v');
+
+      // Calcul de référence (même algorithme, indépendant du code de l'élève)
+      var g = 9.81, k_sur_m = 0.5, dt = 0.01, n = 500;
+      var vRef = 0;
+      for (var i = 0; i < n; i++) {
+        var dv = g - k_sur_m * vRef;
+        vRef = vRef + dv * dt;
+      }
+
+      output.hidden = false;
+      if (typeof v !== 'number' || Number.isNaN(v)) {
+        output.textContent = "La variable v n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les deux « ... ».";
+        output.classList.add('ko');
+      } else if (Math.abs(v - vRef) < 1e-6) {
+        output.textContent = "Correct : v(5 s) = " + v.toFixed(4) + " m/s." + (stdout ? "\n\n" + stdout : "");
+        output.classList.add('ok');
+      } else {
+        output.textContent = "Pas encore correct : ta valeur v = " + v + " m/s, attendu " + vRef.toFixed(6) + " m/s.\nVérifie ta ligne de mise à jour d'Euler (v = v + dv_dt * dt)." + (stdout ? "\n\n" + stdout : "");
+        output.classList.add('ko');
+      }
+    } catch (err) {
+      output.hidden = false;
+      output.classList.add('ko');
+      output.textContent = "Erreur dans le code :\n" + err.message;
+    } finally {
+      statusEl.textContent = "Prêt.";
+      runBtn.disabled = false;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
