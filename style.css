@@ -296,3 +296,86 @@ footer.site-footer {
   margin: 10px 0 0;
   font-family: "IBM Plex Mono", monospace;
 }
+
+/* Exercices de compétences numériques */
+.exercise {
+  border: 1px solid var(--border);
+  padding: 22px 24px;
+  margin: 26px 0 44px;
+}
+.exercise h3 {
+  margin-top: 0;
+}
+.exercise .statement {
+  margin-bottom: 16px;
+}
+.exercise .statement code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.92em;
+  background: #f2f2ec;
+  padding: 1px 4px;
+}
+.exercise textarea {
+  width: 100%;
+  min-height: 230px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  resize: vertical;
+  background: #fdfdfb;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.exercise-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+}
+.exercise-controls button {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+.exercise-controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.exercise-controls button:hover:not(:disabled) {
+  opacity: 0.88;
+}
+.exercise-status {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.exercise-output {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  background: #f4f4ef;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.exercise-output.ok {
+  border-color: #2f6b3a;
+  color: #2f6b3a;
+  background: #f2f7f2;
+}
+.exercise-output.ko {
+  border-color: #a12b2b;
+  color: #a12b2b;
+  background: #f9f0f0;
+}
