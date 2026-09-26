@@ -186,6 +186,9 @@ footer.site-footer {
 }
 
 /* Écran de mot de passe */
+.auth-overlay[hidden] {
+  display: none;
+}
 .auth-overlay {
   min-height: 100vh;
   display: flex;
