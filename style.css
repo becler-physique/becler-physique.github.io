@@ -67,6 +67,8 @@ nav.top-nav {
 nav.top-nav a {
   color: var(--ink);
   border-bottom: none;
+  display: inline-flex;
+  align-items: center;
 }
 nav.top-nav a:hover, nav.top-nav a:focus-visible {
   color: var(--accent);
@@ -74,12 +76,13 @@ nav.top-nav a:hover, nav.top-nav a:focus-visible {
 nav.top-nav a .icon {
   margin-right: 8px;
   font-size: 1.5em;
-  vertical-align: -4px;
-  display: inline-block;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 nav.top-nav a .icon-atom {
   font-size: 2.2em;
-  vertical-align: -8px;
 }
 
 .layout {
