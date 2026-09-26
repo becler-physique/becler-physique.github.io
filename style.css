@@ -1,9 +1,10 @@
 :root {
-  --red: #c00000;
-  --border: #999999;
-  --text: #111111;
-  --muted: #555555;
-  --sidebar-w: 160px;
+  --paper: #fafaf7;
+  --ink: #1b1b1a;
+  --muted: #6b6b62;
+  --accent: #2f4b7c;
+  --border: #d9d9d0;
+  --sidebar-w: 170px;
 }
 
 * { box-sizing: border-box; }
@@ -15,49 +16,60 @@ html {
 
 body {
   margin: 0;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  color: var(--text);
-  background: #ffffff;
-  line-height: 1.5;
+  font-family: "Source Serif 4", Georgia, "Times New Roman", Times, serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.6;
 }
 
 a {
-  color: var(--red);
+  color: var(--accent);
   text-decoration: none;
+  border-bottom: 1px solid transparent;
 }
 a:hover, a:focus-visible {
-  text-decoration: underline;
+  border-bottom-color: currentColor;
 }
 
 header.site-header {
-  border-bottom: 2px solid var(--text);
-  padding: 14px 24px;
+  border-bottom: 1px solid var(--ink);
+  box-shadow: 0 3px 0 -1px var(--paper), 0 4px 0 -1px var(--border);
+  padding: 20px 28px 16px;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 28px;
+  margin-bottom: 6px;
 }
 
 .site-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 0.02em;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 .site-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--muted);
   display: block;
-  font-weight: normal;
+  font-weight: 400;
+  font-style: italic;
+  margin-top: 2px;
 }
 
 nav.top-nav {
   display: flex;
-  gap: 22px;
+  gap: 26px;
   margin-left: auto;
-  font-size: 1.05rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
 }
 nav.top-nav a {
-  color: var(--text);
+  color: var(--ink);
+  border-bottom: none;
+}
+nav.top-nav a:hover, nav.top-nav a:focus-visible {
+  color: var(--accent);
 }
 nav.top-nav a .icon {
   margin-right: 6px;
@@ -66,29 +78,36 @@ nav.top-nav a .icon {
 .layout {
   display: flex;
   align-items: flex-start;
-  gap: 32px;
+  gap: 40px;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 28px;
 }
 
 nav.sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
+  position: sticky;
+  top: 28px;
+  border-left: 2px solid var(--border);
+  padding-left: 16px;
 }
 nav.sidebar ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
 }
 nav.sidebar li {
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
-nav.sidebar a.current {
-  color: var(--text);
-  font-weight: bold;
-  text-decoration: none;
-  cursor: default;
+nav.sidebar a {
+  color: var(--ink);
+  border-bottom: none;
+}
+nav.sidebar a:hover, nav.sidebar a:focus-visible {
+  color: var(--accent);
 }
 
 main {
@@ -98,14 +117,23 @@ main {
 
 main > p.intro {
   margin-top: 0;
+  color: var(--muted);
 }
 
 h2.section-title {
-  font-size: 1.15rem;
-  margin: 28px 0 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 46px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 main > h2.section-title:first-child {
   margin-top: 0;
+}
+main h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 24px 0 10px;
 }
 
 .box-row {
@@ -117,15 +145,17 @@ main > h2.section-title:first-child {
 
 .box {
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px 18px;
+  border-radius: 0;
+  padding: 16px 20px;
   flex: 1 1 260px;
   min-width: 220px;
 }
 .box h3 {
-  text-align: center;
-  font-size: 1rem;
-  margin: 0 0 10px;
+  text-align: left;
+  font-size: 0.95rem;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 .box ul {
   list-style: none;
@@ -133,7 +163,7 @@ main > h2.section-title:first-child {
   padding: 0;
 }
 .box li {
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .subsection {
@@ -157,9 +187,11 @@ main > h2.section-title:first-child {
   gap: 18px;
   align-items: baseline;
   margin-bottom: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
 }
 .entry-row .entry-label {
-  color: var(--text);
+  color: var(--ink);
   width: 50px;
 }
 
@@ -170,19 +202,27 @@ main > h2.section-title:first-child {
 
 footer.site-footer {
   max-width: 1100px;
-  margin: 40px auto 20px;
-  padding: 14px 24px 0;
+  margin: 60px auto 24px;
+  padding: 16px 28px 0;
   border-top: 1px solid var(--border);
-  font-size: 0.8rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
   color: var(--muted);
 }
 
 @media (max-width: 640px) {
-  .layout { flex-direction: column; }
-  nav.sidebar { width: 100%; }
-  nav.sidebar ul { display: flex; flex-wrap: wrap; gap: 14px; }
-  nav.top-nav { gap: 14px; font-size: 0.95rem; margin-left: 0; }
-  header.site-header { flex-direction: column; gap: 6px; }
+  .layout { flex-direction: column; padding: 24px 20px; }
+  nav.sidebar {
+    width: 100%;
+    position: static;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+    padding-left: 0;
+    padding-bottom: 12px;
+  }
+  nav.sidebar ul { display: flex; flex-wrap: wrap; gap: 16px; }
+  nav.top-nav { gap: 14px; font-size: 0.8rem; margin-left: 0; }
+  header.site-header { flex-direction: column; gap: 6px; padding: 16px 20px; }
 }
 
 /* Écran de mot de passe */
@@ -195,53 +235,57 @@ footer.site-footer {
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background: var(--paper);
 }
 .auth-overlay form {
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 24px 28px;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 28px 30px;
   text-align: center;
   width: 100%;
   max-width: 260px;
 }
 .auth-overlay label {
   display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
+  margin-bottom: 12px;
+  font-weight: 700;
 }
 .auth-overlay label.auth-toggle {
-  font-weight: normal;
+  font-weight: 400;
   font-size: 0.85rem;
   text-align: left;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  font-family: "IBM Plex Mono", monospace;
 }
 .auth-overlay label.auth-toggle input {
   margin-right: 6px;
 }
 .auth-overlay input[type="password"] {
   width: 100%;
-  padding: 7px 9px;
+  padding: 8px 10px;
   border: 1px solid var(--border);
-  border-radius: 3px;
-  margin-bottom: 12px;
-  font-family: inherit;
-  font-size: 1rem;
+  border-radius: 0;
+  margin-bottom: 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
 }
 .auth-overlay button {
-  background: var(--red);
+  background: var(--accent);
   color: #ffffff;
   border: none;
-  padding: 7px 18px;
-  border-radius: 3px;
+  padding: 8px 20px;
+  border-radius: 0;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 1rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
 }
 .auth-overlay button:hover {
-  opacity: 0.9;
+  opacity: 0.88;
 }
 .auth-error {
-  color: var(--red);
+  color: #a12b2b;
   font-size: 0.85rem;
   margin: 10px 0 0;
+  font-family: "IBM Plex Mono", monospace;
 }
