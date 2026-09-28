@@ -38,7 +38,74 @@
   <main style="max-width: 780px;">
     <h2 class="section-title" style="margin-top:0;">Compétences numériques</h2>
     <p class="intro">Exercices Python à compléter directement dans le navigateur, en lien avec le programme de physique de TPC2. Aucune installation nécessaire : le code s'exécute sur cette page (chargement de l'environnement Python au premier exercice, quelques secondes).</p>
+    <div class="course">
+      <h3>Rappel de cours — la méthode d'Euler explicite</h3>
 
+      <p><strong>À quoi ça sert ?</strong> À résoudre numériquement une équation différentielle du premier ordre, quand on ne sait pas la résoudre à la main :</p>
+      <p class="formula">dy/dt = f(y) &nbsp;&nbsp; avec &nbsp;&nbsp; y(0) = y<sub>0</sub></p>
+
+      <p><strong>L'idée.</strong> On découpe le temps en petits pas de durée <code>dt</code>. Sur un pas très court, la courbe <code>y(t)</code> ressemble à sa tangente. On avance donc en ligne droite, dans la direction donnée par la pente <code>dy/dt = f(y)</code> :</p>
+      <p class="formula">y<sub>n+1</sub> = y<sub>n</sub> + f(y<sub>n</sub>) · dt</p>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 520 300" role="img" aria-label="Un pas de la méthode d'Euler : on part du point (t_n, y_n) et on suit la tangente sur une durée dt, ce qui donne y_(n+1), légèrement écarté de la solution exacte.">
+          <defs>
+            <marker id="fig-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" class="fig-head"/>
+            </marker>
+          </defs>
+          <line class="axis" x1="50" y1="240" x2="510" y2="240" marker-end="url(#fig-arrow)"/>
+          <line class="axis" x1="50" y1="240" x2="50" y2="22" marker-end="url(#fig-arrow)"/>
+          <text x="508" y="256">t</text>
+          <text x="34" y="30">y</text>
+
+          <polyline class="exact" points="50.0,40.0 61.0,49.8 72.0,59.0 83.0,67.9 94.0,76.3 105.0,84.2 116.0,91.8 127.0,99.1 138.0,105.9 149.0,112.5 160.0,118.7 171.0,124.6 182.0,130.2 193.0,135.6 204.0,140.7 215.0,145.5 226.0,150.1 237.0,154.5 248.0,158.7 259.0,162.7 270.0,166.4 281.0,170.0 292.0,173.4 303.0,176.7 314.0,179.8 325.0,182.7 336.0,185.5 347.0,188.2 358.0,190.7 369.0,193.1 380.0,195.4 391.0,197.6 402.0,199.6 413.0,201.6 424.0,203.5 435.0,205.2 446.0,206.9 457.0,208.6 468.0,210.1 479.0,211.5 490.0,212.9"/>
+          <text class="lab-exact" x="112" y="52">solution exacte</text>
+
+          <line class="guide" x1="182.0" y1="240" x2="182.0" y2="130.2"/>
+          <line class="guide" x1="358.0" y1="240" x2="358.0" y2="190.7"/>
+          <line class="tangent" x1="182.0" y1="130.2" x2="358.0" y2="218.0"/>
+
+          <circle class="pt-exact" cx="358.0" cy="190.7" r="4.5"/>
+          <circle class="pt-euler" cx="182.0" cy="130.2" r="4.5"/>
+          <circle class="pt-euler" cx="358.0" cy="218.0" r="4.5"/>
+
+          <text x="172" y="152" text-anchor="end">y<tspan dy="4" font-size="10">n</tspan></text>
+          <text class="lab-tan" x="192" y="224">tangente : pente f(y<tspan dy="4" font-size="10">n</tspan><tspan dy="-4">)</tspan></text>
+          <text x="370.0" y="223.0">y<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4"> (Euler)</tspan></text>
+          <text class="lab-exact" x="345" y="171">valeur exacte y(t<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4">)</tspan></text>
+
+          <line class="tick" x1="182.0" y1="236" x2="182.0" y2="244"/>
+          <line class="tick" x1="358.0" y1="236" x2="358.0" y2="244"/>
+          <text x="182.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n</tspan></text>
+          <text x="358.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n+1</tspan></text>
+
+          <line class="tick" x1="182.0" y1="270" x2="358.0" y2="270" marker-start="url(#fig-arrow)" marker-end="url(#fig-arrow)"/>
+          <text x="270.0" y="290" text-anchor="middle">dt</text>
+        </svg>
+        <figcaption>Un pas d'Euler : on part de <code>y<sub>n</sub></code> et on suit la tangente pendant <code>dt</code>. On arrive en <code>y<sub>n+1</sub></code>, un peu à côté de la solution exacte (ici l'écart est exagéré par un grand pas).</figcaption>
+      </figure>
+
+      <p><strong>L'algorithme.</strong></p>
+      <ol>
+        <li>On part de la condition initiale <code>y<sub>0</sub></code>.</li>
+        <li>On calcule la pente <code>f(y)</code> avec la valeur actuelle de <code>y</code>.</li>
+        <li>On avance d'un pas : <code>y</code> devient <code>y + pente × dt</code>.</li>
+        <li>On recommence autant de fois qu'il y a de pas de temps : c'est une boucle <code>for</code>.</li>
+      </ol>
+      <pre class="course-code">y = y0                  # condition initiale
+for i in range(n):      # n pas de temps
+    pente = f(y)        # dy/dt avec la valeur actuelle de y
+    y = y + pente * dt  # on avance le long de la tangente</pre>
+
+      <p><strong>Un exemple à la main.</strong> Pour <code>dy/dt = −y</code> avec <code>y(0) = 1</code> et <code>dt = 0,1</code> :</p>
+      <p class="formula">y<sub>1</sub> = 1 + (−1) × 0,1 = 0,9 &nbsp;&nbsp;&nbsp; y<sub>2</sub> = 0,9 + (−0,9) × 0,1 = 0,81</p>
+      <p>La valeur exacte est <code>y(0,2) = e<sup>−0,2</sup> ≈ 0,819</code> : l'écart est petit, mais bien réel.</p>
+
+      <p><strong>Précision.</strong> Plus <code>dt</code> est petit, plus le résultat est précis, mais plus il faut de pas. Avec Euler, diviser <code>dt</code> par 10 divise l'erreur par 10 environ.</p>
+
+      <p><strong>Pour l'exercice.</strong> L'inconnue est la vitesse <code>v</code> de la bille. À toi d'identifier la fonction <code>f(v)</code> à partir de l'équation du mouvement.</p>
+    </div>
     <div class="exercise">
       <h3>Exercice 1 — Chute avec frottement fluide (méthode d'Euler)</h3>
       <div class="statement">
