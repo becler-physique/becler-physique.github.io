@@ -66,6 +66,16 @@ print("v =", v, "m/s")</textarea>
         <span id="status-1" class="exercise-status">Chargement de l'environnement Python…</span>
       </div>
       <pre id="output-1" class="exercise-output" hidden></pre>
+            <details class="solution">
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">for i in range(n):
+    dv_dt = g - k_sur_m * v
+    v = v + dv_dt * dt</pre>
+          <p>La première ligne traduit l'équation du mouvement : <code>dv/dt = g − (k/m)·v</code>. La seconde est la mise à jour d'Euler explicite : <code>v(t + dt) ≈ v(t) + (dv/dt)·dt</code>.</p>
+          <p>Le programme donne <code>v ≈ 18,0196 m/s</code>. La solution exacte de l'équation vaut <code>(g/(k/m))·(1 − exp(−(k/m)·t)) ≈ 18,009 m/s</code> : l'écart d'environ 0,01 m/s vient du pas <code>dt</code>. Essayez avec un pas plus petit (et un <code>n</code> plus grand) pour le réduire.</p>
+        </div>
+      </details>
     </div>
   </main>
 </div>
