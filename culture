@@ -1,1 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPGE TPC — Culture scientifique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div id="auth-overlay" class="auth-overlay">
+  <form id="auth-form">
+    <label for="auth-pass">Mot de passe</label>
+    <input type="password" id="auth-pass" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="auth-toggle"><input type="checkbox" id="auth-toggle"> Afficher le mot de passe</label>
+    <button type="submit">Entrer</button>
+    <p id="auth-error" class="auth-error" hidden>Mot de passe incorrect.</p>
+  </form>
+</div>
+
+<div id="site-content" hidden>
+
+<header class="site-header">
+  <div class="site-title">CPGE TPC
+    <span class="site-subtitle">Lycée La Martinière Diderot, Lyon</span>
+  </div>
+  <nav class="top-nav" aria-label="Matières">
+    <a href="index.html"><span class="icon icon-atom"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="12" rx="10" ry="4.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg></span>Physique</a>
+    <a href="numerique.html"><span class="icon">💻</span>Compétences numériques</a>
+    <a href="culture.html"><span class="icon">💡</span>Culture scientifique</a>
+  </nav>
+</header>
+
+<div class="layout">
+  <main>
+    <h2 class="section-title">Culture scientifique</h2>
+
+    <div class="subsection">
+      <h3>Sciences</h3>
+      <ul>
+        <li><a class="video" href="https://www.youtube.com/@lereveilleur" target="_blank" rel="noopener">Le Réveilleur</a> : énergie, climat et écologie, en vidéos longues et sourcées</li>
+        <li><a class="video" href="https://www.youtube.com/@kurzgesagt" target="_blank" rel="noopener">Kurzgesagt</a> : physique, astronomie, biologie… en animation (en anglais)</li>
+        <li><a class="video" href="https://www.youtube.com/c/ScienceEtonnante" target="_blank" rel="noopener">ScienceEtonnante</a> : physique, mathématiques, informatique, biologie…</li>
+        <li><a class="video" href="https://www.youtube.com/c/Hygi%C3%A8neMentale" target="_blank" rel="noopener">Hygiène Mentale</a> : esprit critique et méthode scientifique</li>
+      </ul>
+    </div>
+
+    <div class="subsection">
+      <h3>Femmes ingénieures et/ou scientifiques</h3>
+      <ul>
+        <li><a class="video" href="#">IngénieurEs</a> (Fondation Mines Paris) : courts témoignages de femmes ingénieures</li>
+        <li><a class="video" href="#">Polytechnicienne</a> : documentaire sur le parcours de sept polytechniciennes</li>
+        <li><a href="#">Frise « Femmes et sciences » de la SMF</a></li>
+        <li><a href="#">20 portraits de scientifiques</a></li>
+        <li><a href="#">40 femmes scientifiques remarquables du XVIIIe siècle à nos jours</a></li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <p>Site personnel — mis à jour au fil de l'année.</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var PASS = "tpc";
+  var overlay = document.getElementById('auth-overlay');
+  var content = document.getElementById('site-content');
+  var form = document.getElementById('auth-form');
+  var input = document.getElementById('auth-pass');
+  var error = document.getElementById('auth-error');
+  var toggle = document.getElementById('auth-toggle');
+
+  toggle.addEventListener('change', function () {
+    input.type = toggle.checked ? 'text' : 'password';
+  });
+
+  if (localStorage.getItem('tpc_auth') === 'ok') {
+    overlay.hidden = true;
+    content.hidden = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value === PASS) {
+      localStorage.setItem('tpc_auth', 'ok');
+      overlay.hidden = true;
+      content.hidden = false;
+    } else {
+      error.hidden = false;
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
