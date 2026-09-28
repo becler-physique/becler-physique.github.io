@@ -397,3 +397,38 @@ a.video::before {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke='black' stroke-width='2'/%3E%3Cpath d='M10 8l6 4-6 4z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke='black' stroke-width='2'/%3E%3Cpath d='M10 8l6 4-6 4z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
+
+/* Solution repliable */
+.solution {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.solution summary {
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+}
+.solution summary:hover {
+  text-decoration: underline;
+}
+.solution-body {
+  margin-top: 12px;
+}
+.solution-code {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  background: #f4f4ef;
+  border: 1px solid var(--border);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  overflow-x: auto;
+}
+.solution-body code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.92em;
+  background: #f2f2ec;
+  padding: 1px 4px;
+}
