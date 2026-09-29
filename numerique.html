@@ -163,6 +163,13 @@ print("v =", v, "m/s")</textarea>
       </div>
     </details>
   </main>
+
+  <aside class="leaderboard">
+    <h3>Classement</h3>
+    <ol id="leaderboard-list" class="leaderboard-list">
+      <li class="placeholder">Chargement…</li>
+    </ol>
+  </aside>
 </div>
 
 <footer class="site-footer">
@@ -386,10 +393,60 @@ def run_student(code, ns, limit=500000):
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ nom: name, exercice: exTitle, id: exId })
+        body: JSON.stringify({ nom: name, exercice: exTitle, etoiles: exStars || 1, id: exId })
       });
+      setTimeout(function () {
+        if (window.TPC_refreshLeaderboard) { window.TPC_refreshLeaderboard(); }
+      }, 1500);
     } catch (e) { /* la réussite reste comptée localement même si l'envoi échoue */ }
   };
+})();
+
+(function () {
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUG_mIgh0N64FqnbEHOYYFvMmwt_LGu0hYCryeFKEd_-ndbdlW3h15XP7Pe_wy-Zw/exec";
+  var listEl = document.getElementById('leaderboard-list');
+  if (!listEl) { return; }
+
+  function render(data) {
+    listEl.innerHTML = '';
+    if (!data || !data.length) {
+      var empty = document.createElement('li');
+      empty.className = 'placeholder';
+      empty.textContent = "Personne n'a encore commencé.";
+      listEl.appendChild(empty);
+      return;
+    }
+    var me = localStorage.getItem('tpc_student_name');
+    data.slice(0, 15).forEach(function (row, i) {
+      var li = document.createElement('li');
+      if (row.nom === me) { li.classList.add('me'); }
+      var rank = document.createElement('span');
+      rank.className = 'rank';
+      rank.textContent = (i + 1) + '.';
+      var name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = row.nom;
+      var score = document.createElement('span');
+      score.className = 'score';
+      score.textContent = '★ ' + row.etoiles;
+      li.appendChild(rank);
+      li.appendChild(name);
+      li.appendChild(score);
+      listEl.appendChild(li);
+    });
+  }
+
+  function load() {
+    fetch(SCRIPT_URL)
+      .then(function (r) { return r.json(); })
+      .then(render)
+      .catch(function () {
+        listEl.innerHTML = '<li class="placeholder">Classement indisponible pour le moment.</li>';
+      });
+  }
+
+  load();
+  window.TPC_refreshLeaderboard = load;
 })();
 </script>
 
