@@ -621,3 +621,11 @@ details.exercise.accordion .statement {
   font-size: 0.85rem;
   padding: 0;
 }
+
+/* Badge de difficulté (étoiles) sur chaque exercice */
+.exercise-stars {
+  color: var(--accent);
+  font-size: 0.82rem;
+  margin-left: 6px;
+  letter-spacing: 1px;
+}
