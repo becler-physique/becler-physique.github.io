@@ -336,8 +336,7 @@ def run_student(code, ns, limit=500000):
   var starCount = document.getElementById('star-count');
   var editBtn = document.getElementById('student-edit');
 
-  var TOTAL_EXERCISES = document.querySelectorAll('details.exercise.accordion').length;
-
+  var TOTAL_STARS = (window.TPC_EXERCISES || []).reduce(function (sum, ex) { return sum + (ex.stars || 1); }, 0);
   function getStars() {
     try { return JSON.parse(localStorage.getItem('tpc_stars') || '{}'); } catch (e) { return {}; }
   }
@@ -345,8 +344,10 @@ def run_student(code, ns, limit=500000):
     localStorage.setItem('tpc_stars', JSON.stringify(obj));
   }
   function refreshStarDisplay() {
-    var n = Object.keys(getStars()).length;
-    starCount.textContent = '\u2605 ' + n + ' / ' + TOTAL_EXERCISES + ' exercice' + (TOTAL_EXERCISES > 1 ? 's' : '') + ' r\u00e9ussi' + (n > 1 ? 's' : '');
+    var earned = 0;
+    var stars = getStars();
+    for (var k in stars) { if (Object.prototype.hasOwnProperty.call(stars, k)) { earned += stars[k]; } }
+    starCount.textContent = '★ ' + earned + ' / ' + TOTAL_STARS + (TOTAL_STARS > 1 ? ' étoiles' : ' étoile');
   }
   function showStatus() {
     var name = localStorage.getItem('tpc_student_name');
@@ -373,12 +374,11 @@ def run_student(code, ns, limit=500000):
     nameInput.focus();
   });
 
-  window.TPC_recordSuccess = function (exId, exTitle) {
+  window.TPC_recordSuccess = function (exId, exTitle, exStars) {
     var stars = getStars();
     if (stars[exId]) { return; }
-    stars[exId] = true;
+    stars[exId] = exStars || 1;
     setStars(stars);
-    refreshStarDisplay();
 
     var name = localStorage.getItem('tpc_student_name') || '(anonyme)';
     try {
