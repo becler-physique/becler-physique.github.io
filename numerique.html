@@ -314,8 +314,7 @@ def run_student(code, ns, limit=500000):
         output.hidden = false;
         output.classList.add(res.ok ? 'ok' : 'ko');
         output.textContent = res.text + (stdout ? "\n\n" + stdout : "");
-        if (res.ok && window.TPC_recordSuccess) { window.TPC_recordSuccess(ex.n, ex.title); }
-      } catch (err) {
+        if (res.ok && window.TPC_recordSuccess) { window.TPC_recordSuccess(ex.n, ex.title, ex.stars); }      } catch (err) {
         output.hidden = false;
         output.classList.add('ko');
         output.textContent = describeError(err) + (stdout ? "\n\nAffichage avant l'erreur :\n" + stdout : "");
