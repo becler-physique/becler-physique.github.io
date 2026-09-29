@@ -39,6 +39,19 @@
     <h2 class="section-title" style="margin-top:0;">Compétences numériques</h2>
     <p class="intro">Exercices Python à compléter directement dans le navigateur, en lien avec le programme de physique de TPC2. Aucune installation nécessaire : le code s'exécute sur cette page (chargement de l'environnement Python au premier exercice, quelques secondes).</p>
 
+    <div id="student-banner" class="student-banner">
+      <form id="student-form" class="student-form">
+        <label for="student-name">Ton prénom, pour suivre ta progression :</label>
+        <input type="text" id="student-name" autocomplete="off" placeholder="Prénom Nom">
+        <button type="submit">Valider</button>
+      </form>
+      <div id="student-status" class="student-status" hidden>
+        <span id="student-greeting"></span>
+        <span id="star-count" class="star-count"></span>
+        <button id="student-edit" type="button" class="student-edit">Modifier</button>
+      </div>
+    </div>
+
     <details class="course accordion">
       <summary>Rappel de cours — la méthode d'Euler explicite</summary>
       <div class="accordion-body">
@@ -226,6 +239,7 @@ def run_student(code, ns, limit=500000):
     {
       n: 1,
       varName: 'v',
+      title: "Exercice 1 — Chute avec frottement fluide (méthode d'Euler)",
       check: function (v) {
         var g = 9.81, k = 0.5, dt = 0.01, N = 500, ref = 0;
         for (var i = 0; i < N; i++) { ref = ref + (g - k * ref) * dt; }
@@ -299,6 +313,7 @@ def run_student(code, ns, limit=500000):
         output.hidden = false;
         output.classList.add(res.ok ? 'ok' : 'ko');
         output.textContent = res.text + (stdout ? "\n\n" + stdout : "");
+        if (res.ok && window.TPC_recordSuccess) { window.TPC_recordSuccess(ex.n, ex.title); }
       } catch (err) {
         output.hidden = false;
         output.classList.add('ko');
@@ -309,6 +324,72 @@ def run_student(code, ns, limit=500000):
       }
     });
   });
+})();
+
+(function () {
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUG_mIgh0N64FqnbEHOYYFvMmwt_LGu0hYCryeFKEd_-ndbdlW3h15XP7Pe_wy-Zw/exec";
+
+  var form = document.getElementById('student-form');
+  var nameInput = document.getElementById('student-name');
+  var statusBox = document.getElementById('student-status');
+  var greeting = document.getElementById('student-greeting');
+  var starCount = document.getElementById('star-count');
+  var editBtn = document.getElementById('student-edit');
+
+  var TOTAL_EXERCISES = document.querySelectorAll('details.exercise.accordion').length;
+
+  function getStars() {
+    try { return JSON.parse(localStorage.getItem('tpc_stars') || '{}'); } catch (e) { return {}; }
+  }
+  function setStars(obj) {
+    localStorage.setItem('tpc_stars', JSON.stringify(obj));
+  }
+  function refreshStarDisplay() {
+    var n = Object.keys(getStars()).length;
+    starCount.textContent = '\u2605 ' + n + ' / ' + TOTAL_EXERCISES + ' exercice' + (TOTAL_EXERCISES > 1 ? 's' : '') + ' r\u00e9ussi' + (n > 1 ? 's' : '');
+  }
+  function showStatus() {
+    var name = localStorage.getItem('tpc_student_name');
+    form.hidden = true;
+    statusBox.hidden = false;
+    greeting.textContent = 'Bonjour ' + name + ' \u00b7';
+    refreshStarDisplay();
+  }
+
+  if (localStorage.getItem('tpc_student_name')) { showStatus(); }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = nameInput.value.trim();
+    if (!v) { return; }
+    localStorage.setItem('tpc_student_name', v);
+    showStatus();
+  });
+
+  editBtn.addEventListener('click', function () {
+    form.hidden = false;
+    statusBox.hidden = true;
+    nameInput.value = localStorage.getItem('tpc_student_name') || '';
+    nameInput.focus();
+  });
+
+  window.TPC_recordSuccess = function (exId, exTitle) {
+    var stars = getStars();
+    if (stars[exId]) { return; }
+    stars[exId] = true;
+    setStars(stars);
+    refreshStarDisplay();
+
+    var name = localStorage.getItem('tpc_student_name') || '(anonyme)';
+    try {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ nom: name, exercice: exTitle, id: exId })
+      });
+    } catch (e) { /* la réussite reste comptée localement même si l'envoi échoue */ }
+  };
 })();
 </script>
 
