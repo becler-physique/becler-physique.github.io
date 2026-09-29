@@ -508,3 +508,62 @@ a.video::before {
 .fig .pt-exact { fill: var(--muted); }
 .fig .lab-exact { fill: var(--muted); }
 .fig .lab-tan { fill: var(--accent); }
+
+/* Accordéon (rappel de cours et exercices repliables) */
+details.accordion {
+  border: 1px solid var(--border);
+  margin: 0 0 20px;
+}
+details.accordion + details.accordion,
+details.course.accordion + details.exercise.accordion {
+  margin-top: -1px;
+}
+details.accordion > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 44px 14px 18px;
+  font-weight: 700;
+  font-size: 1.02rem;
+  position: relative;
+  background: #f4f6fa;
+}
+details.exercise.accordion > summary {
+  background: #ffffff;
+}
+details.accordion > summary::-webkit-details-marker {
+  display: none;
+}
+details.accordion > summary::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -6px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+details.accordion[open] > summary::after {
+  transform: rotate(45deg);
+  margin-top: -8px;
+}
+details.accordion > summary:hover {
+  color: var(--accent);
+}
+details.course.accordion {
+  border-left: 3px solid var(--accent);
+}
+details.course.accordion > summary {
+  color: var(--accent);
+}
+details.accordion > .accordion-body {
+  padding: 4px 20px 18px;
+  border-top: 1px solid var(--border);
+}
+details.course.accordion .formula,
+details.exercise.accordion .statement {
+  margin-top: 12px;
+}
