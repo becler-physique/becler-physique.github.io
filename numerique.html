@@ -201,6 +201,50 @@ print("u =", u, "V")</textarea>
           <p>Le programme donne <code>u ≈ 4,9671 V</code>. La solution exacte du circuit RC vaut <code>E·(1 − exp(−t/(RC))) ≈ 4,9663 V</code> à <code>t = 5 s</code> : l'écart d'environ 0,0008 V vient du pas <code>dt</code>. On retrouve la même structure mathématique que l'exercice 1 (une grandeur qui tend vers une valeur limite), ici appliquée à un circuit électrique plutôt qu'à une chute avec frottement.</p>
         </div>
       </details>
+      <details class="exercise accordion">
+      <summary>Exercice 4 — Refroidissement d'une pièce métallique (méthode d'Euler) <span class="exercise-stars" aria-hidden="true">★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Une pièce métallique, sortie d'un four à la température <code>T₀</code>, refroidit dans l'air ambiant à une température <code>T_ext</code> supposée constante. En l'absence d'autre échange, la loi de refroidissement de Newton donne :</p>
+        <p><code>dT/dt = −k · (T − T_ext)</code></p>
+        <p>avec <code>T₀ = 150 °C</code>, <code>T_ext = 20 °C</code> et <code>k = 0,01 s⁻¹</code> (constante de refroidissement, homogène à l'inverse d'un temps).</p>
+        <p>On considère la pièce suffisamment refroidie lorsque sa température atteint <code>25 °C</code>. Comme pour l'exercice précédent, complétez le code ci-dessous — avec une boucle <code>while</code> — pour déterminer au bout de combien de temps ce seuil est atteint.</p>
+      </div>
+
+      <textarea id="code-4" spellcheck="false">T0 = 150.0    # température initiale (°C)
+Text = 20.0   # température ambiante (°C)
+k = 0.01      # constante de refroidissement (s^-1)
+dt = 0.1      # pas de temps (s)
+
+T = T0
+t = 0.0
+while T > 25.0:
+    # Complétez : calcul de dT/dt à partir de la loi de refroidissement, puis mise à jour de T (Euler explicite)
+    dT_dt = ...
+    T = ...
+    t = t + dt
+
+print("t =", t, "s")
+print("T =", T, "°C")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-4" disabled>Exécuter et vérifier</button>
+        <span id="status-4" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-4" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-4" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">while T > 25.0:
+    dT_dt = -k * (T - Text)
+    T = T + dT_dt * dt
+    t = t + dt</pre>
+          <p>Même principe que l'exercice précédent : la pente est donnée par la loi de refroidissement de Newton, la mise à jour est un pas d'Euler classique, et la boucle <code>while</code> s'arrête dès que le seuil de température est franchi.</p>
+          <p>Le programme donne <code>t ≈ 325,7 s</code>, soit environ 5 min 26 s. La valeur exacte est <code>t = −(1/k)·ln((25 − T_ext)/(T₀ − T_ext)) ≈ 325,8 s</code> : l'écart, minime, vient une fois de plus du pas <code>dt</code>. On retrouve la même idée que pour la décharge du condensateur : une grandeur qui tend exponentiellement vers une valeur limite (ici <code>T_ext</code>), qu'il s'agisse de tension ou de température.</p>
+        </div>
+      </details>
+      </div>
+    </details>
       </div>
     </details>
   </main>
@@ -315,6 +359,29 @@ def run_student(code, ns, limit=500000):
           return { ok: true, text: "Correct : u(5 s) = " + u.toFixed(4) + " V." };
         }
         return { ok: false, text: "Pas encore correct : ta valeur u = " + u + " V, attendu " + ref.toFixed(6) + " V.\nVérifie ta ligne de mise à jour d'Euler (u = u + du_dt * dt)." };
+      }
+    },
+    {
+      n: 4,
+      varName: 't',
+      title: "Exercice 4 — Refroidissement d'une pièce métallique (méthode d'Euler)",
+      stars: 1,
+      check: function (t) {
+        var T0 = 150.0, Text = 20.0, k = 0.01, dt = 0.1;
+        var T = T0, tt = 0, iter = 0;
+        while (T > 25.0 && iter < 1000000) {
+          var dT_dt = -k * (T - Text);
+          T = T + dT_dt * dt;
+          tt = tt + dt;
+          iter++;
+        }
+        if (typeof t !== 'number' || Number.isNaN(t)) {
+          return { ok: false, text: "La variable t n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les deux « ... »." };
+        }
+        if (Math.abs(t - tt) < 0.5) {
+          return { ok: true, text: "Correct : t ≈ " + t.toFixed(1) + " s (soit environ " + (t / 60).toFixed(1) + " min)." };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur t = " + t + " s, attendu environ " + tt.toFixed(1) + " s.\nVérifie ta ligne de mise à jour d'Euler (T = T + dT_dt * dt)." };
       }
     }
   ];
