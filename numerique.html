@@ -162,6 +162,47 @@ print("v =", v, "m/s")</textarea>
       </details>
       </div>
     </details>
+    <details class="exercise accordion">
+      <summary>Exercice 2 — Charge d'un condensateur (méthode d'Euler) <span class="exercise-stars" aria-hidden="true">★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Un condensateur de capacité <code>C</code>, initialement déchargé, est connecté à l'instant <code>t = 0</code> à un générateur de tension continue <code>E</code> à travers une résistance <code>R</code> (circuit RC en réponse à un échelon de tension). La loi des mailles donne <code>E = R·i + u</code>, avec <code>i = C·du/dt</code>, d'où l'équation différentielle :</p>
+        <p><code>du/dt = (E − u) / (RC)</code></p>
+        <p>avec <code>E = 5 V</code>, <code>R = 1000 Ω</code>, <code>C = 1,0×10⁻³ F</code> (donc <code>RC = 1 s</code>) et <code>u(0) = 0 V</code>.</p>
+        <p>En utilisant la <strong>méthode d'Euler explicite</strong> avec un pas <code>dt = 0.01 s</code>, complétez le code ci-dessous pour calculer la tension <code>u</code> aux bornes du condensateur à l'instant <code>t = 5 s</code> (soit <code>n = 500</code> pas de temps).</p>
+      </div>
+
+      <textarea id="code-2" spellcheck="false">E = 5.0
+R = 1000.0
+C = 1.0e-3
+dt = 0.01
+n = 500  # nombre de pas pour aller de t = 0 s à t = 5 s
+
+u = 0.0
+for i in range(n):
+    # Complétez : calcul de du/dt à partir de la formule, puis mise à jour de u (Euler explicite)
+    du_dt = ...
+    u = ...
+
+print("u =", u, "V")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-2" disabled>Exécuter et vérifier</button>
+        <span id="status-2" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-2" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-2" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">for i in range(n):
+    du_dt = (E - u) / (R * C)
+    u = u + du_dt * dt</pre>
+          <p>La première ligne traduit la loi des mailles : <code>du/dt = (E − u) / (RC)</code>. La seconde est la mise à jour d'Euler explicite.</p>
+          <p>Le programme donne <code>u ≈ 4,9671 V</code>. La solution exacte du circuit RC vaut <code>E·(1 − exp(−t/(RC))) ≈ 4,9663 V</code> à <code>t = 5 s</code> : l'écart d'environ 0,0008 V vient du pas <code>dt</code>. On retrouve la même structure mathématique que l'exercice 1 (une grandeur qui tend vers une valeur limite), ici appliquée à un circuit électrique plutôt qu'à une chute avec frottement.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
