@@ -262,6 +262,17 @@ def run_student(code, ns, limit=500000):
   ];
   window.TPC_EXERCISES = EXERCISES;
 
+  (function unhideAlreadySolved() {
+    var stars = {};
+    try { stars = JSON.parse(localStorage.getItem('tpc_stars') || '{}'); } catch (e) { stars = {}; }
+    EXERCISES.forEach(function (ex) {
+      if (stars[ex.n]) {
+        var solEl = document.getElementById('solution-' + ex.n);
+        if (solEl) { solEl.hidden = false; }
+      }
+    });
+  })();
+
   function describeError(err) {
     var msg = String(err && err.message ? err.message : err);
     var lines = msg.split("\n").filter(function (l) { return l.trim() !== ''; });
