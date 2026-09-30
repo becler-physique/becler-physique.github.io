@@ -299,6 +299,23 @@ def run_student(code, ns, limit=500000):
         }
         return { ok: false, text: "Pas encore correct : ta valeur v = " + v + " m/s, attendu " + ref.toFixed(6) + " m/s.\nVérifie ta ligne de mise à jour d'Euler (v = v + dv_dt * dt)." };
       }
+    },
+    {
+      n: 2,
+      varName: 'u',
+      title: "Exercice 2 — Charge d'un condensateur (méthode d'Euler)",
+      stars: 1,
+      check: function (u) {
+        var E = 5.0, R = 1000.0, C = 1e-3, dt = 0.01, N = 500, ref = 0;
+        for (var i = 0; i < N; i++) { ref = ref + ((E - ref) / (R * C)) * dt; }
+        if (typeof u !== 'number' || Number.isNaN(u)) {
+          return { ok: false, text: "La variable u n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les deux « ... »." };
+        }
+        if (Math.abs(u - ref) < 1e-6) {
+          return { ok: true, text: "Correct : u(5 s) = " + u.toFixed(4) + " V." };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur u = " + u + " V, attendu " + ref.toFixed(6) + " V.\nVérifie ta ligne de mise à jour d'Euler (u = u + du_dt * dt)." };
+      }
     }
   ];
   window.TPC_EXERCISES = EXERCISES;
