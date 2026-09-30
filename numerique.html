@@ -150,7 +150,7 @@ print("v =", v, "m/s")</textarea>
         <span id="status-1" class="exercise-status">Chargement de l'environnement Python…</span>
       </div>
       <pre id="output-1" class="exercise-output" hidden></pre>
-      <details class="solution">
+<details class="solution" id="solution-1" hidden>
         <summary>Voir la solution</summary>
         <div class="solution-body">
           <pre class="solution-code">for i in range(n):
@@ -321,8 +321,11 @@ def run_student(code, ns, limit=500000):
         output.hidden = false;
         output.classList.add(res.ok ? 'ok' : 'ko');
         output.textContent = res.text + (stdout ? "\n\n" + stdout : "");
-        if (res.ok && window.TPC_recordSuccess) { window.TPC_recordSuccess(ex.n, ex.title, ex.stars); }      } catch (err) {
-        output.hidden = false;
+        if (res.ok) {
+          var solEl = document.getElementById('solution-' + ex.n);
+          if (solEl) { solEl.hidden = false; }
+          if (window.TPC_recordSuccess) { window.TPC_recordSuccess(ex.n, ex.title, ex.stars); }
+        }        output.hidden = false;
         output.classList.add('ko');
         output.textContent = describeError(err) + (stdout ? "\n\nAffichage avant l'erreur :\n" + stdout : "");
       } finally {
