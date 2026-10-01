@@ -123,6 +123,49 @@ for i in range(n):      # n pas de temps
       </div>
     </details>
 
+        <details class="course accordion">
+      <summary>Rappel de cours — systèmes différentiels et odeint</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> Euler, tel qu'on l'a utilisé jusqu'ici, ne traite que les équations <strong>d'ordre 1</strong> (une seule dérivée). Beaucoup de situations physiques — un pendule, un oscillateur — sont pourtant régies par des équations <strong>d'ordre 2 ou plus</strong> (elles contiennent une dérivée seconde, voire davantage). On transforme alors l'équation d'ordre <code>n</code> en un <strong>système de <code>n</code> équations d'ordre 1</strong>, que l'on résout avec une fonction toute prête de Python : <code>odeint</code>.</p>
+
+      <p><strong>L'idée : transformer.</strong> Pour une équation d'ordre 2 du type <code>x'' = f(x, x', t)</code>, on introduit une nouvelle inconnue <code>y = x'</code>. L'équation d'ordre 2 devient alors un système de deux équations d'ordre 1 :</p>
+      <p class="formula">x' = y &nbsp;&nbsp;&nbsp; y' = f(x, y, t)</p>
+      <p>Chaque dérivée seconde « coûte » ainsi une variable supplémentaire : une équation d'ordre 2 donne un système de 2 équations, une équation d'ordre 3 un système de 3 équations, etc.</p>
+
+      <p><strong>Un exemple de transformation.</strong> Pour un pendule pesant, <code>J·θ'' = −M·g·d·sin(θ)</code> (moment d'inertie <code>J</code>, masse <code>M</code>, distance <code>d</code> de l'axe au centre de masse), on pose <code>ω = θ'</code> :</p>
+      <p class="formula">θ' = ω &nbsp;&nbsp;&nbsp; ω' = −(Mgd/J)·sin(θ)</p>
+
+      <p><strong>Utiliser odeint.</strong> Plutôt que de coder soi-même la boucle d'Euler sur ce système, on peut appeler <code>odeint</code>, qui est à la fois plus précis (elle ajuste automatiquement son pas de temps) et plus rapide. Trois étapes :</p>
+      <ol>
+        <li>Écrire une fonction qui renvoie le vecteur des dérivées, à partir de l'état actuel et du temps.</li>
+        <li>Définir les instants auxquels on veut connaître la solution.</li>
+        <li>Appeler <code>odeint</code> avec cette fonction, l'état initial, et ces instants.</li>
+      </ol>
+      <pre class="course-code">from scipy.integrate import odeint
+import numpy as np
+
+omega0 = 2.0  # pulsation propre (rad/s)
+
+def derivees(Y, t):
+    y1, y2 = Y              # y1 = x, y2 = x'
+    dy1_dt = y2
+    dy2_dt = -omega0**2 * y1
+    return [dy1_dt, dy2_dt]
+
+Y0 = [1.0, 0.0]                 # x(0) = 1, x'(0) = 0
+t = np.linspace(0, 10, 1000)    # instants auxquels on veut la solution
+
+solution = odeint(derivees, Y0, t)
+x = solution[:, 0]   # x(t)  : première colonne
+v = solution[:, 1]   # x'(t) : deuxième colonne</pre>
+
+      <p><strong>Pourquoi pas Euler « à la main » ?</strong> Le principe est le même (avancer pas à pas), mais <code>odeint</code> utilise une méthode bien plus précise qu'Euler à pas constant, avec un pas ajusté automatiquement. En pratique, on code soi-même la boucle d'Euler pour comprendre le principe ; dès qu'une bibliothèque est disponible, on utilise plutôt <code>odeint</code>.</p>
+
+      <p><strong>Pour l'exercice.</strong> Il faudra identifier le système d'équations d'ordre 1 à partir de l'équation physique, écrire la fonction <code>derivees</code>, puis appeler <code>odeint</code> avec les bonnes conditions initiales.</p>
+      </div>
+    </details>
+
     <details class="exercise accordion">
       <summary>Exercice 1 — Chute avec frottement fluide (méthode d'Euler) <span class="exercise-stars" aria-hidden="true">★</span></summary>
       <div class="accordion-body">
