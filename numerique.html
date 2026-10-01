@@ -127,7 +127,7 @@ for i in range(n):      # n pas de temps
       <summary>Rappel de cours — systèmes différentiels et odeint</summary>
       <div class="accordion-body">
 
-      <p><strong>À quoi ça sert ?</strong> Euler, tel qu'on l'a utilisé jusqu'ici, ne traite que les équations <strong>d'ordre 1</strong> (une seule dérivée). Beaucoup de situations physiques — un pendule, un oscillateur — sont pourtant régies par des équations <strong>d'ordre 2 ou plus</strong> (elles contiennent une dérivée seconde, voire davantage). On transforme alors l'équation d'ordre <code>n</code> en un <strong>système de <code>n</code> équations d'ordre 1</strong>, que l'on résout avec une fonction toute prête de Python : <code>odeint</code>.</p>
+      <p><strong>À quoi ça sert ?</strong> Euler, tel que vous allez l'utiliser dans les cinq premiers exercices, ne traite que les équations <strong>d'ordre 1</strong> (une seule dérivée). Beaucoup de situations physiques — un pendule, un oscillateur — sont pourtant régies par des équations <strong>d'ordre 2 ou plus</strong> (elles contiennent une dérivée seconde, voire davantage). On transforme alors l'équation d'ordre <code>n</code> en un <strong>système de <code>n</code> équations d'ordre 1</strong>, que l'on résout avec une fonction toute prête de Python : <code>odeint</code>.</p>
 
       <p><strong>L'idée : transformer.</strong> Pour une équation d'ordre 2 du type <code>x'' = f(x, x', t)</code>, on introduit une nouvelle inconnue <code>y = x'</code>. L'équation d'ordre 2 devient alors un système de deux équations d'ordre 1 :</p>
       <p class="formula">x' = y &nbsp;&nbsp;&nbsp; y' = f(x, y, t)</p>
