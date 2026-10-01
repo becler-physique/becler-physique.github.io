@@ -415,6 +415,61 @@ print("u =", u, "V  à t =", t, "s")</textarea>
       </details>
       </div>
     </details>
+        <details class="exercise accordion">
+      <summary>Exercice 6 — Pendule pesant avec odeint (systèmes différentiels) <span class="exercise-stars" aria-hidden="true">★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>On reprend le pendule pesant du rappel de cours ci-dessus : <code>J·θ'' = −M·g·d·sin(θ)</code>, transformé en système à l'aide de <code>ω = θ'</code> :</p>
+        <p><code>θ' = ω</code> &nbsp;&nbsp;&nbsp; <code>ω' = −(Mgd/J)·sin(θ)</code></p>
+        <p>avec <code>J = 0,5 kg·m²</code>, <code>M = 2 kg</code>, <code>d = 0,3 m</code>, <code>g = 9,81 m/s²</code>, <code>θ(0) = 0,8 rad</code> et <code>ω(0) = 0</code>.</p>
+        <p>Cette fois, pas de boucle à écrire : la fonction <code>derivees</code> ci-dessous reçoit l'état actuel <code>Y = [θ, ω]</code> (et le temps <code>t</code>, inutile ici car l'équation ne dépend pas explicitement de lui) et doit renvoyer <code>[θ', ω']</code>. Le reste — l'appel à <code>odeint</code>, la lecture du résultat — est déjà écrit. Complétez uniquement les deux dérivées pour calculer <code>θ</code> et <code>ω</code> à <code>t = 2 s</code>.</p>
+      </div>
+
+      <textarea id="code-6" spellcheck="false" style="min-height: 320px;">from scipy.integrate import odeint
+import numpy as np
+import math
+
+J = 0.5
+M = 2.0
+g = 9.81
+d = 0.3
+
+def derivees(Y, t):
+    theta, omega = Y
+    # Complétez : les deux dérivées (voir le rappel de cours)
+    dtheta_dt = ...
+    domega_dt = ...
+    return [dtheta_dt, domega_dt]
+
+Y0 = [0.8, 0.0]               # theta(0) = 0.8 rad, omega(0) = 0
+t = np.linspace(0, 2, 2001)   # instants de 0 à 2 s
+
+solution = odeint(derivees, Y0, t)
+theta_final = solution[-1, 0]
+omega_final = solution[-1, 1]
+
+print("theta(2 s) =", theta_final, "rad")
+print("omega(2 s) =", omega_final, "rad/s")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-6" disabled>Exécuter et vérifier</button>
+        <span id="status-6" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-6" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-6" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def derivees(Y, t):
+    theta, omega = Y
+    dtheta_dt = omega
+    domega_dt = -(M * g * d / J) * math.sin(theta)
+    return [dtheta_dt, domega_dt]</pre>
+          <p>La fonction <code>derivees</code> traduit directement le système écrit dans l'énoncé : la dérivée de <code>θ</code>, c'est <code>ω</code> ; la dérivée de <code>ω</code> est donnée par l'équation du mouvement. C'est tout ce qu'<code>odeint</code> a besoin de savoir pour intégrer le système lui-même.</p>
+          <p>Le programme donne <code>θ(2 s) ≈ 0,764 rad</code> et <code>ω(2 s) ≈ −0,773 rad/s</code> — des valeurs très proches de celles obtenues avec Euler « à la main » dans l'exercice correspondant, mais obtenues ici avec une précision bien supérieure (et beaucoup moins de code), car <code>odeint</code> ajuste automatiquement son pas de temps.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -609,6 +664,34 @@ def run_student(code, ns, limit=500000):
         }
         return { ok: false, text: "Pas encore correct : ta valeur u = " + u + " V, attendu " + ref.toFixed(6) + " V.\nVérifie que e est bien évalué avec la valeur de t AVANT sa mise à jour, et que les quatre lignes sont complètes." };
       }
+    },
+    {
+      n: 6,
+      varName: 'theta_final',
+      title: "Exercice 6 — Pendule pesant avec odeint (systèmes différentiels)",
+      stars: 1,
+      packages: ['numpy', 'scipy'],
+      check: function (theta_final) {
+        var J = 0.5, M = 2.0, g = 9.81, d = 0.3, k = M * g * d / J;
+        var dt = 0.001, N = Math.round(2.0 / dt);
+        var th = 0.8, om = 0.0;
+        function deriv(th, om) { return [om, -k * Math.sin(th)]; }
+        for (var i = 0; i < N; i++) {
+          var k1 = deriv(th, om);
+          var k2 = deriv(th + dt / 2 * k1[0], om + dt / 2 * k1[1]);
+          var k3 = deriv(th + dt / 2 * k2[0], om + dt / 2 * k2[1]);
+          var k4 = deriv(th + dt * k3[0], om + dt * k3[1]);
+          th = th + dt / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]);
+          om = om + dt / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+        }
+        if (typeof theta_final !== 'number' || Number.isNaN(theta_final)) {
+          return { ok: false, text: "La variable theta_final n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les deux « ... »." };
+        }
+        if (Math.abs(theta_final - th) < 1e-3) {
+          return { ok: true, text: "Correct : theta(2 s) ≈ " + theta_final.toFixed(4) + " rad." };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur theta_final = " + theta_final + " rad, attendu environ " + th.toFixed(6) + " rad.\nVérifie les deux dérivées dans la fonction derivees." };
+      }
     }
   ];
   window.TPC_EXERCISES = EXERCISES;
@@ -673,9 +756,14 @@ def run_student(code, ns, limit=500000):
       output.hidden = true;
       output.className = 'exercise-output';
 
-      var stdout = '';
+            var stdout = '';
       try {
         var pyodide = await pyodideReady;
+        if (ex.packages && ex.packages.length) {
+          statusEl.textContent = "Chargement de " + ex.packages.join(", ") + "…";
+          await pyodide.loadPackage(ex.packages);
+          statusEl.textContent = "Exécution…";
+        }
         pyodide.setStdout({ batched: function (s) { stdout += s + "\n"; } });
         pyodide.globals.set('__code', codeEl.value);
         var value = pyodide.runPython("__ns = {}\nrun_student(__code, __ns)\n__ns.get('" + ex.varName + "')");
