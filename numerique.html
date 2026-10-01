@@ -250,6 +250,76 @@ print("T =", T, "°C")</textarea>
       </details>
       </div>
     </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 4 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Un disque homogène, de moment d'inertie <code>J</code> par rapport à son axe de rotation <code>Δ</code>, est lancé à la vitesse angulaire <code>ω₀</code> puis livré à lui-même : un couple de frottement visqueux, proportionnel à <code>ω</code> (<code>M_f = −f·ω</code>, avec <code>f</code> un coefficient de frottement constant), le freine progressivement. Le théorème du moment cinétique scalaire donne :</p>
+        <p><code>dω/dt = −(f/J)·ω</code></p>
+        <p>Cette équation a, exceptionnellement, une solution exacte simple : <code>ω(t) = ω₀·exp(−(f/J)·t)</code> — ce qui va permettre ici de <strong>mesurer précisément l'erreur commise par la méthode d'Euler</strong>, plutôt que de simplement l'estimer comme dans les exercices précédents.</p>
+        <p>Avec <code>J = 0,4 kg·m²</code>, <code>f = 1,0 N·m·s</code>, <code>ω₀ = 50 rad/s</code>, calculez par la méthode d'Euler la vitesse angulaire à <code>t = 2 s</code>, pour <strong>deux pas de temps différents</strong> : <code>dt = 0,1 s</code> et <code>dt = 0,01 s</code> (dix fois plus petit). Comparez chaque résultat à la valeur exacte, et vérifiez que diviser <code>dt</code> par 10 divise bien l'erreur par environ 10, comme annoncé dans le rappel de cours.</p>
+      </div>
+
+      <textarea id="code-4" spellcheck="false" style="min-height: 420px;">import math
+
+J = 0.4        # moment d'inertie du disque (kg.m^2)
+f = 1.0        # coefficient de frottement visqueux (N.m.s)
+omega0 = 50.0  # vitesse angulaire initiale (rad/s)
+t_final = 2.0  # instant auquel on évalue omega (s)
+
+def euler_omega(dt):
+    n = round(t_final / dt)
+    omega = omega0
+    for i in range(n):
+        # Complétez : calcul de domega/dt à partir de la formule, puis mise à jour (Euler explicite)
+        domega_dt = ...
+        omega = ...
+    return omega
+
+exact = omega0 * math.exp(-(f / J) * t_final)
+
+omega_a = euler_omega(0.1)
+omega_b = euler_omega(0.01)
+
+# Complétez : écart (valeur absolue) entre chaque résultat et la valeur exacte
+erreur_a = ...
+erreur_b = ...
+
+# Complétez : rapport entre la plus grande erreur et la plus petite
+rapport = ...
+
+print("omega exact =", exact, "rad/s")
+print("omega (dt=0.1) =", omega_a, " erreur =", erreur_a)
+print("omega (dt=0.01) =", omega_b, " erreur =", erreur_b)
+print("rapport des erreurs =", rapport)</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-4" disabled>Exécuter et vérifier</button>
+        <span id="status-4" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-4" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-4" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def euler_omega(dt):
+    n = round(t_final / dt)
+    omega = omega0
+    for i in range(n):
+        domega_dt = -(f / J) * omega
+        omega = omega + domega_dt * dt
+    return omega
+
+erreur_a = abs(omega_a - exact)
+erreur_b = abs(omega_b - exact)
+rapport = erreur_a / erreur_b</pre>
+          <p>La boucle d'Euler est la même que dans les exercices précédents, simplement placée dans une fonction pour pouvoir l'appeler deux fois avec des pas différents. L'erreur est l'écart absolu entre la valeur calculée et la valeur exacte ; le rapport compare l'erreur du pas large à celle du pas fin.</p>
+          <p>Le programme donne <code>erreur(dt=0,1) ≈ 0,178 rad/s</code>, <code>erreur(dt=0,01) ≈ 0,0207 rad/s</code>, soit un rapport proche de <code>8,6</code> — assez proche de 10 pour confirmer la règle « diviser <code>dt</code> par 10 divise l'erreur par environ 10 », sans être exactement 10 car on n'est pas encore complètement dans le régime où cette proportionnalité est exacte (il faudrait un pas encore plus petit pour s'en approcher davantage).</p>
+          <p>Remarque : ce calcul n'a été possible que parce que l'équation a une solution exacte connue ici. En pratique (comme pour les exercices précédents), on ne connaît en général pas cette solution : on ne peut donc pas mesurer l'erreur directement, mais cette étude justifie pourquoi on fait confiance à Euler pour un pas suffisamment petit.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -385,6 +455,41 @@ def run_student(code, ns, limit=500000):
           return { ok: true, text: "Correct : t ≈ " + t.toFixed(1) + " s (soit environ " + (t / 60).toFixed(1) + " min)." };
         }
         return { ok: false, text: "Pas encore correct : ta valeur t = " + t + " s, attendu environ " + tt.toFixed(1) + " s.\nVérifie ta ligne de mise à jour d'Euler (T = T + dT_dt * dt)." };
+      }
+    },
+    {
+      n: 4,
+      varName: 'rapport',
+      title: "Exercice 4 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide)",
+      stars: 2,
+      check: function (rapport) {
+        var J = 0.4, f = 1.0, omega0 = 50.0, t_final = 2.0;
+        var k = f / J;
+        function euler(dt) {
+          var n = Math.round(t_final / dt);
+          var omega = omega0;
+          for (var i = 0; i < n; i++) {
+            var domega_dt = -k * omega;
+            omega = omega + domega_dt * dt;
+          }
+          return omega;
+        }
+        var exact = omega0 * Math.exp(-k * t_final);
+        var erreurA = Math.abs(euler(0.1) - exact);
+        var erreurB = Math.abs(euler(0.01) - exact);
+        var ref = erreurA / erreurB;
+        var refInverse = erreurB / erreurA;
+
+        if (typeof rapport !== 'number' || Number.isNaN(rapport)) {
+          return { ok: false, text: "La variable rapport n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les cinq « ... »." };
+        }
+        if (Math.abs(rapport - ref) < 1e-3) {
+          return { ok: true, text: "Correct : le rapport des erreurs vaut environ " + rapport.toFixed(2) + ", proche de 10 comme attendu." };
+        }
+        if (Math.abs(rapport - refInverse) < 1e-3) {
+          return { ok: false, text: "Ta valeur correspond au rapport inversé (petite erreur / grande erreur). L'énoncé demande l'inverse : la plus grande erreur divisée par la plus petite." };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur rapport = " + rapport + ", attendu environ " + ref.toFixed(4) + ".\nVérifie erreur_a, erreur_b (écart absolu à la valeur exacte), puis leur rapport." };
       }
     }
   ];
