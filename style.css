@@ -159,7 +159,7 @@ main h3 {
   border: 1px solid var(--border);
   border-radius: 0;
   padding: 16px 20px;
-  flex: 1 1 260px;
+  flex: 0 1 260px;
   min-width: 220px;
 }
 .box h3 {
@@ -693,15 +693,8 @@ details.exercise.accordion .statement {
   .leaderboard { width: 100%; position: static; }
 }
 
-/* Grille de chapitres (4 par ligne) */
-.box-row.box-row-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-@media (max-width: 760px) {
-  .box-row.box-row-4 { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 440px) {
-  .box-row.box-row-4 { grid-template-columns: 1fr; }
+
+/* Titre de cadre centré (grille de chapitres) */
+.box h3.centered {
+  text-align: center;
 }
