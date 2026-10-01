@@ -320,6 +320,58 @@ rapport = erreur_a / erreur_b</pre>
       </details>
       </div>
     </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 5 — Filtre RC soumis à une tension sinusoïdale (filtrage, méthode d'Euler) <span class="exercise-stars" aria-hidden="true">★★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>On reprend le circuit RC passe-bas déjà rencontré, mais cette fois alimenté par une tension sinusoïdale <code>e(t) = E·cos(ω·t)</code> plutôt que par un échelon. L'équation différentielle reste :</p>
+        <p><code>du/dt = (e(t) − u) / (RC)</code></p>
+        <p>avec <code>R = 1000 Ω</code>, <code>C = 1,0×10⁻³ F</code> (donc <code>RC = 1 s</code>), <code>E = 5 V</code>, <code>ω = 5 rad/s</code> et <code>u(0) = 0 V</code>.</p>
+        <p><strong>Différence essentielle avec les exercices précédents</strong> : le second membre ne dépend plus seulement de <code>u</code>, mais aussi explicitement du temps <code>t</code>, par l'intermédiaire de <code>e(t)</code>. Il faut donc évaluer <code>e</code> à l'instant courant à chaque pas, avant de calculer la dérivée — et donc aussi faire avancer <code>t</code> en même temps que <code>u</code>.</p>
+        <p>Complétez le code ci-dessous pour calculer <code>u</code> à l'instant <code>t = 20 s</code> (soit <code>n = 20000</code> pas avec <code>dt = 0.001 s</code>) : au bout d'un temps long devant <code>RC</code>, le régime transitoire s'est éteint et on observe le régime sinusoïdal forcé, celui que décrit le chapitre sur le filtrage (amplitude et déphasage).</p>
+      </div>
+
+      <textarea id="code-5" spellcheck="false" style="min-height: 320px;">import math
+
+R = 1000.0
+C = 1.0e-3
+E = 5.0
+omega = 5.0    # pulsation du signal d'entrée (rad/s)
+dt = 0.001
+n = 20000      # nombre de pas pour aller de t = 0 s à t = 20 s
+
+u = 0.0
+t = 0.0
+for i in range(n):
+    # Complétez : tension d'entrée à l'instant t, dérivée, puis mises à jour de u et de t
+    e = ...
+    du_dt = ...
+    u = ...
+    t = ...
+
+print("u =", u, "V  à t =", t, "s")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-5" disabled>Exécuter et vérifier</button>
+        <span id="status-5" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-5" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-5" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">for i in range(n):
+    e = E * math.cos(omega * t)
+    du_dt = (e - u) / (R * C)
+    u = u + du_dt * dt
+    t = t + dt</pre>
+          <p>À chaque pas, on calcule d'abord <code>e</code> avec la valeur actuelle de <code>t</code> (pas encore mise à jour), puis la dérivée, puis on avance <code>u</code> et <code>t</code> — l'ordre entre les deux dernières lignes n'a pas d'importance ici, car elles ne dépendent pas l'une de l'autre.</p>
+          <p>Le programme donne <code>u(20 s) ≈ −0,323 V</code>. On peut comparer cette valeur à ce que prévoit le chapitre sur le filtrage : pour un passe-bas du premier ordre, le gain en régime sinusoïdal forcé vaut <code>1/√(1+(ωRC)²) ≈ 0,196</code>, donc une amplitude de sortie <code>S_m ≈ 0,981 V</code>, et un déphasage <code>φ = −arctan(ωRC) ≈ −1,373 rad</code>. Cela donne une valeur théorique <code>u_théo(20 s) ≈ −0,321 V</code> : très proche du résultat numérique, l'écart venant à la fois du pas <code>dt</code> et d'un tout petit reste de régime transitoire.</p>
+          <p>C'est l'intérêt de cette méthode : elle calcule directement <code>u(t)</code> sans jamais passer par la notion d'amplitude complexe ni par <code>H(jω)</code> — utile pour un signal d'entrée quelconque, pas seulement sinusoïdal.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -490,6 +542,29 @@ def run_student(code, ns, limit=500000):
           return { ok: false, text: "Ta valeur correspond au rapport inversé (petite erreur / grande erreur). L'énoncé demande l'inverse : la plus grande erreur divisée par la plus petite." };
         }
         return { ok: false, text: "Pas encore correct : ta valeur rapport = " + rapport + ", attendu environ " + ref.toFixed(4) + ".\nVérifie erreur_a, erreur_b (écart absolu à la valeur exacte), puis leur rapport." };
+      }
+    },
+    {
+      n: 5,
+      varName: 'u',
+      title: "Exercice 5 — Filtre RC soumis à une tension sinusoïdale (filtrage, méthode d'Euler)",
+      stars: 3,
+      check: function (u) {
+        var R = 1000.0, C = 1e-3, E = 5.0, omega = 5.0, dt = 0.001, N = 20000;
+        var ref = 0, t = 0;
+        for (var i = 0; i < N; i++) {
+          var e = E * Math.cos(omega * t);
+          var du_dt = (e - ref) / (R * C);
+          ref = ref + du_dt * dt;
+          t = t + dt;
+        }
+        if (typeof u !== 'number' || Number.isNaN(u)) {
+          return { ok: false, text: "La variable u n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les quatre « ... »." };
+        }
+        if (Math.abs(u - ref) < 1e-4) {
+          return { ok: true, text: "Correct : u(20 s) ≈ " + u.toFixed(4) + " V." };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur u = " + u + " V, attendu " + ref.toFixed(6) + " V.\nVérifie que e est bien évalué avec la valeur de t AVANT sa mise à jour, et que les quatre lignes sont complètes." };
       }
     }
   ];
