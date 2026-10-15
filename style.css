@@ -512,7 +512,7 @@ a.video::before {
 /* Accordéon (rappel de cours et exercices repliables) */
 details.accordion {
   border: 1px solid var(--border);
-  margin: 0 0 20px;
+  margin: 0 0 12px;
 }
 details.accordion + details.accordion,
 details.course.accordion + details.exercise.accordion {
