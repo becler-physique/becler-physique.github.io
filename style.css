@@ -553,6 +553,11 @@ details.accordion[open] > summary::after {
 details.accordion > summary:hover {
   color: var(--accent);
 }
+details.exercise.accordion {
+  border: 1px solid var(--border);
+  padding: 0;
+  margin: 0 0 20px;
+}
 details.course.accordion {
   border-left: 3px solid var(--accent);
 }
