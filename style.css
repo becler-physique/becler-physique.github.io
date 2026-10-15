@@ -521,7 +521,7 @@ details.course.accordion + details.exercise.accordion {
 details.accordion > summary {
   cursor: pointer;
   list-style: none;
-  padding: 8px 44px 8px 18px;
+  padding: 6px 44px 6px 18px;
   font-weight: 700;
   font-size: 1.02rem;
   position: relative;
