@@ -473,6 +473,96 @@ print("omega(2 s) =", omega_final, "rad/s")</textarea>
       </details>
       </div>
     </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 7 — Non-isochronisme du pendule pesant (odeint) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>On reprend le pendule de l'exercice 6 : <code>θ' = ω</code> et <code>ω' = −(Mgd/J)·sin(θ)</code>, avec les mêmes valeurs numériques. Pour de <strong>petites</strong> oscillations, on remplace <code>sin(θ)</code> par <code>θ</code> : le mouvement est sinusoïdal, de période <code>T₀ = 2π·√(J/(Mgd))</code>, indépendante de l'amplitude. On dit que les oscillations sont <strong>isochrones</strong>.</p>
+        <p>Mais <code>sin(θ) ≈ θ</code> n'est qu'une approximation. Avec <code>odeint</code>, on peut résoudre l'équation <strong>exacte</strong> et mesurer la vraie période <code>T</code> pour chaque amplitude <code>θ₀</code> (pendule lâché sans vitesse initiale). L'objectif : trouver <strong>à partir de quelle amplitude la période dépasse T₀ de plus de 1 %</strong>. C'est elle qui fixe, en TP, l'amplitude à ne pas dépasser pour utiliser la formule de T₀.</p>
+        <p><strong>Méthode pour mesurer la période.</strong> Lâché depuis <code>θ₀ &gt; 0</code>, le pendule passe pour la première fois par <code>θ = 0</code> au bout d'un <strong>quart de période</strong>. Il suffit donc de repérer le premier instant où <code>θ</code> devient négatif, puis de multiplier par 4 (une ligne, déjà écrite, affine cet instant par interpolation linéaire).</p>
+        <p>Complétez les quatre « ... » :</p>
+        <ol>
+          <li>les deux dérivées (comme à l'exercice 6) ;</li>
+          <li>la condition de la boucle <code>while</code> : on avance tant que <code>θ</code> est encore positif ;</li>
+          <li>le rapport <code>T/T₀</code> pour chaque amplitude <code>a</code>, donnée en <strong>degrés</strong> (<code>math.radians(a)</code> convertit en radians) ;</li>
+          <li>la condition qui repère la première amplitude pour laquelle <code>T/T₀</code> dépasse <code>1,01</code>.</li>
+        </ol>
+      </div>
+
+      <textarea id="code-7" spellcheck="false" style="min-height: 620px;">from scipy.integrate import odeint
+import numpy as np
+import math
+
+J = 0.5        # moment d'inertie par rapport à l'axe (kg.m^2)
+M = 2.0        # masse du pendule (kg)
+g = 9.81
+d = 0.3        # distance de l'axe au centre de masse (m)
+T0 = 2 * math.pi * math.sqrt(J / (M * g * d))   # période des petites oscillations (s)
+
+def derivees(Y, t):
+    theta, omega = Y
+    # Complétez (comme à l'exercice 6)
+    dtheta_dt = ...
+    domega_dt = ...
+    return [dtheta_dt, domega_dt]
+
+def periode(theta0):
+    # Période des oscillations lâchées sans vitesse initiale depuis l'angle theta0 (en rad)
+    t = np.linspace(0, T0, 2001)
+    theta = odeint(derivees, [theta0, 0.0], t)[:, 0]
+    # Complétez la condition : on avance tant que theta est encore positif
+    i = 0
+    while ...:
+        i = i + 1
+    # (déjà écrit) instant du premier passage par 0, affiné par interpolation linéaire
+    t_zero = t[i-1] + theta[i-1] * (t[i] - t[i-1]) / (theta[i-1] - theta[i])
+    return 4 * t_zero
+
+amplitudes = list(range(1, 91))      # amplitudes de 1° à 90°
+rapports = []
+for a in amplitudes:
+    # Complétez : rapport T/T0 pour l'amplitude a (attention : a est en degrés)
+    rapports.append(...)
+
+# Complétez la condition : première amplitude (en degrés) pour laquelle T/T0 dépasse 1,01
+amplitude_1pc = None
+for k in range(len(amplitudes)):
+    if ... and amplitude_1pc is None:
+        amplitude_1pc = amplitudes[k]
+
+print("T0 =", round(T0, 4), "s")
+for a in [10, 20, 30, 40, 60, 90]:
+    print("amplitude", a, "°  ->  T/T0 =", round(rapports[a - 1], 4))
+print("La période dépasse T0 de plus de 1 % à partir de", amplitude_1pc, "°")</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-7" disabled>Exécuter et vérifier</button>
+        <span id="status-7" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-7" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-7" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def derivees(Y, t):
+    theta, omega = Y
+    dtheta_dt = omega
+    domega_dt = -(M * g * d / J) * math.sin(theta)
+    return [dtheta_dt, domega_dt]
+
+    while theta[i] &gt; 0:
+        i = i + 1
+
+    rapports.append(periode(math.radians(a)) / T0)
+
+    if rapports[k] &gt; 1.01 and amplitude_1pc is None:</pre>
+          <p>Le programme donne <code>T₀ ≈ 1,831 s</code> et les rapports <code>T/T₀ ≈ 1,002</code> à 10°, <code>1,008</code> à 20°, <code>1,017</code> à 30°, <code>1,031</code> à 40°, <code>1,073</code> à 60° et <code>1,180</code> à 90°. La période <strong>augmente avec l'amplitude</strong> : les oscillations ne sont pas isochrones. Elle dépasse <code>T₀</code> de plus de 1 % <strong>à partir de 23°</strong>.</p>
+          <p>Pourquoi ? Pour <code>θ</code> grand, <code>sin(θ) &lt; θ</code> : le couple de rappel est plus faible que dans le modèle linéaire, le pendule est moins vite ramené vers l'équilibre, et il met plus de temps à faire un aller-retour. Pour des amplitudes modérées, la <strong>formule de Borda</strong>, <code>T ≈ T₀·(1 + θ₀²/16)</code> (θ₀ en radians), donne une très bonne approximation : vous pouvez la comparer à vos valeurs.</p>
+          <p><strong>Conséquence en TP</strong> : un moment d'inertie déduit de la période varie comme <code>T²</code>, donc l'erreur sur <code>J</code> est le double de celle sur <code>T</code>. Pour que ce biais reste négligeable, on travaille à une amplitude de l'ordre de 10° au plus.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -694,6 +784,36 @@ def run_student(code, ns, limit=500000):
           return { ok: true, text: "Correct : theta(2 s) ≈ " + theta_final.toFixed(4) + " rad." };
         }
         return { ok: false, text: "Pas encore correct : ta valeur theta_final = " + theta_final + " rad, attendu environ " + th.toFixed(6) + " rad.\nVérifie les deux dérivées dans la fonction derivees." };
+      }
+    },
+    {
+      n: 7,
+      varName: 'amplitude_1pc',
+      title: "Exercice 7 — Non-isochronisme du pendule pesant (odeint)",
+      stars: 2,
+      packages: ['numpy', 'scipy'],
+      check: function (amp) {
+        // Rapport exact T/T0 = 2K(k)/pi = 1/AGM(1, cos(theta0/2)), avec k = sin(theta0/2)
+        function ratio(deg) {
+          var k = Math.sin(deg * Math.PI / 360), a = 1, b = Math.sqrt(1 - k * k);
+          for (var i = 0; i < 30; i++) { var an = (a + b) / 2; b = Math.sqrt(a * b); a = an; }
+          return 1 / a;
+        }
+        var ref = null;
+        for (var dg = 1; dg <= 90; dg++) { if (ratio(dg) > 1.01) { ref = dg; break; } }
+        if (amp === null || amp === undefined) {
+          return { ok: false, text: "La variable amplitude_1pc vaut encore None : aucune amplitude n'a été retenue. Vérifie la condition (rapports[k] > 1.01) dans la dernière boucle, et le calcul des rapports." };
+        }
+        if (typeof amp !== 'number' || Number.isNaN(amp)) {
+          return { ok: false, text: "La variable amplitude_1pc n'a pas été calculée comme un nombre — vérifie que tu as bien remplacé les quatre « ... »." };
+        }
+        if (Math.abs(amp - ref) < 0.5) {
+          return { ok: true, text: "Correct : la période dépasse T0 de plus de 1 % à partir de " + amp + "°. En TP, on restera donc bien en dessous (≈ 10°)." };
+        }
+        if (amp <= 2) {
+          return { ok: false, text: "Ta valeur amplitude_1pc = " + amp + "° est beaucoup trop petite : les rapports T/T0 sont sans doute faux. As-tu bien converti l'amplitude en radians (math.radians(a)) et divisé par T0 ?" };
+        }
+        return { ok: false, text: "Pas encore correct : ta valeur amplitude_1pc = " + amp + "°, attendu " + ref + "°.\nVérifie la condition de la boucle while (theta[i] > 0) et le calcul du rapport periode(math.radians(a)) / T0." };
       }
     }
   ];
