@@ -888,3 +888,60 @@ details.course.accordion > .accordion-body { padding-top: 14px; }
   .leaderboard { width: auto !important; margin: 32px 16px 0; position: static; }
   footer.site-footer { margin-top: 56px; padding: 16px; }
 }
+
+
+/* ---------- Formulaire TIPE (intégré au site) ---------- */
+.tipe-form {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 20px 22px 18px;
+  display: grid;
+  gap: 16px;
+}
+.tipe-form .field-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+.tipe-form .field { display: flex; flex-direction: column; gap: 6px; }
+.tipe-form .field-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tipe-form select, .tipe-form input, .tipe-form textarea {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 9px 11px;
+  width: 100%;
+}
+.tipe-form textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.tipe-form select:focus, .tipe-form input:focus, .tipe-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  background: #ffffff;
+}
+.tipe-form .form-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.tipe-form button {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+.tipe-form button:hover { opacity: 0.9; }
+.tipe-form button:disabled { opacity: 0.5; cursor: default; }
+.form-status { font-size: 0.92rem; color: var(--muted); }
+.form-status.ok { color: #2f6b3a; }
+.form-status.ko { color: #a12b2b; }
+@media (max-width: 720px) {
+  .tipe-form { padding: 16px 14px; }
+  .tipe-form .field-row { grid-template-columns: 1fr; }
+}

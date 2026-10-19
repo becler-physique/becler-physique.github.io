@@ -202,10 +202,42 @@
          ===================================================== -->
     <section id="TIPE">
       <h2 class="section-title"><span class="kicker">04</span>TIPE</h2>
-      <p class="note">Chaque groupe indique ici, semaine après semaine, le matériel dont il a besoin pour la séance suivante. <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIFT4F6fTYJUNrQBHpThyzplvF_y1vZlCZqVVgG26woyS5UQ/viewform" target="_blank" rel="noopener">Ouvrir le formulaire dans un nouvel onglet&nbsp;↗</a></p>
-      <div class="tipe-frame">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeIFT4F6fTYJUNrQBHpThyzplvF_y1vZlCZqVVgG26woyS5UQ/viewform?embedded=true" title="Demande de matériel TIPE" loading="lazy">Chargement…</iframe>
-      </div>
+      <p class="note">Chaque groupe indique ici, semaine après semaine, le matériel dont il a besoin pour la séance suivante.</p>
+
+      <!-- Formulaire de demande de matériel : les réponses sont envoyées au formulaire Google
+           (même tableau de réponses, mêmes notifications). Pour modifier la liste des groupes,
+           la modifier ICI ET dans le formulaire Google, avec exactement le même texte. -->
+      <form id="tipe-form" class="tipe-form">
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Groupe</span>
+            <select name="groupe" required>
+              <option value="" disabled selected>Choisir…</option>
+              <option>Groupe 1 : Marc et Yanis</option>
+              <option>Groupe 2 : Gaëtan et Tissia</option>
+              <option>Groupe 3 : Louane et Flavie</option>
+              <option>Groupe 4 : Lilou</option>
+              <option>Groupe 5 : Aubin et Dali</option>
+              <option>Groupe 6 : Ilyasse et Abderrahmane</option>
+              <option>Groupe 7 : Anaëlle et Sidonie</option>
+              <option>Groupe 8 : Nathan et Toni</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Pour la séance du</span>
+            <input type="date" name="date" required>
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">Matériel nécessaire</span>
+          <textarea name="materiel" rows="4" required placeholder="Ex. : 2 multimètres, une alimentation 0-30 V, un oscilloscope, 3 fils banane…"></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="submit">Envoyer la demande</button>
+          <span id="tipe-status" class="form-status" role="status"></span>
+        </div>
+      </form>
+      <p class="legend">Les demandes arrivent directement chez le professeur. En cas de problème, utiliser le <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIFT4F6fTYJUNrQBHpThyzplvF_y1vZlCZqVVgG26woyS5UQ/viewform" target="_blank" rel="noopener">formulaire Google&nbsp;↗</a>.</p>
     </section>
 
     <!-- =====================================================
@@ -309,6 +341,45 @@
 })();
 </script>
 
+
+
+<script>
+/* Formulaire TIPE : envoi des réponses au formulaire Google (même tableau, mêmes notifications) */
+(function () {
+  var GOOGLE_FORM = {
+    action: 'https://docs.google.com/forms/d/e/1FAIpQLSeIFT4F6fTYJUNrQBHpThyzplvF_y1vZlCZqVVgG26woyS5UQ/formResponse',
+    groupe: 'entry.1097679920',
+    date: 'entry.823114430',
+    materiel: 'entry.1432213280'
+  };
+  var form = document.getElementById('tipe-form');
+  if (!form) return;
+  var status = document.getElementById('tipe-status');
+  var btn = form.querySelector('button');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = new URLSearchParams();
+    data.append(GOOGLE_FORM.groupe, form.groupe.value);
+    var d = form.date.value.split('-');                      // AAAA-MM-JJ
+    data.append(GOOGLE_FORM.date + '_year', d[0]);
+    data.append(GOOGLE_FORM.date + '_month', String(+d[1]));
+    data.append(GOOGLE_FORM.date + '_day', String(+d[2]));
+    data.append(GOOGLE_FORM.materiel, form.materiel.value.trim().replace(/\s*\n+\s*/g, ' ; '));
+    btn.disabled = true; status.className = 'form-status'; status.textContent = 'Envoi…';
+    fetch(GOOGLE_FORM.action, { method: 'POST', mode: 'no-cors', body: data })
+      .then(function () {
+        status.className = 'form-status ok';
+        status.textContent = '✓ Demande envoyée (' + form.groupe.value.split(' :')[0] + ', séance du ' + d[2] + '/' + d[1] + ').';
+        form.materiel.value = '';
+      })
+      .catch(function () {
+        status.className = 'form-status ko';
+        status.textContent = 'Échec de l’envoi : vérifier la connexion, ou utiliser le formulaire Google ci-dessous.';
+      })
+      .then(function () { btn.disabled = false; });
+  });
+})();
+</script>
 
 </body>
 </html>
