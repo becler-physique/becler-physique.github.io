@@ -8,6 +8,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* matplotlib : démos du rappel de cours et figures des exercices */
+  .mpl-demo { margin: 4px 0 18px; }
+  .mpl-demo textarea {
+    width: 100%; min-height: 200px; font-family: var(--mono); font-size: 0.85rem; line-height: 1.5;
+    padding: 12px; border: 1px solid var(--border); border-radius: 0; resize: vertical;
+    background: #ffffff; color: var(--ink); box-sizing: border-box;
+  }
+  .mpl-demo .exercise-controls { margin-top: 8px; }
+  .mpl-out img { display: block; max-width: 100%; height: auto; margin: 14px auto 0; border: 1px solid var(--border); background: #ffffff; }
+  .mpl-out pre { margin: 12px 0 0; }
+  .course h3 { margin-top: 22px; }
+  .mpl-table { width: 100%; border-collapse: collapse; margin: 4px 0 16px; font-size: 0.92rem; background: #ffffff; }
+  .mpl-table td { border: 1px solid var(--border); padding: 6px 10px; vertical-align: top; }
+  .mpl-table td:first-child { width: 48%; }
+  @media (max-width: 720px) { .mpl-table td { display: block; width: 100% !important; border-top: none; } .mpl-table tr td:first-child { border-top: 1px solid var(--border); } }
+</style>
 </head>
 <body>
 
@@ -563,6 +580,212 @@ print("La période dépasse T0 de plus de 1 % à partir de", amplitude_1pc, "°"
       </details>
       </div>
     </details>
+
+    <details class="course accordion">
+      <summary>Rappel de cours — tracer des courbes avec matplotlib</summary>
+      <div class="accordion-body">
+
+      <p><strong>Le principe.</strong> Une seule instruction fait l'essentiel du travail : <code>plt.plot(x, y)</code>. Elle place les points de coordonnées <code>(x[0], y[0])</code>, <code>(x[1], y[1])</code>… et les relie dans l'ordre par des segments. Les listes (ou tableaux) <code>x</code> et <code>y</code> doivent donc avoir <strong>la même longueur</strong>.</p>
+      <pre class="course-code">import matplotlib.pyplot as plt   # en début de programme, une fois pour toutes
+import numpy as np
+
+plt.plot(x, y)    # x : abscisses, y : ordonnées
+plt.show()        # affiche la figure (indispensable sur votre ordinateur)</pre>
+      <p>Les trois situations du programme se ramènent à cette instruction. Chaque exemple ci-dessous peut être <strong>modifié et exécuté</strong> : changez une valeur, cliquez sur « Tracer », observez.</p>
+
+      <h3>1. Nuage de points (mesures expérimentales)</h3>
+      <p>On ajoute un <strong>marqueur</strong>, ici <code>'o'</code>, sans trait : les points ne sont pas reliés. C'est ce qu'on fait toujours pour des mesures.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-1" spellcheck="false" style="min-height: 310px;">import matplotlib.pyplot as plt
+
+I = [0.5, 1.0, 1.5, 2.0, 2.5]           # intensité (A)
+U = [0.52, 0.98, 1.55, 2.01, 2.47]      # tension mesurée (V)
+
+plt.plot(I, U, 'o', label="mesures")    # 'o' : des points, sans trait
+plt.xlabel("I (A)")
+plt.ylabel("U (V)")
+plt.title("Caractéristique d'un conducteur ohmique")
+plt.legend()
+plt.grid()
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="1" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-1">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-1"></div>
+      </div>
+      <p>Avec des barres d'incertitude (incertitudes-types dans la liste <code>uU</code>) : <code>plt.errorbar(I, U, yerr=uU, fmt='o')</code>.</p>
+
+      <h3>2. Courbe représentative d'une fonction</h3>
+      <p>On crée un grand nombre d'abscisses régulièrement espacées avec <code>np.linspace(début, fin, nombre)</code>, puis on calcule <strong>d'un seul coup</strong> toutes les ordonnées. Les fonctions de <code>numpy</code> (<code>np.cos</code>, <code>np.exp</code>, <code>np.sqrt</code>…) s'appliquent à tout le tableau ; celles du module <code>math</code> n'acceptent qu'un seul nombre. Avec assez de points (quelques centaines), les segments ne se voient plus : on obtient une courbe lisse.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-2" spellcheck="false" style="min-height: 310px;">import numpy as np
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 10, 500)                 # 500 instants entre 0 et 10 s
+x = np.exp(-t / 4) * np.cos(2 * np.pi * t)  # oscillations amorties
+
+plt.plot(t, x, label="x(t)")
+plt.plot(t, np.exp(-t / 4), 'k--', label="enveloppe")   # 2e courbe, même figure
+plt.xlabel("t (s)")
+plt.ylabel("x (cm)")
+plt.legend()
+plt.grid()
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="2" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-2">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-2"></div>
+      </div>
+
+      <h3>3. Courbe plane paramétrée</h3>
+      <p>Les deux coordonnées dépendent d'un paramètre, souvent le temps : <code>x(t)</code> et <code>y(t)</code>. On calcule les deux tableaux, puis on trace <code>y</code> en fonction de <code>x</code>. <strong>Le paramètre n'apparaît sur aucun axe.</strong> Exemples en physique : une trajectoire, une courbe de Lissajous (mode XY de l'oscilloscope), un portrait de phase. <code>plt.axis("equal")</code> impose la même échelle sur les deux axes, pour qu'un cercle ait l'air d'un cercle.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-3" spellcheck="false" style="min-height: 310px;">import numpy as np
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 2 * np.pi, 400)   # le paramètre
+x = np.cos(3 * t)                    # tension sur la voie X
+y = np.sin(2 * t)                    # tension sur la voie Y
+
+plt.plot(x, y)                       # y en fonction de x : t n'apparaît pas
+plt.axis("equal")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Courbe de Lissajous")
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="3" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-3">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-3"></div>
+      </div>
+
+      <h3>4. Habiller un graphe</h3>
+      <table class="mpl-table">
+        <tr><td><code>plt.xlabel("t (s)")</code>, <code>plt.ylabel(...)</code></td><td>nom des axes, <strong>avec les unités</strong></td></tr>
+        <tr><td><code>plt.title("...")</code></td><td>titre de la figure</td></tr>
+        <tr><td><code>plt.plot(x, y, label="...")</code> puis <code>plt.legend()</code></td><td>légende : chaque courbe reçoit un <code>label</code>, <code>plt.legend()</code> les affiche</td></tr>
+        <tr><td><code>plt.grid()</code></td><td>quadrillage</td></tr>
+        <tr><td><code>plt.xlim(0, 10)</code>, <code>plt.ylim(...)</code></td><td>bornes des axes</td></tr>
+        <tr><td><code>plt.figure()</code></td><td>nouvelle figure (sinon tout se superpose sur la même)</td></tr>
+        <tr><td><code>'o'</code>, <code>'+'</code>, <code>'-'</code>, <code>'--'</code>, <code>':'</code></td><td>points, croix, trait plein, tirets, pointillés</td></tr>
+        <tr><td><code>'r'</code>, <code>'b'</code>, <code>'g'</code>, <code>'k'</code></td><td>rouge, bleu, vert, noir ; se combinent : <code>'ro'</code>, <code>'k--'</code></td></tr>
+      </table>
+
+      <p><strong>Erreurs fréquentes.</strong></p>
+      <ol>
+        <li><code>x and y must have same first dimension</code> : les deux listes n'ont pas la même longueur.</li>
+        <li><code>only length-1 arrays can be converted…</code> : <code>math.cos</code> appliqué à un tableau ; utiliser <code>np.cos</code>.</li>
+        <li>Des mesures reliées par des segments : il manque le marqueur <code>'o'</code>.</li>
+        <li>Des <code>label=</code> sans <code>plt.legend()</code> : la légende n'apparaît pas.</li>
+        <li>Rien ne s'affiche sur votre ordinateur : il manque <code>plt.show()</code> à la fin.</li>
+      </ol>
+
+      <p><strong>Pour l'exercice.</strong> Les trois situations sont réunies : courbes de fonctions du temps, courbe paramétrée (portrait de phase) et nuage de points comparé à une formule.</p>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 8 — Non-isochronisme du pendule en trois figures (matplotlib) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>On reprend le pendule pesant des exercices 6 et 7, régi par <code>θ'' = −ω₀²·sin(θ)</code>, lâché sans vitesse initiale depuis l'angle <code>θ₀</code>. L'exercice 7 a montré que la période augmente avec l'amplitude. Cette fois, on va le <strong>voir</strong>, en traçant trois figures. Tout le calcul est déjà écrit : la fonction <code>derivees</code>, la fonction <code>periode</code> de l'exercice 7, et les appels à <code>odeint</code>. Il ne reste que les tracés.</p>
+        <ol>
+          <li><strong>Figure 1 — courbes de fonctions.</strong> Tracer <code>θ/θ₀</code> en fonction de <code>t</code> pour <code>θ₀ = 10°</code>, <code>90°</code> et <code>150°</code>. Diviser par <code>θ₀</code> permet de comparer les trois mouvements sur la même échelle. Nommer les axes.</li>
+          <li><strong>Figure 2 — courbe paramétrée.</strong> Tracer le <strong>portrait de phase</strong> : <code>ω</code> (en rad/s) en fonction de <code>θ</code> (<strong>en degrés</strong>), pour les mêmes amplitudes, avec une légende.</li>
+          <li><strong>Figure 3 — nuage de points et fonction.</strong> Tracer les rapports <code>T/T₀</code> calculés par <code>odeint</code> en fonction de l'amplitude, sous forme de <strong>points</strong>. Sur la même figure, tracer la courbe de la <strong>formule de Borda</strong> <code>T/T₀ ≈ 1 + θ₀²/16</code> (avec <code>θ₀</code> en <strong>radians</strong> dans la formule, et l'amplitude en degrés sur l'axe). Nommer les axes.</li>
+        </ol>
+        <p>Remplacez tous les « ... ». Une fois les figures obtenues, observez-les : pourquoi les courbes de la figure 1 se décalent-elles ? Que deviennent les courbes de la figure 2 quand l'amplitude augmente ? Jusqu'à quelle amplitude la formule de Borda est-elle fiable ?</p>
+      </div>
+
+      <textarea id="code-8" spellcheck="false" style="min-height: 1000px;">import numpy as np
+import math
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+J, M, g, d = 0.5, 2.0, 9.81, 0.3           # mêmes valeurs qu'aux exercices 6 et 7
+w0 = math.sqrt(M * g * d / J)              # pulsation propre (rad/s)
+T0 = 2 * math.pi / w0                      # période des petites oscillations (s)
+
+def derivees(Y, t):
+    theta, omega = Y
+    return [omega, -w0**2 * math.sin(theta)]
+
+def periode(theta0):                       # période mesurée comme à l'exercice 7
+    t = np.linspace(0, T0, 4001)
+    theta = odeint(derivees, [theta0, 0.0], t)[:, 0]
+    i = 0
+    while theta[i] > 0:
+        i = i + 1
+    return 4 * (t[i-1] + theta[i-1] * (t[i] - t[i-1]) / (theta[i-1] - theta[i]))
+
+t = np.linspace(0, 6, 601)                 # instants de 0 à 6 s
+
+# ---------- Figure 1 : theta/theta0 en fonction du temps ----------
+plt.figure(1)
+for a in [10, 90, 150]:                    # amplitudes en degrés
+    theta0 = math.radians(a)
+    sol = odeint(derivees, [theta0, 0.0], t)
+    theta = sol[:, 0]
+    plt.plot(..., ..., label="θ0 = " + str(a) + "°")    # à compléter
+plt.xlabel(...)                            # à compléter
+plt.ylabel(...)                            # à compléter
+plt.legend()
+plt.grid()
+
+# ---------- Figure 2 : portrait de phase ----------
+plt.figure(2)
+for a in [10, 90, 150]:
+    sol = odeint(derivees, [math.radians(a), 0.0], t)
+    theta, omega = sol[:, 0], sol[:, 1]
+    ...                                    # à compléter : omega en fonction de theta en degrés, avec un label
+plt.xlabel("θ (°)")
+plt.ylabel("ω (rad/s)")
+plt.legend()
+plt.grid()
+
+# ---------- Figure 3 : période en fonction de l'amplitude ----------
+amplitudes = np.arange(10, 171, 10)        # 10°, 20°, ..., 170°
+rapports = [periode(math.radians(a)) / T0 for a in amplitudes]
+plt.figure(3)
+...                                        # à compléter : nuage de points rapports en fonction de amplitudes
+x = np.linspace(0, 170, 200)               # amplitudes en degrés
+borda = ...                                # à compléter : 1 + theta0²/16, theta0 en radians
+plt.plot(x, borda, label="formule de Borda")
+plt.xlabel(...)                            # à compléter
+plt.ylabel(...)                            # à compléter
+plt.legend()
+plt.grid()
+plt.show()</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-8" disabled>Exécuter et vérifier</button>
+        <span id="status-8" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-8" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-8"></div>
+      <details class="solution" id="solution-8" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">    plt.plot(t, theta / theta0, label="θ0 = " + str(a) + "°")
+plt.xlabel("t (s)")
+plt.ylabel("θ/θ0")
+
+    plt.plot(np.degrees(theta), omega, label="θ0 = " + str(a) + "°")
+
+plt.plot(amplitudes, rapports, 'o', label="odeint")
+borda = 1 + np.radians(x)**2 / 16
+plt.xlabel("amplitude θ0 (°)")
+plt.ylabel("T/T0")</pre>
+          <p><strong>Figure 1.</strong> À 10°, la courbe est une sinusoïde de période <code>T₀ ≈ 1,83 s</code>. Plus l'amplitude est grande, plus la période est longue : les trois courbes, en phase à <code>t = 0</code>, se décalent de plus en plus. À 150°, la courbe n'est plus sinusoïdale : le pendule s'attarde près de ses positions extrêmes, où le couple de rappel, proportionnel à <code>sin(θ)</code>, est faible.</p>
+          <p><strong>Figure 2.</strong> Les courbes sont <strong>fermées</strong> : le mouvement est périodique, et le pendule repasse indéfiniment par les mêmes états (pas de frottement). Aux petites amplitudes, la courbe est une ellipse : c'est le portrait de phase d'un oscillateur harmonique. Aux grandes amplitudes, elle se déforme en « œil », avec des pointes en <code>±θ₀</code>. La vitesse angulaire maximale, atteinte en <code>θ = 0</code>, vaut <code>2ω₀·sin(θ₀/2)</code> d'après la conservation de l'énergie mécanique : vous pouvez le vérifier sur la figure.</p>
+          <p><strong>Figure 3.</strong> <code>T/T₀</code> vaut <code>1,002</code> à 10°, <code>1,180</code> à 90° et <code>2,44</code> à 170°. Il tend vers l'infini quand <code>θ₀</code> tend vers 180° : lâché près de la position d'équilibre instable, le pendule met très longtemps à en partir. La formule de Borda colle aux points tant que l'amplitude reste modérée : l'écart reste inférieur à 1 % jusqu'à 70° environ. Au-delà, elle sous-estime nettement la période.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -579,6 +802,144 @@ print("La période dépasse T0 de plus de 1 % à partir de", amplitude_1pc, "°"
 
 </div>
 
+<script type="text/x-python" id="py-extra">
+def setup_mpl():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.close("all")
+    plt.rcParams.update({"figure.figsize": (6.4, 4.0), "figure.dpi": 100, "axes.grid": False})
+    plt.show = lambda *a, **k: None
+
+def figures_png():
+    import io, base64, json
+    import matplotlib.pyplot as plt
+    out = []
+    for num in plt.get_fignums():
+        fig = plt.figure(num)
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", dpi=90, bbox_inches="tight")
+        out.append(base64.b64encode(buf.getvalue()).decode("ascii"))
+    plt.close("all")
+    return json.dumps(out)
+
+
+def check_ex8(ns):
+    import json, math
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.integrate import odeint
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+
+    w0 = math.sqrt(2.0 * 9.81 * 0.3 / 0.5)
+    T0 = 2 * math.pi / w0
+    t = np.linspace(0, 6, 601)
+    def ref(a):
+        return odeint(lambda Y, s: [Y[1], -w0**2 * math.sin(Y[0])], [math.radians(a), 0.0], t)
+    def ratio(a):
+        k = math.sin(math.radians(a) / 2); x, y = 1.0, math.sqrt(1 - k * k)
+        for _ in range(30): x, y = (x + y) / 2, math.sqrt(x * y)
+        return 1 / x
+    def lab(s):
+        s = (s or "").strip()
+        return s != "" and s != "Ellipsis"
+    def arr(v):
+        try:
+            return np.asarray(v, dtype=float).ravel()
+        except Exception:
+            return np.array([])
+    def same(u, v, tol):
+        u, v = arr(u), arr(v)
+        return u.size == v.size and u.size > 0 and np.allclose(u, v, atol=tol)
+
+    nums = plt.get_fignums()
+    for n in (1, 2, 3):
+        if n not in nums:
+            return rep(False, "La figure " + str(n) + " n'existe pas : as-tu gardé les lignes plt.figure(" + str(n) + ") ?")
+    axes = {}
+    for n in (1, 2, 3):
+        f = plt.figure(n)
+        if not f.axes:
+            return rep(False, "La figure " + str(n) + " est vide : aucune courbe n'a été tracée.")
+        axes[n] = f.axes[0]
+    refs = {a: ref(a) for a in (10, 90, 150)}
+
+    # ----- Figure 1 -----
+    ax = axes[1]; lines = ax.get_lines()
+    for a in (10, 90, 150):
+        th = refs[a][:, 0]
+        if not any(same(L.get_xdata(), t, 1e-9) and same(L.get_ydata(), th / math.radians(a), 2e-3) for L in lines):
+            if any(same(L.get_xdata(), t, 1e-9) and same(L.get_ydata(), th, 2e-3) for L in lines):
+                return rep(False, "Figure 1 : tu as tracé θ au lieu de θ/θ0. Divise theta par theta0 pour comparer des amplitudes différentes sur la même échelle.")
+            if any(same(L.get_ydata(), t, 1e-9) for L in lines):
+                return rep(False, "Figure 1 : les axes sont inversés. Dans plt.plot(x, y), on donne d'abord les abscisses (ici le temps t), puis les ordonnées.")
+            return rep(False, "Figure 1 : je ne trouve pas la courbe θ/θ0 en fonction de t pour θ0 = " + str(a) + "°. Vérifie les deux premiers arguments de plt.plot.")
+    if not (lab(ax.get_xlabel()) and lab(ax.get_ylabel())):
+        return rep(False, "Figure 1 : les courbes sont justes, mais il manque le nom des axes (plt.xlabel et plt.ylabel, avec les unités).")
+    if ax.get_legend() is None:
+        return rep(False, "Figure 1 : il manque la légende (plt.legend()).")
+
+    # ----- Figure 2 -----
+    ax = axes[2]; lines = ax.get_lines()
+    radians_used = False
+    for a in (10, 90, 150):
+        th, om = refs[a][:, 0], refs[a][:, 1]
+        found = False
+        for L in lines:
+            if same(L.get_ydata(), om, 2e-3):
+                if same(L.get_xdata(), np.degrees(th), 0.1):
+                    found = True
+                elif same(L.get_xdata(), th, 2e-3):
+                    found = True; radians_used = True
+            elif same(L.get_xdata(), om, 2e-3) and same(L.get_ydata(), np.degrees(th), 0.1):
+                return rep(False, "Figure 2 : les axes sont inversés. On veut ω en ordonnée et θ en abscisse : plt.plot(abscisses, ordonnées).")
+        if not found:
+            if any(same(L.get_xdata(), t, 1e-9) for L in lines):
+                return rep(False, "Figure 2 : tu as tracé une grandeur en fonction du temps. Dans un portrait de phase, le temps n'apparaît pas sur les axes : on trace ω en fonction de θ (courbe paramétrée par t).")
+            return rep(False, "Figure 2 : je ne trouve pas le portrait de phase (ω en fonction de θ en degrés) pour θ0 = " + str(a) + "°.")
+    if radians_used:
+        return rep(False, "Figure 2 : les courbes sont justes, mais θ est en radians alors que l'axe est gradué en degrés. Utilise np.degrees(theta).")
+
+    # ----- Figure 3 -----
+    ax = axes[3]
+    amps = np.arange(10, 171, 10)
+    rr = np.array([ratio(a) for a in amps])
+    pts = False; curve_line = False; curve_deg = False; joined = False
+    for L in ax.get_lines():
+        x, y = arr(L.get_xdata()), arr(L.get_ydata())
+        if same(x, amps, 1e-9) and same(y, rr, 3e-3):
+            if L.get_linestyle() in ("None", "", " ", "none") and L.get_marker() not in (None, "None", "", " ", "none"):
+                pts = True
+            else:
+                joined = True
+        elif x.size >= 20 and y.size == x.size:
+            if np.allclose(y, 1 + np.radians(x)**2 / 16, atol=1e-6):
+                curve_line = True
+            elif np.allclose(y, 1 + x**2 / 16, atol=1e-6):
+                curve_deg = True
+    for c in ax.collections:
+        try:
+            off = np.asarray(c.get_offsets(), dtype=float)
+        except Exception:
+            continue
+        if off.ndim == 2 and off.shape[0] == amps.size and np.allclose(off[:, 0], amps) and np.allclose(off[:, 1], rr, atol=3e-3):
+            pts = True
+    if not pts:
+        if joined:
+            return rep(False, "Figure 3 : les valeurs sont justes, mais elles sont reliées par des segments. Pour un nuage de points, ajoute un marqueur sans trait : plt.plot(x, y, 'o').")
+        return rep(False, "Figure 3 : je ne trouve pas le nuage de points (rapports en fonction de amplitudes). Utilise plt.plot(amplitudes, rapports, 'o').")
+    if curve_deg:
+        return rep(False, "Figure 3 : la formule de Borda doit être calculée avec θ0 en radians : 1 + np.radians(x)**2 / 16.")
+    if not curve_line:
+        return rep(False, "Figure 3 : je ne trouve pas la courbe de la formule de Borda, borda = 1 + θ0²/16 (θ0 en radians), tracée en fonction de x.")
+    if not (lab(ax.get_xlabel()) and lab(ax.get_ylabel())):
+        return rep(False, "Figure 3 : il manque le nom des axes (plt.xlabel et plt.ylabel).")
+    if ax.get_legend() is None:
+        return rep(False, "Figure 3 : il manque la légende (plt.legend()).")
+    return rep(True, "Correct : les trois figures sont justes.\nT/T0 vaut 1,002 à 10°, 1,180 à 90° et 2,44 à 170° : la période augmente avec l'amplitude.\nLa formule de Borda reste juste à 1 % près jusqu'à 70° environ.")
+</script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
 <script>
 (function () {
@@ -815,6 +1176,14 @@ def run_student(code, ns, limit=500000):
         }
         return { ok: false, text: "Pas encore correct : ta valeur amplitude_1pc = " + amp + "°, attendu " + ref + "°.\nVérifie la condition de la boucle while (theta[i] > 0) et le calcul du rapport periode(math.radians(a)) / T0." };
       }
+    },
+    {
+      n: 8,
+      title: "Exercice 8 — Non-isochronisme du pendule en trois figures (matplotlib)",
+      stars: 2,
+      packages: ['numpy', 'scipy', 'matplotlib'],
+      pyCheck: 'check_ex8',
+      figures: true
     }
   ];
   window.TPC_EXERCISES = EXERCISES;
@@ -830,7 +1199,7 @@ def run_student(code, ns, limit=500000):
     });
   })();
 
-  function describeError(err) {
+  function describeError(err, code) {
     var msg = String(err && err.message ? err.message : err);
     var lines = msg.split("\n").filter(function (l) { return l.trim() !== ''; });
     var last = lines.length ? lines[lines.length - 1] : msg;
@@ -839,7 +1208,8 @@ def run_student(code, ns, limit=500000):
     while ((m = re.exec(msg)) !== null) { lineNo = m[1]; }
     if (/TimeoutError/.test(last)) { lineNo = null; }
     var text = "Erreur" + (lineNo ? " (ligne " + lineNo + ")" : "") + " :\n" + last;
-    if (/ellipsis/i.test(msg)) {
+    var codeSansCommentaires = (code || '').split("\n").map(function (l) { return l.replace(/#.*$/, ''); }).join("\n");
+    if (/ellipsis/i.test(msg) || /\.\.\./.test(codeSansCommentaires)) {
       text += "\n\nIndice : remplace tous les « ... » par une expression Python.";
     }
     return text;
@@ -849,16 +1219,31 @@ def run_student(code, ns, limit=500000):
     EXERCISES.forEach(function (ex) {
       document.getElementById('status-' + ex.n).textContent = text;
     });
+    Array.prototype.forEach.call(document.querySelectorAll('.mpl-demo .exercise-status'), function (el) { el.textContent = text; });
+  }
+
+  function showFigures(py, box) {
+    box.innerHTML = '';
+    var list = [];
+    try { list = JSON.parse(py.runPython("figures_png()")); } catch (e) { return; }
+    list.forEach(function (b64, i) {
+      var img = document.createElement('img');
+      img.src = 'data:image/png;base64,' + b64;
+      img.alt = 'Figure ' + (i + 1);
+      box.appendChild(img);
+    });
   }
 
   var pyodideReady = (async function () {
     try {
       var py = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/" });
       py.runPython(PYRUNNER);
+      py.runPython(document.getElementById("py-extra").textContent);
       setAllStatus("Prêt.");
       EXERCISES.forEach(function (ex) {
         document.getElementById('run-' + ex.n).disabled = false;
       });
+      Array.prototype.forEach.call(document.querySelectorAll('.demo-run'), function (b) { b.disabled = false; });
       return py;
     } catch (e) {
       setAllStatus("Impossible de charger l'environnement Python. Vérifie ta connexion et recharge la page.");
@@ -879,18 +1264,28 @@ def run_student(code, ns, limit=500000):
       output.hidden = true;
       output.className = 'exercise-output';
 
-            var stdout = '';
+      var stdout = '';
+      var pyodide = null;
+      var figBox = document.getElementById('figs-' + ex.n);
+      if (figBox) { figBox.innerHTML = ''; }
       try {
-        var pyodide = await pyodideReady;
+        pyodide = await pyodideReady;
         if (ex.packages && ex.packages.length) {
           statusEl.textContent = "Chargement de " + ex.packages.join(", ") + "…";
           await pyodide.loadPackage(ex.packages);
           statusEl.textContent = "Exécution…";
         }
+        if (ex.figures) { pyodide.runPython("setup_mpl()"); }
         pyodide.setStdout({ batched: function (s) { stdout += s + "\n"; } });
         pyodide.globals.set('__code', codeEl.value);
-        var value = pyodide.runPython("__ns = {}\nrun_student(__code, __ns)\n__ns.get('" + ex.varName + "')");
-        var res = ex.check(value);
+        var res;
+        if (ex.pyCheck) {
+          pyodide.runPython("__ns = {}\nrun_student(__code, __ns)");
+          res = JSON.parse(pyodide.runPython(ex.pyCheck + "(__ns)"));
+        } else {
+          var value = pyodide.runPython("__ns = {}\nrun_student(__code, __ns)\n__ns.get('" + ex.varName + "')");
+          res = ex.check(value);
+        }
         output.hidden = false;
         output.classList.add(res.ok ? 'ok' : 'ko');
         output.textContent = res.text + (stdout ? "\n\n" + stdout : "");
@@ -902,10 +1297,51 @@ def run_student(code, ns, limit=500000):
       } catch (err) {
         output.hidden = false;
         output.classList.add('ko');
-        output.textContent = describeError(err) + (stdout ? "\n\nAffichage avant l'erreur :\n" + stdout : "");
+        output.textContent = describeError(err, codeEl.value) + (stdout ? "\n\nAffichage avant l'erreur :\n" + stdout : "");
       } finally {
+        if (ex.figures && pyodide && figBox) { showFigures(pyodide, figBox); }
         statusEl.textContent = "Prêt.";
         runBtn.disabled = false;
+      }
+    });
+  });
+
+  // Exemples exécutables du rappel de cours matplotlib (sans étoile ni vérification)
+  Array.prototype.forEach.call(document.querySelectorAll('.demo-run'), function (btn) {
+    var k = btn.getAttribute('data-demo');
+    var codeEl = document.getElementById('demo-' + k);
+    var statusEl = document.getElementById('demo-status-' + k);
+    var out = document.getElementById('demo-out-' + k);
+    btn.addEventListener('click', async function () {
+      btn.disabled = true;
+      out.innerHTML = '';
+      var stdout = '';
+      var py = null;
+      try {
+        py = await pyodideReady;
+        statusEl.textContent = "Chargement de matplotlib…";
+        await py.loadPackage(['numpy', 'matplotlib']);
+        statusEl.textContent = "Exécution…";
+        py.runPython("setup_mpl()");
+        py.setStdout({ batched: function (s) { stdout += s + "\n"; } });
+        py.globals.set('__code', codeEl.value);
+        py.runPython("__ns = {}\nrun_student(__code, __ns)");
+        showFigures(py, out);
+        if (stdout) {
+          var pre = document.createElement('pre');
+          pre.className = 'exercise-output';
+          pre.textContent = stdout;
+          out.appendChild(pre);
+        }
+      } catch (err) {
+        if (py) { showFigures(py, out); }
+        var pe = document.createElement('pre');
+        pe.className = 'exercise-output ko';
+        pe.textContent = describeError(err, codeEl.value);
+        out.appendChild(pe);
+      } finally {
+        statusEl.textContent = "Prêt.";
+        btn.disabled = false;
       }
     });
   });
