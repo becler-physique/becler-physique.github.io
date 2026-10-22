@@ -55,7 +55,7 @@
 <div class="layout">
   <main style="max-width: 780px;">
     <h2 class="section-title" style="margin-top:0;">Compétences numériques</h2>
-    <p class="intro">Exercices Python à compléter directement dans le navigateur, en lien avec le programme de physique de TPC2. Aucune installation nécessaire : le code s'exécute sur cette page. A chaque exercice réussi, vous gagnez le nombre d'étoiles correspondant. </p>
+    <p class="intro">Exercices Python à compléter directement dans le navigateur, en lien avec le programme de physique de TPC2. Aucune installation nécessaire : le code s'exécute sur cette page (chargement de l'environnement Python au premier exercice, quelques secondes).</p>
 
     <div id="student-banner" class="student-banner">
       <form id="student-form" class="student-form">
@@ -640,7 +640,7 @@ plt.show()</textarea>
       </div>
 
       <h3>3. Courbe plane paramétrée</h3>
-      <p>Les deux coordonnées dépendent d'un paramètre, souvent le temps : <code>x(t)</code> et <code>y(t)</code>. On calcule les deux tableaux, puis on trace <code>y</code> en fonction de <code>x</code>. <strong>Le paramètre n'apparaît sur aucun axe.</strong> Exemples en physique : une trajectoire, une courbe de Lissajous (mode XY de l'oscilloscope), un portrait de phase. <code>plt.axis("equal")</code> impose la même échelle sur les deux axes, pour qu'un cercle ait l'air d'un cercle.</p>
+      <p>Les deux coordonnées dépendent d'un paramètre, souvent le temps : <code>x(t)</code> et <code>y(t)</code>. On calcule les deux tableaux, puis on trace <code>y</code> en fonction de <code>x</code>. <strong>Le paramètre n'apparaît sur aucun axe.</strong> Exemples en physique : une trajectoire, une courbe de Lissajous (mode XY de l'oscilloscope). <code>plt.axis("equal")</code> impose la même échelle sur les deux axes, pour qu'un cercle ait l'air d'un cercle.</p>
       <div class="mpl-demo">
         <textarea id="demo-3" spellcheck="false" style="min-height: 310px;">import numpy as np
 import matplotlib.pyplot as plt
@@ -683,7 +683,7 @@ plt.show()</textarea>
         <li>Rien ne s'affiche sur votre ordinateur : il manque <code>plt.show()</code> à la fin.</li>
       </ol>
 
-      <p><strong>Pour l'exercice.</strong> Les trois situations sont réunies : courbes de fonctions du temps, courbe paramétrée (portrait de phase) et nuage de points comparé à une formule.</p>
+      <p><strong>Pour l'exercice.</strong> Les trois situations sont réunies : courbes de fonctions du temps, courbe paramétrée et nuage de points comparé à une formule.</p>
       </div>
     </details>
 
@@ -694,10 +694,10 @@ plt.show()</textarea>
         <p>On reprend le pendule pesant des exercices 6 et 7, régi par <code>θ'' = −ω₀²·sin(θ)</code>, lâché sans vitesse initiale depuis l'angle <code>θ₀</code>. L'exercice 7 a montré que la période augmente avec l'amplitude. Cette fois, on va le <strong>voir</strong>, en traçant trois figures. Tout le calcul est déjà écrit : la fonction <code>derivees</code>, la fonction <code>periode</code> de l'exercice 7, et les appels à <code>odeint</code>. Il ne reste que les tracés.</p>
         <ol>
           <li><strong>Figure 1 — courbes de fonctions.</strong> Tracer <code>θ/θ₀</code> en fonction de <code>t</code> pour <code>θ₀ = 10°</code>, <code>90°</code> et <code>150°</code>. Diviser par <code>θ₀</code> permet de comparer les trois mouvements sur la même échelle. Nommer les axes.</li>
-          <li><strong>Figure 2 — courbe paramétrée.</strong> Tracer le <strong>portrait de phase</strong> : <code>ω</code> (en rad/s) en fonction de <code>θ</code> (<strong>en degrés</strong>), pour les mêmes amplitudes, avec une légende.</li>
+          <li><strong>Figure 2 — courbe paramétrée.</strong> Tracer <code>ω</code> (en rad/s) en fonction de <code>θ</code> (<strong>en degrés</strong>), pour les mêmes amplitudes, avec une légende. Le paramètre est le temps : il n'apparaît sur aucun des deux axes.</li>
           <li><strong>Figure 3 — nuage de points et fonction.</strong> Tracer les rapports <code>T/T₀</code> calculés par <code>odeint</code> en fonction de l'amplitude, sous forme de <strong>points</strong>. Sur la même figure, tracer la courbe de la <strong>formule de Borda</strong> <code>T/T₀ ≈ 1 + θ₀²/16</code> (avec <code>θ₀</code> en <strong>radians</strong> dans la formule, et l'amplitude en degrés sur l'axe). Nommer les axes.</li>
         </ol>
-        <p>Remplacez tous les « ... ». Une fois les figures obtenues, observez-les : pourquoi les courbes de la figure 1 se décalent-elles ? Que deviennent les courbes de la figure 2 quand l'amplitude augmente ? Jusqu'à quelle amplitude la formule de Borda est-elle fiable ?</p>
+        <p>Remplacez tous les « ... ». Une fois les figures obtenues, observez-les : pourquoi les courbes de la figure 1 se décalent-elles ? Pourquoi les courbes de la figure 2 sont-elles fermées, et pourquoi se déforment-elles quand l'amplitude augmente (on pourra s'appuyer sur la conservation de l'énergie mécanique) ? Jusqu'à quelle amplitude la formule de Borda est-elle fiable ?</p>
       </div>
 
       <textarea id="code-8" spellcheck="false" style="min-height: 1000px;">import numpy as np
@@ -735,7 +735,7 @@ plt.ylabel(...)                            # à compléter
 plt.legend()
 plt.grid()
 
-# ---------- Figure 2 : portrait de phase ----------
+# ---------- Figure 2 : omega en fonction de theta (theta en degres) ----------
 plt.figure(2)
 for a in [10, 90, 150]:
     sol = odeint(derivees, [math.radians(a), 0.0], t)
@@ -780,7 +780,7 @@ borda = 1 + np.radians(x)**2 / 16
 plt.xlabel("amplitude θ0 (°)")
 plt.ylabel("T/T0")</pre>
           <p><strong>Figure 1.</strong> À 10°, la courbe est une sinusoïde de période <code>T₀ ≈ 1,83 s</code>. Plus l'amplitude est grande, plus la période est longue : les trois courbes, en phase à <code>t = 0</code>, se décalent de plus en plus. À 150°, la courbe n'est plus sinusoïdale : le pendule s'attarde près de ses positions extrêmes, où le couple de rappel, proportionnel à <code>sin(θ)</code>, est faible.</p>
-          <p><strong>Figure 2.</strong> Les courbes sont <strong>fermées</strong> : le mouvement est périodique, et le pendule repasse indéfiniment par les mêmes états (pas de frottement). Aux petites amplitudes, la courbe est une ellipse : c'est le portrait de phase d'un oscillateur harmonique. Aux grandes amplitudes, elle se déforme en « œil », avec des pointes en <code>±θ₀</code>. La vitesse angulaire maximale, atteinte en <code>θ = 0</code>, vaut <code>2ω₀·sin(θ₀/2)</code> d'après la conservation de l'énergie mécanique : vous pouvez le vérifier sur la figure.</p>
+          <p><strong>Figure 2.</strong> Les courbes sont <strong>fermées</strong> : le pendule repasse indéfiniment par les mêmes états <code>(θ, ω)</code>, ce qui traduit la périodicité du mouvement (pas de frottement). Chaque courbe part de <code>(θ₀, 0)</code> (vitesse nulle au lâcher), passe par un maximum de <code>|ω|</code> en <code>θ = 0</code>, puis revient. Ce maximum se lit directement par conservation de l'énergie mécanique : <code>½J·ω²</code> en <code>θ = 0</code> est égal à l'énergie potentielle de pesanteur perdue depuis <code>θ₀</code>, ce qui donne <code>ω_max = 2ω₀·sin(θ₀/2)</code> (avec <code>ω₀ = √(Mgd/J)</code>) — vous pouvez le vérifier sur la figure. Aux petites amplitudes, la courbe est presque une ellipse (mouvement sinusoïdal) ; aux grandes amplitudes, elle se déforme en « œil », avec des pointes en <code>±θ₀</code> : le pendule s'attarde près des positions extrêmes, où la vitesse angulaire est faible.</p>
           <p><strong>Figure 3.</strong> <code>T/T₀</code> vaut <code>1,002</code> à 10°, <code>1,180</code> à 90° et <code>2,44</code> à 170°. Il tend vers l'infini quand <code>θ₀</code> tend vers 180° : lâché près de la position d'équilibre instable, le pendule met très longtemps à en partir. La formule de Borda colle aux points tant que l'amplitude reste modérée : l'écart reste inférieur à 1 % jusqu'à 70° environ. Au-delà, elle sous-estime nettement la période.</p>
         </div>
       </details>
@@ -897,8 +897,8 @@ def check_ex8(ns):
                 return rep(False, "Figure 2 : les axes sont inversés. On veut ω en ordonnée et θ en abscisse : plt.plot(abscisses, ordonnées).")
         if not found:
             if any(same(L.get_xdata(), t, 1e-9) for L in lines):
-                return rep(False, "Figure 2 : tu as tracé une grandeur en fonction du temps. Dans un portrait de phase, le temps n'apparaît pas sur les axes : on trace ω en fonction de θ (courbe paramétrée par t).")
-            return rep(False, "Figure 2 : je ne trouve pas le portrait de phase (ω en fonction de θ en degrés) pour θ0 = " + str(a) + "°.")
+                return rep(False, "Figure 2 : tu as tracé une grandeur en fonction du temps. Le temps ne doit apparaître sur aucun des deux axes : on trace omega en fonction de theta (courbe paramétrée par t, comme la courbe de Lissajous du rappel de cours).")
+            return rep(False, "Figure 2 : je ne trouve pas la courbe omega en fonction de theta (en degrés) pour θ0 = " + str(a) + "°.")
     if radians_used:
         return rep(False, "Figure 2 : les courbes sont justes, mais θ est en radians alors que l'axe est gradué en degrés. Utilise np.degrees(theta).")
 
