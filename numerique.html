@@ -1139,6 +1139,303 @@ for N in codes:
       </details>
       </div>
     </details>
+
+    <details class="course accordion">
+      <summary>Rappel de cours — intégrale par la méthode des rectangles</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À calculer une valeur approchée d'une intégrale quand on ne connaît pas de primitive de la fonction : période du pendule pesant, débit à partir d'un profil de vitesse…</p>
+      <p class="formula">I = ∫<sub>a</sub><sup>b</sup> f(x) dx</p>
+
+      <p><strong>L'idée.</strong> L'intégrale est l'aire sous la courbe. On découpe <code>[a, b]</code> en <code>n</code> intervalles de même largeur <code>h = (b − a)/n</code>. Sur chacun, on remplace la courbe par un rectangle dont la hauteur est la valeur de <code>f</code> au bord gauche <code>x<sub>k</sub> = a + k·h</code> :</p>
+      <p class="formula">I ≈ h · [ f(x<sub>0</sub>) + f(x<sub>1</sub>) + … + f(x<sub>n−1</sub>) ]</p>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 520 285" role="img" aria-label="Méthode des rectangles : l'aire sous la courbe de f entre a et b est approchée par n rectangles de largeur h, de hauteur égale à la valeur de f au bord gauche de chaque intervalle.">
+<defs><marker id="fig-arrow-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fig-head"/></marker></defs>
+<rect x="90.0" y="180.5" width="76.0" height="49.5" style="fill:var(--accent);fill-opacity:0.13;stroke:var(--accent);stroke-width:1.2"/>
+<rect x="166.0" y="143.2" width="76.0" height="86.8" style="fill:var(--accent);fill-opacity:0.13;stroke:var(--accent);stroke-width:1.2"/>
+<rect x="242.0" y="113.8" width="76.0" height="116.2" style="fill:var(--accent);fill-opacity:0.13;stroke:var(--accent);stroke-width:1.2"/>
+<rect x="318.0" y="92.4" width="76.0" height="137.6" style="fill:var(--accent);fill-opacity:0.13;stroke:var(--accent);stroke-width:1.2"/>
+<rect x="394.0" y="78.9" width="76.0" height="151.1" style="fill:var(--accent);fill-opacity:0.13;stroke:var(--accent);stroke-width:1.2"/>
+<polyline class="exact" points="82.4,184.7 90.6,180.2 98.8,175.8 107.0,171.5 115.2,167.2 123.4,163.1 131.6,159.1 139.9,155.1 148.1,151.3 156.3,147.5 164.5,143.9 172.7,140.3 180.9,136.8 189.1,133.4 197.3,130.2 205.5,126.9 213.7,123.8 221.9,120.8 230.1,117.9 238.4,115.1 246.6,112.3 254.8,109.7 263.0,107.1 271.2,104.7 279.4,102.3 287.6,100.0 295.8,97.8 304.0,95.7 312.2,93.7 320.4,91.8 328.6,90.0 336.8,88.3 345.1,86.7 353.3,85.1 361.5,83.7 369.7,82.3 377.9,81.1 386.1,79.9 394.3,78.8 402.5,77.8 410.7,76.9 418.9,76.1 427.1,75.4 435.3,74.8 443.6,74.3 451.8,73.9 460.0,73.5 468.2,73.3 476.4,73.1 484.6,73.1 492.8,73.1"/>
+<line class="axis" x1="50" y1="230" x2="505" y2="230" marker-end="url(#fig-arrow-r)"/>
+<line class="axis" x1="50" y1="240" x2="50" y2="20" marker-end="url(#fig-arrow-r)"/>
+<text x="498" y="248">x</text><text x="58" y="30">f(x)</text>
+<circle class="pt-euler" cx="90.0" cy="180.5" r="3.5"/>
+<circle class="pt-euler" cx="166.0" cy="143.2" r="3.5"/>
+<circle class="pt-euler" cx="242.0" cy="113.8" r="3.5"/>
+<circle class="pt-euler" cx="318.0" cy="92.4" r="3.5"/>
+<circle class="pt-euler" cx="394.0" cy="78.9" r="3.5"/>
+<text x="90" y="248" text-anchor="middle">a = x<tspan dy="4" font-size="10">0</tspan></text>
+<text x="470" y="248" text-anchor="middle">b</text>
+<text x="242.0" y="248" text-anchor="middle">x<tspan dy="4" font-size="10">k</tspan></text>
+<text class="lab-tan" x="280.0" y="135.8" text-anchor="middle">f(x<tspan dy="4" font-size="10">k</tspan><tspan dy="-4">)</tspan></text>
+<line class="tick" x1="90" y1="262" x2="166.0" y2="262" marker-start="url(#fig-arrow-r)" marker-end="url(#fig-arrow-r)"/><text x="128.0" y="280" text-anchor="middle">h</text>
+</svg>
+        <figcaption>L'aire sous la courbe est remplacée par la somme des aires des <code>n</code> rectangles (ici <code>n = 5</code>).</figcaption>
+      </figure>
+
+      <p><strong>L'algorithme.</strong> Une boucle <code>for</code> additionne les hauteurs, puis on multiplie par la largeur commune <code>h</code>.</p>
+      <pre class="course-code">def rectangles(f, a, b, n):
+    h = (b - a) / n            # largeur d'un rectangle
+    S = 0
+    for k in range(n):         # k = 0, 1, ..., n − 1
+        S = S + f(a + k * h)   # hauteur du rectangle k (bord gauche)
+    return h * S</pre>
+
+      <p><strong>Un exemple à la main.</strong> Pour <code>∫<sub>0</sub><sup>1</sup> x² dx</code> avec <code>n = 4</code>, soit <code>h = 0,25</code> :</p>
+      <p class="formula">I ≈ 0,25 × (0 + 0,0625 + 0,25 + 0,5625) ≈ 0,219</p>
+      <p>La valeur exacte est <code>1/3 ≈ 0,333</code> : avec 4 rectangles seulement, l'écart est grand.</p>
+
+      <p><strong>Précision.</strong> L'erreur diminue quand <code>n</code> augmente : en général, multiplier <code>n</code> par 10 divise l'erreur par 10. Prendre la hauteur au milieu de chaque intervalle, <code>f(a + (k + ½)·h)</code>, est souvent bien plus précis.</p>
+
+      <p><strong>Pour l'exercice.</strong> On calcule un débit à partir d'un profil de vitesse. À toi d'écrire la fonction à intégrer.</p>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 11 — Débit dans un tuyau : profil laminaire et profil turbulent (méthode des rectangles) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Dans un tuyau cylindrique de rayon <code>R = 1,0 cm</code>, la vitesse de l'eau dépend de la distance <code>r</code> à l'axe. Pour obtenir le débit volumique, on découpe la section en couronnes : la couronne comprise entre <code>r</code> et <code>r + dr</code> a pour aire <code>2πr·dr</code> et est traversée par le débit <code>v(r)·2πr·dr</code>. D'où :</p>
+        <p><code>Q = ∫ v(r)·2πr dr</code>, &nbsp; pour <code>r</code> variant de 0 à <code>R</code>.</p>
+        <p>On compare deux écoulements :</p>
+        <ul>
+          <li><strong>laminaire</strong> (profil de Poiseuille) : <code>v(r) = Vmax·(1 − r²/R²)</code> avec <code>Vmax = 0,10 m/s</code>. Son débit exact, <code>Q = πR²·Vmax/2</code>, permet de tester le programme ;</li>
+          <li><strong>turbulent</strong> : profil empirique (fourni) <code>v(r) = Vmax·(1 − r/R)<sup>1/7</sup></code> avec <code>Vmax = 1,2 m/s</code>.</li>
+        </ul>
+        <p>Complétez les « ... » :</p>
+        <ol>
+          <li>la fonction <code>rectangles(f, a, b, n)</code>, avec la hauteur prise au bord gauche (voir le rappel) ;</li>
+          <li>les fonctions <code>dQ_lam</code> et <code>dQ_turb</code>, qui renvoient <code>v(r)·2πr</code> ;</li>
+          <li>les débits <code>Q_lam</code> et <code>Q_turb</code>, calculés avec <code>n = 1000</code>.</li>
+        </ol>
+        <p>Le programme affiche l'erreur commise sur le débit laminaire pour <code>n = 10, 100, 1000</code>, puis, pour chaque écoulement, le rapport entre la vitesse débitante <code>U = Q/(πR²)</code> et la vitesse sur l'axe, et le nombre de Reynolds. Les régimes sont-ils cohérents ? Comment la forme des profils tracés explique-t-elle la différence entre les deux rapports <code>U/Vmax</code> ?</p>
+      </div>
+
+      <textarea id="code-11" spellcheck="false" style="min-height: 1050px;">import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+R = 1.0e-2                # rayon intérieur du tuyau (m)
+rho, eta = 1000.0, 1.0e-3 # eau (kg/m^3, Pa.s)
+
+def rectangles(f, a, b, n):
+    # Complétez : valeur approchée de l'intégrale de f sur [a, b]
+    # avec n rectangles (hauteur prise au bord gauche)
+    ...
+    return ...
+
+# Profil laminaire (Poiseuille)
+Vmax_lam = 0.10           # vitesse sur l'axe (m/s)
+def v_lam(r):
+    return Vmax_lam * (1 - (r / R)**2)
+
+# Profil turbulent (formule empirique fournie)
+Vmax_turb = 1.2
+def v_turb(r):
+    return Vmax_turb * (1 - r / R)**(1 / 7)
+
+# Complétez : fonctions à intégrer entre 0 et R pour obtenir le débit
+def dQ_lam(r):
+    return ...
+
+def dQ_turb(r):
+    return ...
+
+# 1. Validation sur le profil laminaire, de débit exact connu (déjà écrit)
+Q_exact = math.pi * R**2 * Vmax_lam / 2
+for n in [10, 100, 1000]:
+    Q = rectangles(dQ_lam, 0, R, n)
+    erreur = abs(Q - Q_exact) / Q_exact
+    print("n =", n, ": erreur relative =", format(erreur, ".0e"))
+
+# 2. Débits des deux écoulements, avec n = 1000
+Q_lam = ...               # Complétez
+Q_turb = ...              # Complétez
+for nom, Q, Vmax in [("laminaire", Q_lam, Vmax_lam), ("turbulent", Q_turb, Vmax_turb)]:
+    U = Q / (math.pi * R**2)                  # vitesse débitante
+    print(nom, ": Q =", round(Q * 6e4, 2), "L/min ; U/Vmax =",
+          round(U / Vmax, 3), "; Re =", round(rho * U * 2 * R / eta))
+
+# 3. Les deux profils, rapportés à leur vitesse sur l'axe (déjà écrit)
+r = np.linspace(0, R, 200)
+plt.plot([v_lam(x) / Vmax_lam for x in r], r * 100, label="laminaire")
+plt.plot([v_turb(x) / Vmax_turb for x in r], r * 100, label="turbulent")
+plt.xlabel("v / Vmax")
+plt.ylabel("r (cm)")
+plt.legend()
+plt.grid()
+</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-11" disabled>Exécuter et vérifier</button>
+        <span id="status-11" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-11" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-11"></div>
+      <details class="solution" id="solution-11" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def rectangles(f, a, b, n):
+    h = (b - a) / n
+    S = 0
+    for k in range(n):
+        S = S + f(a + k * h)
+    return h * S
+
+def dQ_lam(r):
+    return v_lam(r) * 2 * math.pi * r
+
+def dQ_turb(r):
+    return v_turb(r) * 2 * math.pi * r
+
+Q_lam = rectangles(dQ_lam, 0, R, 1000)
+Q_turb = rectangles(dQ_turb, 0, R, 1000)</pre>
+          <p>L'erreur relative est de 10⁻² pour <code>n = 10</code> et devient négligeable pour <code>n = 1000</code>. Elle diminue même plus vite que prévu, car la fonction à intégrer s'annule aux deux bornes.</p>
+          <p><strong>Laminaire</strong> : <code>Q ≈ 0,94 L/min</code>, <code>U/Vmax = 0,50</code> (le résultat exact du cours) et <code>Re ≈ 1000 &lt; 2000</code> : le régime est bien laminaire. <strong>Turbulent</strong> : <code>Q ≈ 18,5 L/min</code>, <code>U/Vmax ≈ 0,82</code> et <code>Re ≈ 2·10⁴</code> : le régime est bien turbulent.</p>
+          <p>Le profil turbulent est presque plat : le brassage par les tourbillons uniformise la vitesse, qui ne chute que tout près de la paroi. Presque toute la section avance donc à une vitesse proche de <code>Vmax</code>, d'où une vitesse débitante plus proche de <code>Vmax</code> que pour le profil parabolique.</p>
+        </div>
+      </details>
+      </div>
+    </details>
+
+    <details class="course accordion">
+      <summary>Rappel de cours — dérivée numérique</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À calculer une valeur approchée du nombre dérivé <code>f′(x)</code> d'une fonction compliquée, ou d'une grandeur connue seulement par des mesures : une vitesse à partir de positions, un débit à partir d'une hauteur d'eau…</p>
+
+      <p><strong>L'idée.</strong> <code>f′(x)</code> est la pente de la tangente en <code>x</code>. On la remplace par la pente d'une corde entre deux points proches, à la distance <code>h</code> :</p>
+      <p class="formula">avant : f′(x) ≈ [f(x + h) − f(x)] / h</p>
+      <p class="formula">centrée : f′(x) ≈ [f(x + h) − f(x − h)] / (2h)</p>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 520 285" role="img" aria-label="Dérivée numérique : la pente de la tangente en x est approchée par la pente d'une corde. La corde centrée, entre x − h et x + h, est presque parallèle à la tangente ; la corde avant, entre x et x + h, l'est moins.">
+<defs><marker id="fig-arrow-dv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fig-head"/></marker></defs>
+<polyline class="exact" points="60.0,211.1 66.7,210.6 73.3,210.1 80.0,209.6 86.6,209.1 93.2,208.5 99.9,207.9 106.6,207.3 113.2,206.6 119.8,205.9 126.5,205.1 133.1,204.3 139.8,203.5 146.4,202.6 153.1,201.7 159.8,200.7 166.4,199.7 173.1,198.6 179.7,197.5 186.4,196.2 193.0,195.0 199.6,193.6 206.3,192.2 213.0,190.7 219.6,189.1 226.2,187.5 232.9,185.7 239.6,183.9 246.2,181.9 252.9,179.8 259.5,177.7 266.2,175.4 272.8,173.0 279.5,170.4 286.1,167.7 292.8,164.9 299.4,161.9 306.1,158.7 312.7,155.4 319.4,151.9 326.0,148.2 332.7,144.3 339.3,140.2 345.9,135.9 352.6,131.3 359.2,126.5 365.9,121.4 372.6,116.0 379.2,110.3 385.9,104.4 392.5,98.1 399.2,91.4 405.8,84.4 412.5,77.1 419.1,69.3 425.8,61.1 432.4,52.4 439.1,43.3 445.7,33.6 452.4,23.5 459.0,12.7"/>
+<line class="axis" x1="40" y1="240" x2="505" y2="240" marker-end="url(#fig-arrow-dv)"/><line class="axis" x1="60" y1="252" x2="60" y2="20" marker-end="url(#fig-arrow-dv)"/>
+<text x="498" y="258">x</text><text x="68" y="30">f(x)</text>
+<line class="guide" x1="150.0" y1="240.5" x2="480.0" y2="67.9"/>
+<line style="stroke:var(--ink);stroke-width:1.6" x1="225.0" y1="216.2" x2="471.0" y2="46.8"/>
+<line class="tangent" x1="213.0" y1="200.8" x2="417.0" y2="89.0"/>
+<circle class="pt-euler" cx="249.0" cy="181.0" r="4"/>
+<line class="guide" x1="249.0" y1="181.0" x2="249.0" y2="240"/>
+<circle class="pt-exact" cx="315.0" cy="154.2" r="4"/>
+<line class="guide" x1="315.0" y1="154.2" x2="315.0" y2="240"/>
+<circle class="pt-euler" cx="381.0" cy="108.8" r="4"/>
+<line class="guide" x1="381.0" y1="108.8" x2="381.0" y2="240"/>
+<text x="249.0" y="258" text-anchor="middle">x − h</text><text x="315.0" y="258" text-anchor="middle">x</text><text x="381.0" y="258" text-anchor="middle">x + h</text>
+<text class="lab-exact" x="275.0" y="215.5">tangente : pente f′(x)</text>
+<text class="lab-tan" x="207.0" y="204.8" text-anchor="end">corde centrée</text>
+<text x="485.0" y="82.8" text-anchor="end">corde avant</text>
+</svg>
+        <figcaption>La corde centrée (en couleur) a presque la même pente que la tangente ; la corde avant s'en écarte davantage.</figcaption>
+      </figure>
+
+      <pre class="course-code">def derivee(f, x, h):
+    return (f(x + h) - f(x - h)) / (2 * h)   # différence centrée</pre>
+
+      <p><strong>Un exemple à la main.</strong> Pour <code>f(x) = x²</code> en <code>x = 1</code> (où <code>f′(1) = 2</code>), avec <code>h = 0,1</code> :</p>
+      <p class="formula">avant : (1,21 − 1)/0,1 = 2,1 &nbsp;&nbsp;&nbsp; centrée : (1,21 − 0,81)/0,2 = 2,0</p>
+
+      <p><strong>Choix de h.</strong> Trop grand, la corde s'éloigne de la tangente. Trop petit, <code>f(x + h)</code> et <code>f(x − h)</code> sont presque égaux, et leur différence perd les chiffres significatifs (l'ordinateur ne garde qu'environ 16 chiffres). Pour la formule centrée, <code>h ≈ 10⁻⁵</code> (à l'échelle de <code>x</code>) est un bon compromis.</p>
+
+      <p><strong>Avec des mesures.</strong> Pour des valeurs <code>y[k]</code> relevées à intervalles réguliers <code>dt</code>, le pas est imposé : la dérivée au point <code>k</code> vaut environ <code>(y[k + 1] − y[k − 1])/(2·dt)</code>, pour <code>k</code> de 1 à <code>len(y) − 2</code>.</p>
+
+      <p><strong>Pour l'exercice.</strong> On teste d'abord les deux formules sur une fonction connue, puis on dérive des mesures.</p>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 12 — Vidange d'un réservoir par un tube fin (dérivée numérique) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p><strong>1. Choisir le pas.</strong> Complétez <code>derivee_avant</code> et <code>derivee_centree</code> (formules du rappel). Le programme compare la dérivée de <code>sin</code> en <code>x = 1</code> à la valeur exacte <code>cos(1)</code>, pour <code>h</code> allant de 10⁻¹ à 10⁻¹¹. Quelle formule est la plus précise ? Pourquoi l'erreur remonte-t-elle quand <code>h</code> devient trop petit ?</p>
+        <p><strong>2. Dériver des mesures.</strong> Un réservoir cylindrique, de section <code>S = 10 cm²</code>, se vide par un tube horizontal fin placé à sa base : rayon intérieur <code>a = 0,40 mm</code>, longueur <code>L = 20 cm</code>. On relève toutes les 2 minutes la hauteur d'eau <code>z</code> au-dessus du tube.</p>
+        <p>L'eau du réservoir est quasiment au repos : la différence de pression entre les extrémités du tube vaut <code>ΔP = ρgz</code>. Si l'écoulement dans le tube suit la loi de Poiseuille, <code>Q = πa⁴·ΔP/(8ηL)</code>, alors le débit est proportionnel à la hauteur : <code>Q = K·z</code>, avec <code>K = πa⁴ρg/(8ηL)</code>.</p>
+        <ol>
+          <li>Complétez la boucle qui calcule le débit sortant <code>Q = −S·dz/dt</code>, avec la dérivée centrée.</li>
+          <li>Le programme trace <code>Q</code> en fonction de <code>z</code> : la loi de Poiseuille est-elle vérifiée ?</li>
+          <li>Complétez le calcul de la viscosité <code>eta</code> à partir de <code>K</code>, moyenne des rapports <code>Q/z</code>. De quel liquide s'agit-il ?</li>
+        </ol>
+      </div>
+
+      <textarea id="code-12" spellcheck="false" style="min-height: 1000px;">import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ---------- 1. Choix du pas h, sur une fonction connue ----------
+def derivee_avant(f, x, h):
+    return ...            # Complétez
+
+def derivee_centree(f, x, h):
+    return ...            # Complétez
+
+# Dérivée de sin en x = 1, comparée à la valeur exacte cos(1) (déjà écrit)
+for h in [1e-1, 1e-3, 1e-5, 1e-7, 1e-9, 1e-11]:
+    e_av = abs(derivee_avant(math.sin, 1, h) - math.cos(1))
+    e_ce = abs(derivee_centree(math.sin, 1, h) - math.cos(1))
+    print("h =", h, ": erreur avant =", format(e_av, ".0e"),
+          "; erreur centrée =", format(e_ce, ".0e"))
+
+# ---------- 2. Vidange d'un réservoir par un tube fin ----------
+rho, g = 1000.0, 9.81
+S = 1.0e-3                # section du réservoir (m^2)
+a = 0.40e-3               # rayon intérieur du tube (m)
+L = 0.20                  # longueur du tube (m)
+dt = 120.0                # une mesure toutes les 2 min (s)
+hauteurs = [200, 189, 178, 167, 158, 149, 140, 132,
+            125, 117, 111, 104, 98, 93, 87, 82]     # hauteur d'eau mesurée (mm)
+z = np.array(hauteurs) / 1000                       # en m
+
+# Débit sortant Q = −S·dz/dt, aux instants où la dérivée centrée existe
+Q = []
+z_mil = []
+for k in range(1, len(z) - 1):
+    Q.append(...)         # Complétez
+    z_mil.append(z[k])
+
+# Q en fonction de z (déjà écrit)
+plt.plot(np.array(z_mil) * 100, np.array(Q) * 6e7, "o")
+plt.xlim(left=0)
+plt.ylim(bottom=0)
+plt.xlabel("z (cm)")
+plt.ylabel("Q (mL/min)")
+plt.grid()
+
+# Si Q = K·z, K est la moyenne des rapports Q/z
+K = np.mean(np.array(Q) / np.array(z_mil))
+eta = ...                 # Complétez : viscosité déduite de K (loi de Poiseuille)
+print("K =", format(K, ".3e"), "m^2/s ; eta =", format(eta, ".2e"), "Pa.s")
+</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-12" disabled>Exécuter et vérifier</button>
+        <span id="status-12" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-12" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-12"></div>
+      <details class="solution" id="solution-12" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def derivee_avant(f, x, h):
+    return (f(x + h) - f(x)) / h
+
+def derivee_centree(f, x, h):
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+    Q.append(-S * (z[k + 1] - z[k - 1]) / (2 * dt))
+
+eta = math.pi * a**4 * rho * g / (8 * L * K)</pre>
+          <p><strong>Choix du pas.</strong> Quand <code>h</code> est divisé par 100, l'erreur de la formule avant est divisée par 100 (erreur ∝ h), celle de la formule centrée par 10 000 (erreur ∝ h²). La formule centrée atteint 10⁻¹¹ vers <code>h = 10⁻⁵</code>. En dessous, l'erreur remonte pour les deux formules : <code>f(x + h)</code> et <code>f(x − h)</code> deviennent si proches que leur différence ne garde que quelques chiffres significatifs.</p>
+          <p><strong>Mesures.</strong> Le signe moins vient de ce que <code>z</code> diminue. Avec des mesures, on ne choisit pas <code>h</code> : c'est <code>dt</code>. Les points <code>Q(z)</code> sont alignés avec l'origine, aux erreurs de mesure près : <code>Q ∝ z</code>, la loi de Poiseuille est vérifiée. (Un orifice court, sans viscosité, donnerait au contraire <code>Q ∝ √z</code>.) La dispersion vient de l'arrondi des hauteurs au millimètre : dériver des mesures amplifie leurs erreurs.</p>
+          <p><strong>Viscosité.</strong> On trouve <code>K ≈ 5,0·10⁻⁷ m²/s</code> et <code>η ≈ 1,0·10⁻³ Pa·s</code> : c'est de l'eau. On vérifie le régime laminaire : au début, <code>U = Q/(πa²) ≈ 0,18 m/s</code> dans le tube, d'où <code>Re ≈ 150</code>.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -1463,6 +1760,187 @@ def check_ex10(ns, err=None):
     if err is not None:
         raise err
     return rep(True, "Correct : Vs = E·N/8 pour les huit codes (0 ; 0,625 ; 1,25 … ; 4,375 V). La tension de sortie est proportionnelle au nombre binaire : c'est un convertisseur numérique-analogique.\nUn pas de code vaut E/8 = 0,625 V, et la sortie n'atteint jamais E : le plus grand code, 111, donne 7E/8.")
+
+def check_ex11(ns, err=None):
+    import json, math
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+    def num(x):
+        return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+
+    if isinstance(err, SyntaxError):
+        raise err
+    R, Vl, Vt = 1.0e-2, 0.10, 1.2
+    Ql_ex = math.pi * R**2 * Vl / 2
+    Qt_ex = 2 * math.pi * R**2 * Vt * 49 / 120
+
+    # 1. la fonction rectangles, testée sur x² entre 0 et 1 avec 4 rectangles
+    rf = ns.get("rectangles")
+    if not callable(rf):
+        if err is not None:
+            raise err
+        return rep(False, "La fonction rectangles n'est pas définie : ne modifie pas sa première ligne.")
+    try:
+        y = rf(lambda x: x * x, 0, 1, 4)
+    except Exception as e:
+        return rep(False, "La fonction rectangles s'arrête sur une erreur : " + type(e).__name__ + " : " + str(e) + "\nInspire-toi de l'algorithme du rappel : h = (b − a)/n, puis une boucle for qui additionne les f(a + k·h).")
+    if y is Ellipsis or y is None:
+        return rep(False, "La fonction rectangles ne renvoie pas encore de valeur : complète son corps (calcul de h, boucle de somme) et sa ligne return.")
+    if not num(y):
+        return rep(False, "La fonction rectangles doit renvoyer un nombre.")
+    method = None
+    for val, nom in [(0.21875, "gauche"), (0.328125, "milieu"), (0.46875, "droite")]:
+        if abs(y - val) < 1e-9:
+            method = nom
+    if method is None:
+        if abs(y - 0.875) < 1e-9:
+            return rep(False, "Presque : ta fonction renvoie la somme des hauteurs f(x_k), sans la multiplier par la largeur h des rectangles.")
+        if abs(y) < 1e-12:
+            return rep(False, "Ta fonction renvoie 0 pour l'intégrale de x² entre 0 et 1 : la ligne return est peut-être dans la boucle (indentation), ce qui arrête le calcul dès le premier rectangle.")
+        if abs(y - 0.25 * 1.875) < 1e-9 or abs(y - 0.2 * 1.875) < 1e-9:
+            return rep(False, "Ta fonction prend un rectangle de trop (n + 1 au lieu de n) : la boucle doit parcourir k = 0, 1, …, n − 1, c'est-à-dire range(n).")
+        return rep(False, "La fonction rectangles n'est pas encore correcte : pour l'intégrale de x² entre 0 et 1 avec 4 rectangles, elle donne " + str(y) + " au lieu de 0,21875.\nVérifie h = (b − a)/n, la boucle for k in range(n) et la hauteur f(a + k·h).")
+
+    # 2. les fonctions à intégrer
+    for nom, v, ref in [("dQ_lam", "v_lam", lambda r: Vl * (1 - (r / R)**2) * 2 * math.pi * r),
+                        ("dQ_turb", "v_turb", lambda r: Vt * (1 - r / R)**(1 / 7) * 2 * math.pi * r)]:
+        fn = ns.get(nom)
+        if not callable(fn):
+            if err is not None:
+                raise err
+            return rep(False, "La fonction " + nom + " n'est pas définie.")
+        try:
+            y = fn(R / 2)
+        except Exception as e:
+            return rep(False, "La fonction " + nom + " s'arrête sur une erreur : " + type(e).__name__ + " : " + str(e))
+        if y is Ellipsis:
+            return rep(False, "La fonction rectangles est juste. Complète maintenant " + nom + " : elle doit renvoyer le débit à travers la couronne de rayon r, divisé par dr, c'est-à-dire " + v + "(r)·2πr.")
+        r0 = ref(R / 2)
+        if not num(y) or abs(y - r0) > 1e-9 * abs(r0):
+            vr = r0 / (2 * math.pi * R / 2)
+            if num(y) and abs(y - vr) < 1e-9 * abs(vr):
+                return rep(False, nom + " renvoie seulement la vitesse : il faut la multiplier par le périmètre 2πr de la couronne, qui donne son aire 2πr·dr.")
+            if num(y) and abs(y - r0 / math.pi) < 1e-9 * abs(r0):
+                return rep(False, nom + " : il manque le facteur π. Le périmètre de la couronne vaut 2πr.")
+            return rep(False, nom + " n'est pas encore correcte : elle doit renvoyer " + v + "(r) * 2 * math.pi * r.")
+
+    # 3. les débits
+    for nom, ex in [("Q_lam", Ql_ex), ("Q_turb", Qt_ex)]:
+        q = ns.get(nom)
+        if q is Ellipsis:
+            return rep(False, "Les fonctions sont justes. Il reste à calculer " + nom + " avec la fonction rectangles, entre 0 et R, avec n = 1000.")
+        if not num(q):
+            if err is not None:
+                raise err
+            return rep(False, nom + " doit être un nombre : appelle la fonction rectangles entre 0 et R avec n = 1000.")
+        if abs(q - ex) > 2e-3 * ex:
+            return rep(False, nom + " = " + format(q, ".3e") + " m³/s ne convient pas (attendu ≈ " + format(ex, ".3e") + " m³/s). Vérifie l'appel rectangles(" + ("dQ_lam" if nom == "Q_lam" else "dQ_turb") + ", 0, R, 1000).")
+    if err is not None:
+        raise err
+    msg = "Correct : U/Vmax = 0,50 pour le profil de Poiseuille (Re ≈ 1000, laminaire) et ≈ 0,82 pour le profil turbulent (Re ≈ 2·10⁴).\nLe profil turbulent est bien plus plat : presque toute la section avance à une vitesse proche de Vmax, et la vitesse ne chute que tout près de la paroi."
+    if method == "milieu":
+        msg += "\n(Tu as pris la hauteur au milieu de chaque intervalle : c'est aussi une méthode des rectangles, souvent plus précise.)"
+    elif method == "droite":
+        msg += "\n(Tu as pris la hauteur au bord droit de chaque intervalle : c'est aussi une méthode des rectangles, de même précision que celle du rappel.)"
+    return rep(True, msg)
+
+
+def check_ex12(ns, err=None):
+    import json, math
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+    def num(x):
+        try:
+            x = float(x)
+        except Exception:
+            return False
+        return math.isfinite(x)
+
+    if isinstance(err, SyntaxError):
+        raise err
+    sin = math.sin
+    x, h = 1.0, 1e-3
+    av = (sin(x + h) - sin(x)) / h
+    ce = (sin(x + h) - sin(x - h)) / (2 * h)
+    ar = (sin(x) - sin(x - h)) / h
+
+    # 1. les deux formules
+    for nom, ref, other, txt in [("derivee_avant", av, ce, "(f(x + h) − f(x))/h"),
+                                 ("derivee_centree", ce, av, "(f(x + h) − f(x − h))/(2h)")]:
+        fn = ns.get(nom)
+        if not callable(fn):
+            if err is not None:
+                raise err
+            return rep(False, "La fonction " + nom + " n'est pas définie : ne modifie pas sa première ligne.")
+        try:
+            y = fn(sin, x, h)
+        except Exception as e:
+            return rep(False, "La fonction " + nom + " s'arrête sur une erreur : " + type(e).__name__ + " : " + str(e))
+        if y is Ellipsis:
+            return rep(False, "Complète la fonction " + nom + " : elle doit renvoyer " + txt + ".")
+        if not num(y):
+            return rep(False, "La fonction " + nom + " doit renvoyer un nombre.")
+        y = float(y)
+        if abs(y - ref) > 1e-9:
+            if abs(y - other) < 1e-9:
+                return rep(False, "Tu as échangé les deux formules : " + nom + " doit renvoyer " + txt + ".")
+            if nom == "derivee_centree" and abs(y - 2 * ce) < 1e-9:
+                return rep(False, "derivee_centree : les deux points sont distants de 2h, il faut donc diviser par 2h, et non par h.")
+            if nom == "derivee_avant" and abs(y - ar) < 1e-9:
+                return rep(False, "derivee_avant utilise le point x − h : la différence « avant » utilise x et x + h, (f(x + h) − f(x))/h.")
+            if abs(y - (sin(x + h) - sin(x - h)) / 2 * h) < 1e-9 or abs(y - (sin(x + h) - sin(x)) * h) < 1e-12:
+                return rep(False, nom + " : attention aux parenthèses. En Python, a / 2 * h vaut (a/2)·h ; écris / (2 * h).")
+            return rep(False, nom + " n'est pas encore correcte : elle doit renvoyer " + txt + ".")
+
+    # 2. le débit
+    zs = [v / 1000 for v in [200, 189, 178, 167, 158, 149, 140, 132, 125, 117, 111, 104, 98, 93, 87, 82]]
+    S, dt = 1.0e-3, 120.0
+    Qref = [-S * (zs[k + 1] - zs[k - 1]) / (2 * dt) for k in range(1, len(zs) - 1)]
+    Q = ns.get("Q")
+    if not isinstance(Q, list) or len(Q) != len(Qref):
+        if err is not None:
+            raise err
+        return rep(False, "Les deux formules sont justes. Complète maintenant la boucle qui remplit la liste Q.")
+    if any(q is Ellipsis for q in Q):
+        return rep(False, "Les deux formules sont justes. Complète maintenant Q.append(...) : le débit sortant vaut −S·dz/dt, avec la dérivée centrée (z[k + 1] − z[k − 1])/(2·dt).")
+    if not all(num(q) for q in Q):
+        return rep(False, "La liste Q doit contenir des nombres.")
+    Q = [float(q) for q in Q]
+    def same(u, v, tol=1e-6):
+        return all(abs(a - b) <= tol * abs(b) + 1e-15 for a, b in zip(u, v))
+    if not same(Q, Qref):
+        if same(Q, [-q for q in Qref]):
+            return rep(False, "Tes débits sont négatifs : z diminue, donc dz/dt < 0. Le débit sortant vaut Q = −S·dz/dt.")
+        if same(Q, [q / S for q in Qref]) or same(Q, [-q / S for q in Qref]):
+            return rep(False, "Il manque la section S du réservoir : le volume d'eau vaut S·z, donc le débit sortant est Q = −S·dz/dt.")
+        if same(Q, [2 * q for q in Qref]):
+            return rep(False, "Tes débits sont deux fois trop grands : z[k + 1] et z[k − 1] sont séparés de 2·dt, il faut diviser par 2·dt.")
+        Qav = [-S * (zs[k + 1] - zs[k]) / dt for k in range(1, len(zs) - 1)]
+        if same(Q, Qav):
+            return rep(False, "Tu as utilisé la différence avant (z[k + 1] − z[k])/dt. L'énoncé demande la dérivée centrée : (z[k + 1] − z[k − 1])/(2·dt), plus précise.")
+        return rep(False, "Les débits ne sont pas encore corrects : Q.append(-S * (z[k + 1] - z[k - 1]) / (2 * dt)).")
+
+    # 3. la viscosité
+    rho, g, a, L = 1000.0, 9.81, 0.40e-3, 0.20
+    K = sum(q / zs[k + 1] for k, q in enumerate(Qref)) / len(Qref)
+    eref = math.pi * a**4 * rho * g / (8 * L * K)
+    eta = ns.get("eta")
+    if eta is Ellipsis:
+        return rep(False, "Les débits sont justes ; le graphe montre des points alignés avec l'origine. Il reste eta : avec ΔP = ρgz, la loi de Poiseuille donne Q = K·z, avec K = πa⁴ρg/(8ηL). Isole η.")
+    if not num(eta):
+        if err is not None:
+            raise err
+        return rep(False, "eta doit être un nombre : isole η dans K = πa⁴ρg/(8ηL).")
+    eta = float(eta)
+    if abs(eta - eref) > 1e-3 * eref:
+        if abs(eta - 1 / eref) < 1e-3 / eref or abs(eta - K * 8 * L / (math.pi * a**4 * rho * g)) < 1e-3 * abs(K * 8 * L / (math.pi * a**4 * rho * g)):
+            return rep(False, "eta est à l'envers : de K = πa⁴ρg/(8ηL), on tire η = πa⁴ρg/(8LK).")
+        return rep(False, "eta = " + format(eta, ".2e") + " Pa·s ne convient pas (attendu ≈ " + format(eref, ".2e") + " Pa·s). De K = πa⁴ρg/(8ηL), on tire η = πa⁴ρg/(8LK) ; attention aux parenthèses.")
+    if err is not None:
+        raise err
+    return rep(True, "Correct : η ≈ " + format(eta * 1000, ".2f").replace(".", ",") + "·10⁻³ Pa·s, c'est bien de l'eau.\nLa dérivée centrée est la plus précise (erreur ∝ h²), avec un optimum vers h ≈ 10⁻⁵ ; en dessous, les erreurs d'arrondi l'emportent.\nLes points Q(z) sont alignés avec l'origine : Q ∝ z, comme le prévoit la loi de Poiseuille. La dispersion vient de l'arrondi des mesures au millimètre, amplifié par la dérivation.")
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
 <script>
@@ -1723,6 +2201,22 @@ def run_student(code, ns, limit=500000):
       stars: 2,
       packages: ['numpy', 'matplotlib'],
       pyCheck: 'check_ex10',
+      figures: true
+    },
+    {
+      n: 11,
+      title: "Exercice 11 — Débit dans un tuyau : profil laminaire et profil turbulent (méthode des rectangles)",
+      stars: 2,
+      packages: ['numpy', 'matplotlib'],
+      pyCheck: 'check_ex11',
+      figures: true
+    },
+    {
+      n: 12,
+      title: "Exercice 12 — Vidange d'un réservoir par un tube fin (dérivée numérique)",
+      stars: 2,
+      packages: ['numpy', 'matplotlib'],
+      pyCheck: 'check_ex12',
       figures: true
     }
   ];
