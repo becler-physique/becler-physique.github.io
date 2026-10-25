@@ -20,6 +20,30 @@
   .mpl-out img { display: block; max-width: 100%; height: auto; margin: 14px auto 0; border: 1px solid var(--border); background: #ffffff; }
   .mpl-out pre { margin: 12px 0 0; }
   .course h3 { margin-top: 22px; }
+  /* parcours de l'année et filtre par chapitre */
+  .parcours { border: 1px solid var(--border); border-left: 3px solid var(--accent); background: #ffffff; padding: 14px 16px 10px; margin: 18px 0 14px; }
+  .parcours h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--accent); }
+  .parcours-intro { margin: 0 0 10px; color: var(--muted); font-size: 0.92rem; }
+  .parcours table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .parcours th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.8rem; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  .parcours td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .parcours tr:last-child td { border-bottom: none; }
+  .parcours .quand { display: block; color: var(--muted); font-size: 0.8rem; }
+  .parcours a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); cursor: pointer; white-space: nowrap; }
+  .parcours a.done::after { content: " ✓"; color: #2f6b3a; }
+  .parcours .vide { color: var(--muted); }
+  @media (max-width: 720px) {
+    .parcours thead { display: none; }
+    .parcours tr { display: block; border-bottom: 1px solid var(--border); padding: 6px 0; }
+    .parcours tr:last-child { border-bottom: none; }
+    .parcours td { display: block; border: none; padding: 2px 0; }
+    .parcours td.cell-vide { display: none; }
+    .parcours td[data-lbl]::before { content: attr(data-lbl) " : "; color: var(--muted); font-size: 0.8rem; }
+  }
+  .chap-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+  .chap-filter button { font: inherit; font-size: 0.85rem; padding: 4px 10px; border: 1px solid var(--border); background: #ffffff; color: var(--ink); cursor: pointer; }
+  .chap-filter button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #ffffff; }
+  .chap-tag { display: inline-block; font-size: 0.72rem; font-weight: 500; color: var(--accent); background: var(--accent-soft); border: 1px solid var(--border); padding: 0 6px; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
   .mpl-table { width: 100%; border-collapse: collapse; margin: 4px 0 16px; font-size: 0.92rem; background: #ffffff; }
   .mpl-table td { border: 1px solid var(--border); padding: 6px 10px; vertical-align: top; }
   .mpl-table td:first-child { width: 48%; }
@@ -70,7 +94,121 @@
       </div>
     </div>
 
-    <details class="course accordion">
+    <section id="parcours" class="parcours" aria-labelledby="parcours-title">
+      <h3 id="parcours-title">Parcours de l'année</h3>
+      <p class="parcours-intro">Les rappels et exercices sont rangés par outil numérique. Ce tableau indique ce qu'il faut faire au fil des chapitres de physique.</p>
+      <div id="parcours-table"></div>
+    </section>
+
+    <div id="chap-filter" class="chap-filter" role="group" aria-label="Afficher les rappels et exercices d'un chapitre"></div>
+
+    <details class="course accordion" data-rappel="matplotlib">
+      <summary>Rappel de cours — tracer des courbes avec matplotlib</summary>
+      <div class="accordion-body">
+
+      <p><strong>Le principe.</strong> Une seule instruction fait l'essentiel du travail : <code>plt.plot(x, y)</code>. Elle place les points de coordonnées <code>(x[0], y[0])</code>, <code>(x[1], y[1])</code>… et les relie dans l'ordre par des segments. Les listes (ou tableaux) <code>x</code> et <code>y</code> doivent donc avoir <strong>la même longueur</strong>.</p>
+      <pre class="course-code">import matplotlib.pyplot as plt   # en début de programme, une fois pour toutes
+import numpy as np
+
+plt.plot(x, y)    # x : abscisses, y : ordonnées
+plt.show()        # affiche la figure (indispensable sur votre ordinateur)</pre>
+      <p>Les trois situations du programme se ramènent à cette instruction. Chaque exemple ci-dessous peut être <strong>modifié et exécuté</strong> : changez une valeur, cliquez sur « Tracer », observez.</p>
+
+      <h3>1. Nuage de points (mesures expérimentales)</h3>
+      <p>On ajoute un <strong>marqueur</strong>, ici <code>'o'</code>, sans trait : les points ne sont pas reliés. C'est ce qu'on fait toujours pour des mesures.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-1" spellcheck="false" style="min-height: 310px;">import matplotlib.pyplot as plt
+
+I = [0.5, 1.0, 1.5, 2.0, 2.5]           # intensité (A)
+U = [0.52, 0.98, 1.55, 2.01, 2.47]      # tension mesurée (V)
+
+plt.plot(I, U, 'o', label="mesures")    # 'o' : des points, sans trait
+plt.xlabel("I (A)")
+plt.ylabel("U (V)")
+plt.title("Caractéristique d'un conducteur ohmique")
+plt.legend()
+plt.grid()
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="1" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-1">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-1"></div>
+      </div>
+      <p>Avec des barres d'incertitude (incertitudes-types dans la liste <code>uU</code>) : <code>plt.errorbar(I, U, yerr=uU, fmt='o')</code>.</p>
+
+      <h3>2. Courbe représentative d'une fonction</h3>
+      <p>On crée un grand nombre d'abscisses régulièrement espacées avec <code>np.linspace(début, fin, nombre)</code>, puis on calcule <strong>d'un seul coup</strong> toutes les ordonnées. Les fonctions de <code>numpy</code> (<code>np.cos</code>, <code>np.exp</code>, <code>np.sqrt</code>…) s'appliquent à tout le tableau ; celles du module <code>math</code> n'acceptent qu'un seul nombre. Avec assez de points (quelques centaines), les segments ne se voient plus : on obtient une courbe lisse.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-2" spellcheck="false" style="min-height: 310px;">import numpy as np
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 10, 500)                 # 500 instants entre 0 et 10 s
+x = np.exp(-t / 4) * np.cos(2 * np.pi * t)  # oscillations amorties
+
+plt.plot(t, x, label="x(t)")
+plt.plot(t, np.exp(-t / 4), 'k--', label="enveloppe")   # 2e courbe, même figure
+plt.xlabel("t (s)")
+plt.ylabel("x (cm)")
+plt.legend()
+plt.grid()
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="2" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-2">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-2"></div>
+      </div>
+
+      <h3>3. Courbe plane paramétrée</h3>
+      <p>Les deux coordonnées dépendent d'un paramètre, souvent le temps : <code>x(t)</code> et <code>y(t)</code>. On calcule les deux tableaux, puis on trace <code>y</code> en fonction de <code>x</code>. <strong>Le paramètre n'apparaît sur aucun axe.</strong> Exemples en physique : une trajectoire, une courbe de Lissajous (mode XY de l'oscilloscope). <code>plt.axis("equal")</code> impose la même échelle sur les deux axes, pour qu'un cercle ait l'air d'un cercle.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-3" spellcheck="false" style="min-height: 310px;">import numpy as np
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 2 * np.pi, 400)   # le paramètre
+x = np.cos(3 * t)                    # tension sur la voie X
+y = np.sin(2 * t)                    # tension sur la voie Y
+
+plt.plot(x, y)                       # y en fonction de x : t n'apparaît pas
+plt.axis("equal")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Courbe de Lissajous")
+plt.show()</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="3" disabled>Tracer</button>
+          <span class="exercise-status" id="demo-status-3">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-3"></div>
+      </div>
+
+      <h3>4. Habiller un graphe</h3>
+      <table class="mpl-table">
+        <tr><td><code>plt.xlabel("t (s)")</code>, <code>plt.ylabel(...)</code></td><td>nom des axes, <strong>avec les unités</strong></td></tr>
+        <tr><td><code>plt.title("...")</code></td><td>titre de la figure</td></tr>
+        <tr><td><code>plt.plot(x, y, label="...")</code> puis <code>plt.legend()</code></td><td>légende : chaque courbe reçoit un <code>label</code>, <code>plt.legend()</code> les affiche</td></tr>
+        <tr><td><code>plt.grid()</code></td><td>quadrillage</td></tr>
+        <tr><td><code>plt.xlim(0, 10)</code>, <code>plt.ylim(...)</code></td><td>bornes des axes</td></tr>
+        <tr><td><code>plt.figure()</code></td><td>nouvelle figure (sinon tout se superpose sur la même)</td></tr>
+        <tr><td><code>'o'</code>, <code>'+'</code>, <code>'-'</code>, <code>'--'</code>, <code>':'</code></td><td>points, croix, trait plein, tirets, pointillés</td></tr>
+        <tr><td><code>'r'</code>, <code>'b'</code>, <code>'g'</code>, <code>'k'</code></td><td>rouge, bleu, vert, noir ; se combinent : <code>'ro'</code>, <code>'k--'</code></td></tr>
+      </table>
+
+      <p><strong>Erreurs fréquentes.</strong></p>
+      <ol>
+        <li><code>x and y must have same first dimension</code> : les deux listes n'ont pas la même longueur.</li>
+        <li><code>only length-1 arrays can be converted…</code> : <code>math.cos</code> appliqué à un tableau ; utiliser <code>np.cos</code>.</li>
+        <li>Des mesures reliées par des segments : il manque le marqueur <code>'o'</code>.</li>
+        <li>Des <code>label=</code> sans <code>plt.legend()</code> : la légende n'apparaît pas.</li>
+        <li>Rien ne s'affiche sur votre ordinateur : il manque <code>plt.show()</code> à la fin.</li>
+      </ol>
+
+      <p><strong>Pour les exercices.</strong> Presque tous les exercices de la page tracent des courbes. L'exercice 8 réunit les trois situations : courbes de fonctions du temps, courbe paramétrée et nuage de points comparé à une formule.</p>
+      </div>
+    </details>
+
+    <details class="course accordion" data-rappel="euler">
       <summary>Rappel de cours — la méthode d'Euler explicite</summary>
       <div class="accordion-body">
 
@@ -393,7 +531,7 @@ print("u =", u, "V  à t =", t, "s")</textarea>
       </details>
       </div>
     </details>
-            <details class="course accordion">
+    <details class="course accordion" data-rappel="odeint">
       <summary>Rappel de cours — systèmes différentiels et odeint</summary>
       <div class="accordion-body">
 
@@ -435,7 +573,7 @@ v = solution[:, 1]   # x'(t) : deuxième colonne</pre>
       <p><strong>Pour l'exercice.</strong> Il faudra identifier le système d'équations d'ordre 1 à partir de l'équation physique, écrire la fonction <code>derivees</code>, puis appeler <code>odeint</code> avec les bonnes conditions initiales.</p>
       </div>
     </details>
-        <details class="exercise accordion">
+    <details class="exercise accordion">
       <summary>Exercice 6 — Pendule pesant avec odeint (systèmes différentiels) <span class="exercise-stars" aria-hidden="true">★</span></summary>
       <div class="accordion-body">
       <div class="statement">
@@ -581,112 +719,6 @@ print("La période dépasse T0 de plus de 1 % à partir de", amplitude_1pc, "°"
       </div>
     </details>
 
-    <details class="course accordion">
-      <summary>Rappel de cours — tracer des courbes avec matplotlib</summary>
-      <div class="accordion-body">
-
-      <p><strong>Le principe.</strong> Une seule instruction fait l'essentiel du travail : <code>plt.plot(x, y)</code>. Elle place les points de coordonnées <code>(x[0], y[0])</code>, <code>(x[1], y[1])</code>… et les relie dans l'ordre par des segments. Les listes (ou tableaux) <code>x</code> et <code>y</code> doivent donc avoir <strong>la même longueur</strong>.</p>
-      <pre class="course-code">import matplotlib.pyplot as plt   # en début de programme, une fois pour toutes
-import numpy as np
-
-plt.plot(x, y)    # x : abscisses, y : ordonnées
-plt.show()        # affiche la figure (indispensable sur votre ordinateur)</pre>
-      <p>Les trois situations du programme se ramènent à cette instruction. Chaque exemple ci-dessous peut être <strong>modifié et exécuté</strong> : changez une valeur, cliquez sur « Tracer », observez.</p>
-
-      <h3>1. Nuage de points (mesures expérimentales)</h3>
-      <p>On ajoute un <strong>marqueur</strong>, ici <code>'o'</code>, sans trait : les points ne sont pas reliés. C'est ce qu'on fait toujours pour des mesures.</p>
-      <div class="mpl-demo">
-        <textarea id="demo-1" spellcheck="false" style="min-height: 310px;">import matplotlib.pyplot as plt
-
-I = [0.5, 1.0, 1.5, 2.0, 2.5]           # intensité (A)
-U = [0.52, 0.98, 1.55, 2.01, 2.47]      # tension mesurée (V)
-
-plt.plot(I, U, 'o', label="mesures")    # 'o' : des points, sans trait
-plt.xlabel("I (A)")
-plt.ylabel("U (V)")
-plt.title("Caractéristique d'un conducteur ohmique")
-plt.legend()
-plt.grid()
-plt.show()</textarea>
-        <div class="exercise-controls">
-          <button class="demo-run" data-demo="1" disabled>Tracer</button>
-          <span class="exercise-status" id="demo-status-1">Chargement de l'environnement Python…</span>
-        </div>
-        <div class="mpl-out" id="demo-out-1"></div>
-      </div>
-      <p>Avec des barres d'incertitude (incertitudes-types dans la liste <code>uU</code>) : <code>plt.errorbar(I, U, yerr=uU, fmt='o')</code>.</p>
-
-      <h3>2. Courbe représentative d'une fonction</h3>
-      <p>On crée un grand nombre d'abscisses régulièrement espacées avec <code>np.linspace(début, fin, nombre)</code>, puis on calcule <strong>d'un seul coup</strong> toutes les ordonnées. Les fonctions de <code>numpy</code> (<code>np.cos</code>, <code>np.exp</code>, <code>np.sqrt</code>…) s'appliquent à tout le tableau ; celles du module <code>math</code> n'acceptent qu'un seul nombre. Avec assez de points (quelques centaines), les segments ne se voient plus : on obtient une courbe lisse.</p>
-      <div class="mpl-demo">
-        <textarea id="demo-2" spellcheck="false" style="min-height: 310px;">import numpy as np
-import matplotlib.pyplot as plt
-
-t = np.linspace(0, 10, 500)                 # 500 instants entre 0 et 10 s
-x = np.exp(-t / 4) * np.cos(2 * np.pi * t)  # oscillations amorties
-
-plt.plot(t, x, label="x(t)")
-plt.plot(t, np.exp(-t / 4), 'k--', label="enveloppe")   # 2e courbe, même figure
-plt.xlabel("t (s)")
-plt.ylabel("x (cm)")
-plt.legend()
-plt.grid()
-plt.show()</textarea>
-        <div class="exercise-controls">
-          <button class="demo-run" data-demo="2" disabled>Tracer</button>
-          <span class="exercise-status" id="demo-status-2">Chargement de l'environnement Python…</span>
-        </div>
-        <div class="mpl-out" id="demo-out-2"></div>
-      </div>
-
-      <h3>3. Courbe plane paramétrée</h3>
-      <p>Les deux coordonnées dépendent d'un paramètre, souvent le temps : <code>x(t)</code> et <code>y(t)</code>. On calcule les deux tableaux, puis on trace <code>y</code> en fonction de <code>x</code>. <strong>Le paramètre n'apparaît sur aucun axe.</strong> Exemples en physique : une trajectoire, une courbe de Lissajous (mode XY de l'oscilloscope). <code>plt.axis("equal")</code> impose la même échelle sur les deux axes, pour qu'un cercle ait l'air d'un cercle.</p>
-      <div class="mpl-demo">
-        <textarea id="demo-3" spellcheck="false" style="min-height: 310px;">import numpy as np
-import matplotlib.pyplot as plt
-
-t = np.linspace(0, 2 * np.pi, 400)   # le paramètre
-x = np.cos(3 * t)                    # tension sur la voie X
-y = np.sin(2 * t)                    # tension sur la voie Y
-
-plt.plot(x, y)                       # y en fonction de x : t n'apparaît pas
-plt.axis("equal")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.title("Courbe de Lissajous")
-plt.show()</textarea>
-        <div class="exercise-controls">
-          <button class="demo-run" data-demo="3" disabled>Tracer</button>
-          <span class="exercise-status" id="demo-status-3">Chargement de l'environnement Python…</span>
-        </div>
-        <div class="mpl-out" id="demo-out-3"></div>
-      </div>
-
-      <h3>4. Habiller un graphe</h3>
-      <table class="mpl-table">
-        <tr><td><code>plt.xlabel("t (s)")</code>, <code>plt.ylabel(...)</code></td><td>nom des axes, <strong>avec les unités</strong></td></tr>
-        <tr><td><code>plt.title("...")</code></td><td>titre de la figure</td></tr>
-        <tr><td><code>plt.plot(x, y, label="...")</code> puis <code>plt.legend()</code></td><td>légende : chaque courbe reçoit un <code>label</code>, <code>plt.legend()</code> les affiche</td></tr>
-        <tr><td><code>plt.grid()</code></td><td>quadrillage</td></tr>
-        <tr><td><code>plt.xlim(0, 10)</code>, <code>plt.ylim(...)</code></td><td>bornes des axes</td></tr>
-        <tr><td><code>plt.figure()</code></td><td>nouvelle figure (sinon tout se superpose sur la même)</td></tr>
-        <tr><td><code>'o'</code>, <code>'+'</code>, <code>'-'</code>, <code>'--'</code>, <code>':'</code></td><td>points, croix, trait plein, tirets, pointillés</td></tr>
-        <tr><td><code>'r'</code>, <code>'b'</code>, <code>'g'</code>, <code>'k'</code></td><td>rouge, bleu, vert, noir ; se combinent : <code>'ro'</code>, <code>'k--'</code></td></tr>
-      </table>
-
-      <p><strong>Erreurs fréquentes.</strong></p>
-      <ol>
-        <li><code>x and y must have same first dimension</code> : les deux listes n'ont pas la même longueur.</li>
-        <li><code>only length-1 arrays can be converted…</code> : <code>math.cos</code> appliqué à un tableau ; utiliser <code>np.cos</code>.</li>
-        <li>Des mesures reliées par des segments : il manque le marqueur <code>'o'</code>.</li>
-        <li>Des <code>label=</code> sans <code>plt.legend()</code> : la légende n'apparaît pas.</li>
-        <li>Rien ne s'affiche sur votre ordinateur : il manque <code>plt.show()</code> à la fin.</li>
-      </ol>
-
-      <p><strong>Pour l'exercice.</strong> Les trois situations sont réunies : courbes de fonctions du temps, courbe paramétrée et nuage de points comparé à une formule.</p>
-      </div>
-    </details>
-
     <details class="exercise accordion">
       <summary>Exercice 8 — Non-isochronisme du pendule en trois figures (matplotlib) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
       <div class="accordion-body">
@@ -787,7 +819,7 @@ plt.ylabel("T/T0")</pre>
       </div>
     </details>
 
-    <details class="course accordion">
+    <details class="course accordion" data-rappel="dichotomie">
       <summary>Rappel de cours — la méthode dichotomique</summary>
       <div class="accordion-body">
 
@@ -975,7 +1007,7 @@ v_scipy = bisect(f, a, b, xtol=1e-6)</pre>
       </div>
     </details>
 
-    <details class="course accordion">
+    <details class="course accordion" data-rappel="solve">
       <summary>Rappel de cours — systèmes linéaires et numpy.linalg.solve</summary>
       <div class="accordion-body">
 
@@ -1140,7 +1172,7 @@ for N in codes:
       </div>
     </details>
 
-    <details class="course accordion">
+    <details class="course accordion" data-rappel="rectangles">
       <summary>Rappel de cours — intégrale par la méthode des rectangles</summary>
       <div class="accordion-body">
 
@@ -1301,7 +1333,7 @@ Q_turb = rectangles(dQ_turb, 0, R, 1000)</pre>
       </div>
     </details>
 
-    <details class="course accordion">
+    <details class="course accordion" data-rappel="derivee">
       <summary>Rappel de cours — dérivée numérique</summary>
       <div class="accordion-body">
 
@@ -2507,5 +2539,141 @@ def run_student(code, ns, limit=500000):
 })();
 </script>
 
+<script>
+/* ==== Parcours de l'année : À METTRE À JOUR CHAQUE ANNÉE (seul endroit à modifier) ====
+   court     : nom court (bouton de filtre)
+   quand     : période, facultatif (ex. "sept.", "semaines 3-5") ; laisser '' si inutile
+   rappels   : clés des rappels (euler, odeint, matplotlib, dichotomie, solve, rectangles, derivee)
+   exercices : numéros des exercices de la page
+   td        : questions Python sur papier dans le TD du chapitre                           */
+var PARCOURS = [
+  { key: 'c1', label: 'Ch. 1 · Filtrage', court: 'Filtrage', quand: '', rappels: ['matplotlib', 'euler'], exercices: [1, 2, 3, 5],
+    td: 'méthode des rectangles (valeur efficace)' },
+  { key: 'c2', label: 'Ch. 2 · Moment cinétique', court: 'Moment cinétique', quand: '', rappels: [], exercices: [],
+    td: 'dérivée numérique (palet)' },
+  { key: 'c3', label: "Ch. 3 · Mouvement d'un solide", court: 'Solides', quand: '', rappels: ['euler', 'odeint'], exercices: [4, 6, 7, 8],
+    td: 'méthode des rectangles' },
+  { key: 'c45', label: 'Ch. 4-5 · Fluides', court: 'Fluides', quand: '', rappels: ['rectangles', 'derivee', 'solve'], exercices: [10, 11, 12],
+    td: 'numpy.linalg.solve (réseau microfluidique)' },
+  { key: 'c6', label: "Ch. 6 · Écoulement autour d'un obstacle", court: 'Obstacle', quand: '', rappels: ['dichotomie'], exercices: [9],
+    td: '' },
+  { key: 'thermo', label: 'Second principe', court: 'Second principe', quand: '', rappels: [], exercices: [],
+    td: 'Monte-Carlo (incertitude sur une efficacité)' },
+  { key: 'elec', label: 'Électrostatique', court: 'Électrostatique', quand: '', rappels: [], exercices: [],
+    td: 'superposition (chaîne de charges)' }
+];
+var TOUJOURS = ['matplotlib'];   // rappels affichés quel que soit le chapitre choisi
+/* ==== fin de la partie à mettre à jour ==== */
+
+(function () {
+  var NOMS = { euler: 'Euler', odeint: 'odeint', matplotlib: 'matplotlib', dichotomie: 'dichotomie',
+               solve: 'solve', rectangles: 'rectangles', derivee: 'dérivée' };
+  function exDetails(n) {
+    var ta = document.getElementById('code-' + n);
+    return ta ? ta.closest('details.exercise') : null;
+  }
+  function rappelDetails(k) { return document.querySelector('details.course[data-rappel="' + k + '"]'); }
+  function stars() {
+    try { return JSON.parse(localStorage.getItem('tpc_stars') || '{}') || {}; } catch (e) { return {}; }
+  }
+  var avecContenu = PARCOURS.filter(function (c) { return c.rappels.length || c.exercices.length; });
+
+  // étiquette de chapitre sur chaque exercice
+  PARCOURS.forEach(function (c) {
+    c.exercices.forEach(function (n) {
+      var d = exDetails(n); if (!d) { return; }
+      var sum = d.querySelector('summary'); if (!sum || sum.querySelector('.chap-tag')) { return; }
+      var tag = document.createElement('span');
+      tag.className = 'chap-tag';
+      tag.textContent = c.label.split(' · ')[0] + ' · ' + c.court;
+      tag.title = c.label;
+      var st = sum.querySelector('.exercise-stars');
+      sum.insertBefore(tag, st || null);
+    });
+  });
+
+  // filtre
+  var bar = document.getElementById('chap-filter');
+  var actuel = 'tout';
+  function appliquer(key) {
+    actuel = key;
+    var c = PARCOURS.filter(function (x) { return x.key === key; })[0];
+    document.querySelectorAll('details.exercise').forEach(function (d) {
+      if (!c) { d.hidden = false; return; }
+      var ok = c.exercices.some(function (n) { return exDetails(n) === d; });
+      d.hidden = !ok;
+    });
+    document.querySelectorAll('details.course[data-rappel]').forEach(function (d) {
+      var k = d.getAttribute('data-rappel');
+      d.hidden = !!c && c.rappels.indexOf(k) < 0 && TOUJOURS.indexOf(k) < 0;
+    });
+    bar.querySelectorAll('button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-key') === key ? 'true' : 'false');
+    });
+    try { localStorage.setItem('tpc_chap_filter', key); } catch (e) {}
+  }
+  function bouton(key, txt) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.textContent = txt; b.setAttribute('data-key', key);
+    b.addEventListener('click', function () { appliquer(key); });
+    bar.appendChild(b);
+  }
+  bouton('tout', 'Tout afficher');
+  avecContenu.forEach(function (c) { bouton(c.key, c.court); });
+
+  // tableau du parcours
+  function ouvrir(d) {
+    if (!d) { return; }
+    if (d.hidden) { appliquer('tout'); }
+    d.open = true;
+    d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function lien(txt, d, fait) {
+    var a = document.createElement('a');
+    a.textContent = txt; a.tabIndex = 0;
+    if (fait) { a.className = 'done'; a.title = 'Exercice réussi'; }
+    a.addEventListener('click', function () { ouvrir(d); });
+    a.addEventListener('keydown', function (e) { if (e.key === 'Enter') { ouvrir(d); } });
+    return a;
+  }
+  function cellule(tr, lbl, remplir) {
+    var td = document.createElement('td'); td.setAttribute('data-lbl', lbl);
+    remplir(td); tr.appendChild(td);
+  }
+  function liste(td, items) {
+    if (!items.length) { var v = document.createElement('span'); v.className = 'vide'; v.textContent = '—'; td.appendChild(v); td.classList.add('cell-vide'); return; }
+    items.forEach(function (el, i) { if (i) { td.appendChild(document.createTextNode(', ')); } td.appendChild(el); });
+  }
+  function dessiner() {
+    var box = document.getElementById('parcours-table'); box.innerHTML = '';
+    var st = stars();
+    var t = document.createElement('table');
+    t.innerHTML = '<thead><tr><th>Chapitre</th><th>Rappels</th><th>Exercices</th><th>En TD (sur papier)</th></tr></thead>';
+    var tb = document.createElement('tbody');
+    PARCOURS.forEach(function (c) {
+      var tr = document.createElement('tr');
+      var th = document.createElement('td');
+      var strong = document.createElement('strong'); strong.textContent = c.label; th.appendChild(strong);
+      if (c.quand) { var q = document.createElement('span'); q.className = 'quand'; q.textContent = c.quand; th.appendChild(q); }
+      tr.appendChild(th);
+      cellule(tr, 'Rappels', function (td) { liste(td, c.rappels.map(function (k) { return lien(NOMS[k] || k, rappelDetails(k)); })); });
+      cellule(tr, 'Exercices', function (td) { liste(td, c.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n]); })); });
+      cellule(tr, 'En TD', function (td) { if (c.td) { td.textContent = c.td; } else { liste(td, []); } });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); box.appendChild(t);
+  }
+  dessiner();
+  // mise à jour des coches après une exécution réussie
+  document.addEventListener('click', function (e) {
+    if (e.target && /^run-\d+$/.test(e.target.id || '')) { setTimeout(dessiner, 4000); setTimeout(dessiner, 12000); }
+  });
+
+  var init = 'tout';
+  try { init = localStorage.getItem('tpc_chap_filter') || 'tout'; } catch (e) {}
+  if (init !== 'tout' && !avecContenu.some(function (c) { return c.key === init; })) { init = 'tout'; }
+  appliquer(init);
+})();
+</script>
 </body>
 </html>
