@@ -20,6 +20,34 @@
   .mpl-out img { display: block; max-width: 100%; height: auto; margin: 14px auto 0; border: 1px solid var(--border); background: #ffffff; }
   .mpl-out pre { margin: 12px 0 0; }
   .course h3 { margin-top: 22px; }
+  /* parcours de l'année */
+  .parcours { border: 1px solid var(--border); border-left: 3px solid var(--accent); background: #ffffff; padding: 14px 16px 10px; margin: 18px 0 14px; }
+  .parcours h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--accent); }
+  .parcours-intro { margin: 0 0 10px; color: var(--muted); font-size: 0.92rem; }
+  .parcours table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .parcours th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.8rem; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  .parcours td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .parcours tr:last-child td { border-bottom: none; }
+  .parcours .quand { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 400; }
+  .parcours td.qnum { white-space: nowrap; }
+  .parcours .theme { color: var(--muted); font-size: 0.82rem; }
+  .parcours a { white-space: nowrap; }
+  .parcours tr.en-cours td { background: var(--accent-soft); }
+  .parcours .en-cours-lbl { color: var(--accent); font-weight: 600; }
+  .parcours tr.choisie td.qnum { box-shadow: inset 3px 0 0 var(--accent); }
+  .parcours a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); cursor: pointer; white-space: nowrap; }
+  .parcours a.done::after { content: " ✓"; color: #2f6b3a; }
+  .parcours .vide { color: var(--muted); }
+  @media (max-width: 720px) {
+    .parcours thead { display: none; }
+    .parcours tr { display: block; border-bottom: 1px solid var(--border); padding: 6px 0; }
+    .parcours tr:last-child { border-bottom: none; }
+    .parcours td { display: block; border: none; padding: 2px 0; }
+    .parcours td.cell-vide { display: none; }
+    .parcours td br { display: none; }
+    .parcours .item { display: inline-block; margin-right: 10px; }
+    .parcours td[data-lbl]::before { content: attr(data-lbl) " : "; color: var(--muted); font-size: 0.8rem; }
+  }
   .part-title { margin: 26px 0 12px; font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
   /* thème physique de chaque exercice */
   .chap-tag { display: inline-block; font-size: 0.72rem; font-weight: 500; color: var(--accent); background: var(--accent-soft); border: 1px solid var(--border); padding: 0 6px; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
@@ -72,6 +100,12 @@
         <button id="student-edit" type="button" class="student-edit">Modifier</button>
       </div>
     </div>
+
+    <section id="parcours" class="parcours" aria-labelledby="parcours-title">
+      <h3 id="parcours-title">Parcours de l'année</h3>
+      <p class="parcours-intro">Ce qu'il faut faire, semaine par semaine. Clique sur un rappel ou un exercice pour l'ouvrir ; le thème physique de chaque exercice est indiqué entre parenthèses.</p>
+      <div id="parcours-table"></div>
+    </section>
 
 
     <h3 class="part-title">Rappels de cours</h3>
@@ -2528,5 +2562,109 @@ def run_student(code, ns, limit=500000):
 })();
 </script>
 
+<script>
+/* ==== Parcours de l'année : À METTRE À JOUR CHAQUE ANNÉE (seul endroit à modifier) ====
+   debut     : date de début de la semaine, au format 'AAAA-MM-JJ' (facultatif).
+               Si les dates sont remplies, la semaine en cours est mise en évidence.
+   cours     : ce qui est traité en cours de physique pendant la semaine
+   rappels   : clés des rappels (matplotlib, euler, odeint, dichotomie, solve, rectangles, derivee)
+   exercices : numéros des exercices de la page
+   td        : question Python sur papier dans le TD                                       */
+var PARCOURS = [
+  { debut: '', cours: 'Reprises de 1re année', rappels: ['matplotlib', 'euler'], exercices: [1, 2, 3], td: '' },
+  { debut: '', cours: 'Ch. 1 · Filtrage', rappels: ['solve', 'rectangles'], exercices: [4, 5], td: 'méthode des rectangles (valeur efficace)' },
+  { debut: '', cours: 'Ch. 2 · Moment cinétique', rappels: ['derivee'], exercices: [], td: 'dérivée numérique (palet)' },
+  { debut: '', cours: "Ch. 3 · Mouvement d'un solide", rappels: ['odeint'], exercices: [6, 7], td: 'méthode des rectangles' },
+  { debut: '', cours: "Ch. 3 · Mouvement d'un solide (suite)", rappels: [], exercices: [8, 9], td: '' },
+  { debut: '', cours: 'Ch. 4-5 · Fluides', rappels: [], exercices: [10, 11], td: 'numpy.linalg.solve (réseau microfluidique)' },
+  { debut: '', cours: "Ch. 6 · Écoulement autour d'un obstacle", rappels: ['dichotomie'], exercices: [12], td: '' },
+  { debut: '', cours: 'Second principe', rappels: [], exercices: [], td: 'Monte-Carlo (incertitude sur une efficacité)' },
+  { debut: '', cours: 'Électrostatique', rappels: [], exercices: [], td: 'superposition (chaîne de charges)' }
+];
+/* Thème physique de chaque exercice (affiché entre parenthèses dans le tableau) */
+var THEMES = {
+  1: 'Mécanique · 1re année', 2: 'Électricité · 1re année', 3: 'Thermique · 1re année',
+  4: 'Filtrage', 5: 'Électricité', 6: 'Solides', 7: 'Solides', 8: 'Solides', 9: 'Solides',
+  10: 'Fluides', 11: 'Fluides', 12: 'Fluides'
+};
+/* ==== fin de la partie à mettre à jour ==== */
+
+(function () {
+  var NOMS = { euler: 'Euler', odeint: 'odeint', matplotlib: 'matplotlib', dichotomie: 'dichotomie',
+               solve: 'solve', rectangles: 'rectangles', derivee: 'dérivée numérique' };
+  function exDetails(n) {
+    var ta = document.getElementById('code-' + n);
+    return ta ? ta.closest('details.exercise') : null;
+  }
+  function rappelDetails(k) { return document.querySelector('details.course[data-rappel="' + k + '"]'); }
+  function stars() {
+    try { return JSON.parse(localStorage.getItem('tpc_stars') || '{}') || {}; } catch (e) { return {}; }
+  }
+  PARCOURS.forEach(function (q, i) { q.num = i + 1; });
+  function frDate(iso) {
+    var p = iso.split('-'); if (p.length !== 3) { return iso; }
+    return parseInt(p[2], 10) + '/' + p[1];
+  }
+  // semaine en cours (seulement si les dates sont remplies)
+  var enCours = null;
+  var auj = new Date(); auj.setHours(0, 0, 0, 0);
+  PARCOURS.forEach(function (q) {
+    if (q.debut) { var d = new Date(q.debut + 'T00:00:00'); if (!isNaN(d) && d <= auj) { enCours = q.num; } }
+  });
+
+  function ouvrir(d) {
+    if (!d) { return; }
+    d.open = true;
+    d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function lien(txt, d, fait, suffixe) {
+    var span = document.createElement('span'); span.className = 'item';
+    var a = document.createElement('a');
+    a.textContent = txt; a.tabIndex = 0;
+    if (fait) { a.className = 'done'; a.title = 'Exercice réussi'; }
+    a.addEventListener('click', function () { ouvrir(d); });
+    a.addEventListener('keydown', function (e) { if (e.key === 'Enter') { ouvrir(d); } });
+    span.appendChild(a);
+    if (suffixe) { var s = document.createElement('span'); s.className = 'theme'; s.textContent = ' (' + suffixe + ')'; span.appendChild(s); }
+    return span;
+  }
+  function cellule(tr, lbl, remplir) {
+    var td = document.createElement('td'); td.setAttribute('data-lbl', lbl);
+    remplir(td); tr.appendChild(td);
+  }
+  function liste(td, items, sep) {
+    if (!items.length) { var v = document.createElement('span'); v.className = 'vide'; v.textContent = '—'; td.appendChild(v); td.classList.add('cell-vide'); return; }
+    items.forEach(function (el, i) { if (i) { td.appendChild(sep === 'br' ? document.createElement('br') : document.createTextNode(', ')); } td.appendChild(el); });
+  }
+  function dessiner() {
+    var box = document.getElementById('parcours-table'); if (!box) { return; }
+    box.innerHTML = '';
+    var st = stars();
+    var t = document.createElement('table');
+    t.innerHTML = '<thead><tr><th>Semaine</th><th>En cours de physique</th><th>Rappels</th><th>Exercices</th><th>En TD (sur papier)</th></tr></thead>';
+    var tb = document.createElement('tbody');
+    PARCOURS.forEach(function (q) {
+      var tr = document.createElement('tr');
+      if (q.num === enCours) { tr.className = 'en-cours'; }
+      var c0 = document.createElement('td'); c0.className = 'qnum';
+      var b = document.createElement('strong'); b.textContent = 'S' + q.num; c0.appendChild(b);
+      if (q.debut) { var dd = document.createElement('span'); dd.className = 'quand'; dd.textContent = 'dès le ' + frDate(q.debut); c0.appendChild(dd); }
+      if (q.num === enCours) { var ec = document.createElement('span'); ec.className = 'quand en-cours-lbl'; ec.textContent = 'en cours'; c0.appendChild(ec); }
+      tr.appendChild(c0);
+      cellule(tr, 'Cours', function (td) { td.textContent = q.cours; });
+      cellule(tr, 'Rappels', function (td) { liste(td, q.rappels.map(function (k) { return lien(NOMS[k] || k, rappelDetails(k)); })); });
+      cellule(tr, 'Exercices', function (td) { liste(td, q.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n], (THEMES[n] || '').toLowerCase()); }), 'br'); });
+      cellule(tr, 'En TD', function (td) { if (q.td) { td.textContent = q.td; } else { liste(td, []); } });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); box.appendChild(t);
+  }
+  dessiner();
+  // mise à jour des coches après une exécution réussie
+  document.addEventListener('click', function (e) {
+    if (e.target && /^run-\d+$/.test(e.target.id || '')) { setTimeout(dessiner, 4000); setTimeout(dessiner, 12000); }
+  });
+})();
+</script>
 </body>
 </html>
