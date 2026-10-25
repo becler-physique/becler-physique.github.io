@@ -974,6 +974,171 @@ v_scipy = bisect(f, a, b, xtol=1e-6)</pre>
       </details>
       </div>
     </details>
+
+    <details class="course accordion">
+      <summary>Rappel de cours — systèmes linéaires et numpy.linalg.solve</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À résoudre un système de <code>n</code> équations linéaires indépendantes à <code>n</code> inconnues : lois des nœuds d'un circuit, réseau de résistances hydrauliques… À la main, c'est pénible dès trois inconnues.</p>
+
+      <p><strong>L'idée.</strong> On écrit le système sous forme matricielle :</p>
+      <p class="formula">A X = B</p>
+      <ul>
+        <li><code>X</code> : les <code>n</code> inconnues, rangées dans un ordre choisi une fois pour toutes ;</li>
+        <li><code>A</code> : la matrice <code>n × n</code> des coefficients. Ligne <code>i</code> = équation <code>i</code> ; colonne <code>j</code> = coefficient de l'inconnue <code>j</code> (0 si elle n'apparaît pas) ;</li>
+        <li><code>B</code> : les <code>n</code> seconds membres, c'est-à-dire les termes sans inconnue.</li>
+      </ul>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 420 125" role="img" aria-label="Le système 2x + y = 5, x − y = 1 s'écrit AX = B : la ligne i de A contient les coefficients de l'équation i, la colonne j ceux de l'inconnue j.">
+<defs><marker id="fig-arrow-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fig-head"/></marker></defs>
+<text x="6" y="50" style="font-size:17px"><tspan class="lab-tan">2x</tspan> + <tspan class="lab-exact">y</tspan> = 5</text>
+<text x="6" y="90" style="font-size:17px"><tspan class="lab-tan">x</tspan> − <tspan class="lab-exact">y</tspan> = 1</text>
+<line class="axis" x1="104" y1="64" x2="136" y2="64" marker-end="url(#fig-arrow-s)"/>
+<text x="162" y="70" text-anchor="middle" style="font-size:17px">A =</text>
+<polyline class="axis" points="190,34 184,34 184,98 190,98"/>
+<text x="204" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">2</text>
+<text x="204" y="90" text-anchor="middle" style="font-size:17px" class="lab-tan">1</text>
+<text x="240" y="56" text-anchor="middle" style="font-size:17px" class="lab-exact">1</text>
+<text x="240" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">−1</text>
+<polyline class="axis" points="258,34 264,34 264,98 258,98"/>
+<text x="292" y="70" text-anchor="middle" style="font-size:17px">X =</text>
+<polyline class="axis" points="318,34 312,34 312,98 318,98"/>
+<text x="326" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">x</text>
+<text x="326" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">y</text>
+<polyline class="axis" points="334,34 340,34 340,98 334,98"/>
+<text x="368" y="70" text-anchor="middle" style="font-size:17px">B =</text>
+<polyline class="axis" points="394,34 388,34 388,98 394,98"/>
+<text x="401" y="56" text-anchor="middle" style="font-size:17px">5</text>
+<text x="401" y="90" text-anchor="middle" style="font-size:17px">1</text>
+<polyline class="axis" points="408,34 414,34 414,98 408,98"/>
+<text x="222" y="120" text-anchor="middle" class="lab-tan" style="font-size:14px">colonne de x</text>
+</svg>
+        <figcaption>Le système, écrit avec les inconnues à gauche dans l'ordre (x, y), se lit directement ligne par ligne.</figcaption>
+      </figure>
+
+      <p><strong>La méthode.</strong></p>
+      <ol>
+        <li>Écrire chaque équation avec toutes les inconnues à gauche, toujours dans le même ordre, et les termes connus à droite.</li>
+        <li>Recopier les coefficients ligne par ligne dans <code>A</code>, sans oublier les 0, et les seconds membres dans <code>B</code>.</li>
+        <li>Appeler <code>solve</code>.</li>
+      </ol>
+      <pre class="course-code">import numpy as np
+A = np.array([[2, 1],         # 2x + y = 5
+              [1, -1]])       #  x − y = 1
+B = np.array([5, 1])
+x, y = np.linalg.solve(A, B)  # x = 2.0 et y = 1.0</pre>
+
+      <p><strong>Spécification (fournie au concours).</strong> <code>np.linalg.solve(A, B)</code> renvoie le tableau <code>X</code> tel que <code>AX = B</code>, où <code>A</code> est un tableau carré <code>n × n</code> et <code>B</code> un tableau de <code>n</code> nombres. Si les équations ne sont pas indépendantes, il n'y a pas de solution unique : erreur <code>LinAlgError: Singular matrix</code>.</p>
+
+      <p><strong>Pièges.</strong> Un 0 oublié, une erreur de signe en passant un terme d'un côté à l'autre, ou une équation de trop qui se déduit des autres (la matrice devient singulière). On vérifie en reportant la solution dans une équation : <code>2 × 2 + 1 = 5</code>.</p>
+
+      <p><strong>Pour l'exercice.</strong> Les inconnues sont les potentiels des nœuds d'un circuit. À toi d'écrire la loi des nœuds en chaque nœud, puis de la ranger sous la forme <code>AX = B</code>.</p>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 10 — Convertisseur numérique-analogique R-2R (système linéaire, solve) <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Un ordinateur manipule des nombres binaires ; pour faire vibrer un haut-parleur, il faut les transformer en tension. C'est le rôle d'un <strong>convertisseur numérique-analogique</strong> (CNA). Le plus simple est le réseau « R-2R » ci-dessous, ici à 3 bits.</p>
+        <figure>
+          <svg class="fig" viewBox="0 0 580 235" style="font-size:15px" role="img" aria-label="Réseau R-2R à 3 bits : trois nœuds V0, V1, V2 reliés en série par des résistances R ; sous chaque nœud, une résistance 2R mène à une borne au potentiel bk·E ; à gauche, une résistance 2R relie le nœud 0 à la masse ; la sortie Vs est prise au nœud 2.">
+<line class="axis" x1="70" y1="60" x2="170" y2="60"/><line class="axis" x1="70" y1="60" x2="70" y2="100"/><rect class="axis" x="62" y="100" width="16" height="46"/><line class="axis" x1="70" y1="146" x2="70" y2="182"/><text x="84" y="128">2R</text><line class="axis" x1="56" y1="182" x2="84" y2="182"/><line class="axis" x1="61" y1="188" x2="79" y2="188"/><line class="axis" x1="66" y1="194" x2="74" y2="194"/><text x="70" y="214" text-anchor="middle" class="lab-exact">masse</text>
+<line class="axis" x1="170" y1="60" x2="217.0" y2="60"/><rect class="axis" x="217.0" y="52" width="46" height="16"/><line class="axis" x1="263.0" y1="60" x2="310" y2="60"/><text x="240.0" y="44" text-anchor="middle">R</text>
+<line class="axis" x1="310" y1="60" x2="357.0" y2="60"/><rect class="axis" x="357.0" y="52" width="46" height="16"/><line class="axis" x1="403.0" y1="60" x2="450" y2="60"/><text x="380.0" y="44" text-anchor="middle">R</text>
+<line class="axis" x1="170" y1="60" x2="170" y2="100"/><rect class="axis" x="162" y="100" width="16" height="46"/><line class="axis" x1="170" y1="146" x2="170" y2="182"/><text x="184" y="128">2R</text>
+<circle class="axis" cx="170" cy="186" r="4"/><text x="170" y="210" text-anchor="middle" class="lab-tan">b<tspan dy="4" font-size="10">0</tspan><tspan dy="-4">E</tspan></text>
+<circle class="pt-euler" cx="170" cy="60" r="4"/><text x="178" y="82">V<tspan dy="4" font-size="10">0</tspan></text>
+<line class="axis" x1="310" y1="60" x2="310" y2="100"/><rect class="axis" x="302" y="100" width="16" height="46"/><line class="axis" x1="310" y1="146" x2="310" y2="182"/><text x="324" y="128">2R</text>
+<circle class="axis" cx="310" cy="186" r="4"/><text x="310" y="210" text-anchor="middle" class="lab-tan">b<tspan dy="4" font-size="10">1</tspan><tspan dy="-4">E</tspan></text>
+<circle class="pt-euler" cx="310" cy="60" r="4"/><text x="318" y="82">V<tspan dy="4" font-size="10">1</tspan></text>
+<line class="axis" x1="450" y1="60" x2="450" y2="100"/><rect class="axis" x="442" y="100" width="16" height="46"/><line class="axis" x1="450" y1="146" x2="450" y2="182"/><text x="464" y="128">2R</text>
+<circle class="axis" cx="450" cy="186" r="4"/><text x="450" y="210" text-anchor="middle" class="lab-tan">b<tspan dy="4" font-size="10">2</tspan><tspan dy="-4">E</tspan></text>
+<circle class="pt-euler" cx="450" cy="60" r="4"/><text x="458" y="82">V<tspan dy="4" font-size="10">2</tspan></text>
+<line class="axis" x1="450" y1="60" x2="526" y2="60"/><circle class="axis" cx="530" cy="60" r="4"/><text x="530" y="46" text-anchor="middle">V<tspan dy="4" font-size="10">s</tspan></text>
+<text x="310" y="232" text-anchor="middle" class="lab-exact">nœud 0 (bit de poids faible) → nœud 2 (sortie)</text>
+</svg>
+          <figcaption>Réseau R-2R à 3 bits. Les résistances horizontales valent <code>R</code>, les verticales <code>2R</code>.</figcaption>
+        </figure>
+        <p>Chaque bit <code>b0</code>, <code>b1</code>, <code>b2</code> vaut 0 ou 1. Un interrupteur relie le bas de la branche <code>k</code> soit au potentiel <code>E = 5 V</code> (bit à 1), soit à la masse (bit à 0) : ce point est donc au potentiel <code>bk·E</code>. La sortie est à vide : aucun courant n'en sort. Le code <code>b2 b1 b0</code> représente le nombre <code>N = 4·b2 + 2·b1 + b0</code>, compris entre 0 et 7.</p>
+        <p>Les inconnues sont les potentiels <code>V0</code>, <code>V1</code>, <code>V2</code> des trois nœuds ; la tension de sortie est <code>Vs = V2</code>.</p>
+        <ol>
+          <li>Sur papier, écrire la loi des nœuds en chacun des trois nœuds. Une résistance <code>r</code> entre deux points de potentiels <code>Vk</code> et <code>Vj</code> est parcourue, de k vers j, par le courant <code>(Vk − Vj)/r</code>. Ranger chaque équation avec les inconnues à gauche, dans l'ordre <code>V0</code>, <code>V1</code>, <code>V2</code>.</li>
+          <li>Compléter <code>A</code> et <code>B</code> dans la fonction <code>tensions</code>, puis sa ligne <code>return</code>.</li>
+          <li>Compléter la boucle, qui calcule la tension de sortie pour les huit codes.</li>
+        </ol>
+        <p>Le programme trace <code>Vs</code> en fonction de <code>N</code>. Quelle loi simple observe-t-on ? Quelle est la plus petite variation de tension que ce CNA sait produire ?</p>
+      </div>
+
+      <textarea id="code-10" spellcheck="false" style="min-height: 900px;">import numpy as np
+import matplotlib.pyplot as plt
+
+E = 5.0        # tension de référence (V)
+R = 1.0e3      # résistance R (ohm) ; les branches verticales valent 2R
+
+def tensions(b2, b1, b0):
+    """Potentiels [V0, V1, V2] des trois nœuds pour le code binaire (b2 b1 b0)."""
+    # Complétez : une ligne de A par nœud (nœud 0, puis 1, puis 2),
+    # une colonne par inconnue (V0, puis V1, puis V2)
+    A = np.array([[..., ..., ...],
+                  [..., ..., ...],
+                  [..., ..., ...]])
+    # Complétez : les seconds membres, dans le même ordre
+    B = np.array([..., ..., ...])
+    # Complétez : résolution de AX = B
+    return ...
+
+# 1. Un code : 101 (c'est-à-dire N = 5)
+V0, V1, V2 = tensions(1, 0, 1)
+print("code 101 : V0 =", round(V0, 4), "V, V1 =", round(V1, 4), "V, Vs =", round(V2, 4), "V")
+
+# 2. Les huit codes de 000 à 111
+codes = []
+Vs = []
+for N in range(8):
+    b2, b1, b0 = N // 4, (N // 2) % 2, N % 2   # chiffres binaires de N
+    codes.append(N)
+    # Complétez : tension de sortie pour ce code
+    Vs.append(...)
+
+# 3. Graphe (déjà écrit)
+plt.plot(codes, Vs, "o", label="Vs calculée")
+plt.plot(codes, [E * N / 8 for N in codes], "--", label="E·N/8")
+plt.xlabel("code N")
+plt.ylabel("Vs (V)")
+plt.legend()
+plt.grid()
+for N in codes:
+    print(format(N, "03b"), "-&gt;", round(Vs[N], 4), "V")
+</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-10" disabled>Exécuter et vérifier</button>
+        <span id="status-10" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-10" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-10"></div>
+      <details class="solution" id="solution-10" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">    A = np.array([[2/R, -1/R, 0],
+                  [-1/R, 2.5/R, -1/R],
+                  [0, -1/R, 1.5/R]])
+    B = np.array([b0*E/(2*R), b1*E/(2*R), b2*E/(2*R)])
+    return np.linalg.solve(A, B)
+
+    Vs.append(tensions(b2, b1, b0)[2])</pre>
+          <p>Lois des nœuds (somme des courants qui partent du nœud nulle) :</p>
+          <p>• nœud 0 : <code>V0/(2R) + (V0 − b0·E)/(2R) + (V0 − V1)/R = 0</code>, soit <code>(2/R)·V0 − (1/R)·V1 + 0·V2 = b0·E/(2R)</code> ;<br>
+          • nœud 1 : <code>(V1 − b1·E)/(2R) + (V1 − V0)/R + (V1 − V2)/R = 0</code> ;<br>
+          • nœud 2 : <code>(V2 − b2·E)/(2R) + (V2 − V1)/R = 0</code> (aucun courant vers la sortie).</p>
+          <p>Le 0 de la première ligne est indispensable : <code>V2</code> n'apparaît pas au nœud 0. On peut aussi multiplier chaque équation par <code>2R</code> : <code>A = [[4, −2, 0], [−2, 5, −2], [0, −2, 3]]</code> et <code>B = [b0·E, b1·E, b2·E]</code>, à condition de multiplier les deux membres.</p>
+          <p>On obtient <code>Vs = E·N/8</code> : 0 ; 0,625 ; 1,25 ; … ; 4,375 V. La sortie est <strong>proportionnelle au nombre binaire</strong>, ce qui est exactement ce qu'on attend d'un CNA. La plus petite variation vaut <code>E/8 = 0,625 V</code>. Avec <code>n</code> bits, elle vaut <code>E/2ⁿ</code> : un CNA audio de 16 bits descend à 76 µV… mais son réseau compte 16 nœuds, et seule la résolution numérique reste raisonnable.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -1213,6 +1378,91 @@ def check_ex9(ns, err=None):
         msg += "\nTa dichotomie a fait " + str(int(n)) + " étapes ; on en attendait log2((b − a)/eps) ≈ " + str(nth) + "."
     msg += "\nLes deux modèles du cours se trompent d'un facteur 2 à 3 : on est dans le régime intermédiaire, d'où la résolution numérique."
     return rep(True, msg)
+
+def check_ex10(ns, err=None):
+    import json, math
+    import numpy as np
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+    def fr(x, d=3):
+        return format(x, "." + str(d) + "f").replace(".", ",")
+
+    if isinstance(err, SyntaxError):
+        raise err
+    E = 5.0
+    def solve_ref(b2, b1, b0, term=1.0):
+        A = np.array([[1.5 + term / 2, -1.0, 0.0], [-1.0, 2.5, -1.0], [0.0, -1.0, 1.5]])
+        B = np.array([b0, b1, b2]) * E / 2
+        return np.linalg.solve(A, B)
+    codes = [(N // 4, (N // 2) % 2, N % 2) for N in range(8)]
+    ref = [solve_ref(*c) for c in codes]
+
+    t = ns.get("tensions")
+    if not callable(t):
+        if err is not None:
+            raise err
+        return rep(False, "La fonction tensions n'est pas définie : ne modifie pas sa première ligne (def tensions(b2, b1, b0):).")
+
+    def call(c):
+        r = t(*c)
+        if r is Ellipsis:
+            raise ValueError("ELLIPSIS")
+        v = [float(x) for x in list(r)]
+        if len(v) != 3:
+            raise ValueError("LEN")
+        return v
+    try:
+        got = [call(c) for c in codes]
+    except Exception as e:
+        s = str(e)
+        if s == "ELLIPSIS":
+            return rep(False, "La fonction tensions renvoie encore « ... » : elle doit renvoyer la solution du système, np.linalg.solve(A, B).")
+        if s == "LEN":
+            return rep(False, "La fonction tensions doit renvoyer les trois potentiels [V0, V1, V2], c'est-à-dire tout le tableau X renvoyé par np.linalg.solve(A, B).")
+        if "ingular" in s:
+            return rep(False, "np.linalg.solve signale une matrice singulière : tes trois équations ne sont pas indépendantes (une ligne de A nulle, ou deux lignes proportionnelles). Revois la loi des nœuds ligne par ligne.")
+        if "Ellipsis" in s or "float()" in s or "object" in s or "dtype" in s:
+            return rep(False, "Il reste des « ... » dans A ou dans B : A doit contenir 3 lignes de 3 nombres, B doit contenir 3 nombres.")
+        return rep(False, "La fonction tensions s'arrête sur une erreur : " + type(e).__name__ + " : " + s + "\nVérifie que A est un tableau de 3 lignes de 3 nombres et B un tableau de 3 nombres.")
+
+    def close(u, v):
+        return all(abs(x - y) < 1e-6 * E for x, y in zip(u, v))
+
+    if not all(close(g, r) for g, r in zip(got, ref)):
+        if max(abs(x) for x in got[0]) > 1e-9:
+            return rep(False, "Pour le code 000, tous les interrupteurs sont à la masse : les trois potentiels doivent être nuls. Or ta fonction donne " + ", ".join(fr(x) for x in got[0]) + " V. Le vecteur B ne doit contenir que des termes proportionnels aux bits (b0·E, b1·E, b2·E…).")
+        noterm = [solve_ref(*c, term=0.0) for c in codes]
+        if all(close(g, r) for g, r in zip(got, noterm)):
+            return rep(False, "Presque : au nœud 0, tu as oublié la résistance 2R reliée à la masse, tout à gauche du réseau. Elle ajoute un terme V0/(2R) dans la loi des nœuds.")
+        swapped = [solve_ref(c[2], c[1], c[0]) for c in codes]
+        if all(close(g, r) for g, r in zip(got, swapped)):
+            return rep(False, "Presque : tu as échangé b0 et b2. Le bit b0 commande la branche du nœud 0 (à gauche), le bit b2 celle du nœud 2 (la sortie).")
+        ratios = [g[k] / r[k] for g, r in zip(got, ref) for k in range(3) if abs(r[k]) > 1e-9]
+        if ratios and max(ratios) - min(ratios) < 1e-6 * abs(ratios[0]) and abs(ratios[0] - 1) > 1e-6:
+            return rep(False, "Tes potentiels sont tous multipliés par " + format(ratios[0], ".4g").replace(".", ",") + " : A et B ne sont pas écrits avec le même facteur. Si tu multiplies une équation par 2R pour simplifier, multiplie ses deux membres.")
+        g5 = got[5]
+        return rep(False, "Pas encore correct : pour le code 101, ta fonction donne V0 = " + fr(g5[0]) + " V, V1 = " + fr(g5[1]) + " V et Vs = " + fr(g5[2]) + " V ; on attend Vs = 3,125 V.\nReprends la loi des nœuds en chaque nœud : la somme des courants (Vk − Vj)/r qui partent du nœud k est nulle. Range les termes en V0, V1, V2 à gauche et les termes en bits à droite.")
+
+    Vs = ns.get("Vs")
+    if not isinstance(Vs, list) or len(Vs) != 8:
+        if err is not None:
+            raise err
+        return rep(False, "La fonction tensions est juste. Complète maintenant la boucle : Vs.append(...) doit ajouter la tension de sortie V2 pour chaque code.")
+    if any(v is Ellipsis for v in Vs):
+        return rep(False, "La fonction tensions est juste. Il reste le « ... » de Vs.append : la tension de sortie est le dernier potentiel renvoyé, tensions(b2, b1, b0)[2].")
+    try:
+        vals = [float(v) for v in Vs]
+    except Exception:
+        return rep(False, "La liste Vs doit contenir des nombres : la tension de sortie est tensions(b2, b1, b0)[2], et non tout le tableau des trois potentiels.")
+    refs = [r[2] for r in ref]
+    if not all(abs(a - b) < 1e-6 * E for a, b in zip(vals, refs)):
+        if all(abs(a - r[0]) < 1e-6 * E for a, r in zip(vals, ref)):
+            return rep(False, "Ta liste Vs contient V0 et non la sortie : la sortie est le nœud 2, c'est-à-dire tensions(b2, b1, b0)[2].")
+        return rep(False, "La fonction tensions est juste, mais la liste Vs ne l'est pas : on attend la sortie V2 = tensions(b2, b1, b0)[2] pour chaque code.")
+    if err is not None:
+        raise err
+    return rep(True, "Correct : Vs = E·N/8 pour les huit codes (0 ; 0,625 ; 1,25 … ; 4,375 V). La tension de sortie est proportionnelle au nombre binaire : c'est un convertisseur numérique-analogique.\nUn pas de code vaut E/8 = 0,625 V, et la sortie n'atteint jamais E : le plus grand code, 111, donne 7E/8.")
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
 <script>
@@ -1465,6 +1715,14 @@ def run_student(code, ns, limit=500000):
       stars: 2,
       packages: ['numpy', 'scipy', 'matplotlib'],
       pyCheck: 'check_ex9',
+      figures: true
+    },
+    {
+      n: 10,
+      title: "Exercice 10 — Convertisseur numérique-analogique R-2R (système linéaire, solve)",
+      stars: 2,
+      packages: ['numpy', 'matplotlib'],
+      pyCheck: 'check_ex10',
       figures: true
     }
   ];
