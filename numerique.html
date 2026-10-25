@@ -28,7 +28,13 @@
   .parcours th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.8rem; padding: 4px 8px; border-bottom: 1px solid var(--border); }
   .parcours td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
   .parcours tr:last-child td { border-bottom: none; }
-  .parcours .quand { display: block; color: var(--muted); font-size: 0.8rem; }
+  .parcours .quand { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 400; }
+  .parcours td.qnum { white-space: nowrap; }
+  .parcours .theme { color: var(--muted); font-size: 0.82rem; }
+  .parcours .item { white-space: nowrap; }
+  .parcours tr.en-cours td { background: var(--accent-soft); }
+  .parcours .en-cours-lbl { color: var(--accent); font-weight: 600; }
+  .parcours tr.choisie td.qnum { box-shadow: inset 3px 0 0 var(--accent); }
   .parcours a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); cursor: pointer; white-space: nowrap; }
   .parcours a.done::after { content: " ✓"; color: #2f6b3a; }
   .parcours .vide { color: var(--muted); }
@@ -38,9 +44,12 @@
     .parcours tr:last-child { border-bottom: none; }
     .parcours td { display: block; border: none; padding: 2px 0; }
     .parcours td.cell-vide { display: none; }
+    .parcours td br { display: none; }
+    .parcours .item { display: inline-block; margin-right: 10px; }
     .parcours td[data-lbl]::before { content: attr(data-lbl) " : "; color: var(--muted); font-size: 0.8rem; }
   }
-  .chap-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+  .chap-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 16px; }
+  .chap-filter-lbl { font-size: 0.85rem; color: var(--muted); margin-right: 2px; }
   .chap-filter button { font: inherit; font-size: 0.85rem; padding: 4px 10px; border: 1px solid var(--border); background: #ffffff; color: var(--ink); cursor: pointer; }
   .chap-filter button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #ffffff; }
   .chap-tag { display: inline-block; font-size: 0.72rem; font-weight: 500; color: var(--accent); background: var(--accent-soft); border: 1px solid var(--border); padding: 0 6px; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
@@ -96,11 +105,11 @@
 
     <section id="parcours" class="parcours" aria-labelledby="parcours-title">
       <h3 id="parcours-title">Parcours de l'année</h3>
-      <p class="parcours-intro">Les rappels et exercices sont rangés par outil numérique. Ce tableau indique ce qu'il faut faire au fil des chapitres de physique.</p>
+      <p class="parcours-intro">Plus bas, les rappels et exercices sont rangés par outil numérique. Ce tableau dit quoi faire, quinzaine par quinzaine. Le thème physique de chaque exercice est indiqué entre parenthèses : certains reprennent la 1re année.</p>
       <div id="parcours-table"></div>
     </section>
 
-    <div id="chap-filter" class="chap-filter" role="group" aria-label="Afficher les rappels et exercices d'un chapitre"></div>
+    <div id="chap-filter" class="chap-filter" role="group" aria-label="Afficher les rappels et exercices d'une quinzaine"></div>
 
     <details class="course accordion" data-rappel="matplotlib">
       <summary>Rappel de cours — tracer des courbes avec matplotlib</summary>
@@ -2541,33 +2550,38 @@ def run_student(code, ns, limit=500000):
 
 <script>
 /* ==== Parcours de l'année : À METTRE À JOUR CHAQUE ANNÉE (seul endroit à modifier) ====
-   court     : nom court (bouton de filtre)
-   quand     : période, facultatif (ex. "sept.", "semaines 3-5") ; laisser '' si inutile
-   rappels   : clés des rappels (euler, odeint, matplotlib, dichotomie, solve, rectangles, derivee)
+   debut     : date de début de la quinzaine, au format 'AAAA-MM-JJ' (facultatif).
+               Si les dates sont remplies, la quinzaine en cours est mise en évidence.
+   cours     : ce qui est traité en cours de physique pendant la quinzaine
+   rappels   : clés des rappels (matplotlib, euler, odeint, dichotomie, solve, rectangles, derivee)
    exercices : numéros des exercices de la page
-   td        : questions Python sur papier dans le TD du chapitre                           */
+   td        : question Python sur papier dans le TD                                       */
 var PARCOURS = [
-  { key: 'c1', label: 'Ch. 1 · Filtrage', court: 'Filtrage', quand: '', rappels: ['matplotlib', 'euler'], exercices: [1, 2, 3, 5],
-    td: 'méthode des rectangles (valeur efficace)' },
-  { key: 'c2', label: 'Ch. 2 · Moment cinétique', court: 'Moment cinétique', quand: '', rappels: [], exercices: [],
-    td: 'dérivée numérique (palet)' },
-  { key: 'c3', label: "Ch. 3 · Mouvement d'un solide", court: 'Solides', quand: '', rappels: ['euler', 'odeint'], exercices: [4, 6, 7, 8],
-    td: 'méthode des rectangles' },
-  { key: 'c45', label: 'Ch. 4-5 · Fluides', court: 'Fluides', quand: '', rappels: ['rectangles', 'derivee', 'solve'], exercices: [10, 11, 12],
-    td: 'numpy.linalg.solve (réseau microfluidique)' },
-  { key: 'c6', label: "Ch. 6 · Écoulement autour d'un obstacle", court: 'Obstacle', quand: '', rappels: ['dichotomie'], exercices: [9],
-    td: '' },
-  { key: 'thermo', label: 'Second principe', court: 'Second principe', quand: '', rappels: [], exercices: [],
-    td: 'Monte-Carlo (incertitude sur une efficacité)' },
-  { key: 'elec', label: 'Électrostatique', court: 'Électrostatique', quand: '', rappels: [], exercices: [],
-    td: 'superposition (chaîne de charges)' }
+  { debut: '', cours: 'Reprises de 1re année', rappels: ['matplotlib', 'euler'], exercices: [1, 2, 3], td: '' },
+  { debut: '', cours: 'Ch. 1 · Filtrage', rappels: ['solve', 'rectangles'], exercices: [5, 10], td: 'méthode des rectangles (valeur efficace)' },
+  { debut: '', cours: 'Ch. 2 · Moment cinétique', rappels: ['derivee'], exercices: [], td: 'dérivée numérique (palet)' },
+  { debut: '', cours: "Ch. 3 · Mouvement d'un solide", rappels: ['odeint'], exercices: [4, 6], td: 'méthode des rectangles' },
+  { debut: '', cours: "Ch. 3 · Mouvement d'un solide (suite)", rappels: [], exercices: [7, 8], td: '' },
+  { debut: '', cours: 'Ch. 4-5 · Fluides', rappels: [], exercices: [11, 12], td: 'numpy.linalg.solve (réseau microfluidique)' },
+  { debut: '', cours: "Ch. 6 · Écoulement autour d'un obstacle", rappels: ['dichotomie'], exercices: [9], td: '' },
+  { debut: '', cours: 'Second principe', rappels: [], exercices: [], td: 'Monte-Carlo (incertitude sur une efficacité)' },
+  { debut: '', cours: 'Électrostatique', rappels: [], exercices: [], td: 'superposition (chaîne de charges)' }
 ];
-var TOUJOURS = ['matplotlib'];   // rappels affichés quel que soit le chapitre choisi
+/* Thème physique de chaque exercice (affiché à côté de son titre) */
+var THEMES = {
+  1: 'Mécanique · 1re année', 2: 'Électricité · 1re année', 3: 'Thermique · 1re année',
+  4: 'Solides', 5: 'Filtrage', 6: 'Solides', 7: 'Solides', 8: 'Solides',
+  9: 'Fluides', 10: 'Électricité', 11: 'Fluides', 12: 'Fluides'
+};
+var TOUJOURS = ['matplotlib'];   // rappels affichés quelle que soit la quinzaine choisie
 /* ==== fin de la partie à mettre à jour ==== */
 
 (function () {
+  // rappel dont chaque exercice a besoin (affiché avec lui quand on filtre)
+  var BESOIN = { 1: 'euler', 2: 'euler', 3: 'euler', 4: 'euler', 5: 'euler', 6: 'odeint', 7: 'odeint',
+                 8: 'matplotlib', 9: 'dichotomie', 10: 'solve', 11: 'rectangles', 12: 'derivee' };
   var NOMS = { euler: 'Euler', odeint: 'odeint', matplotlib: 'matplotlib', dichotomie: 'dichotomie',
-               solve: 'solve', rectangles: 'rectangles', derivee: 'dérivée' };
+               solve: 'solve', rectangles: 'rectangles', derivee: 'dérivée numérique' };
   function exDetails(n) {
     var ta = document.getElementById('code-' + n);
     return ta ? ta.closest('details.exercise') : null;
@@ -2576,50 +2590,68 @@ var TOUJOURS = ['matplotlib'];   // rappels affichés quel que soit le chapitre 
   function stars() {
     try { return JSON.parse(localStorage.getItem('tpc_stars') || '{}') || {}; } catch (e) { return {}; }
   }
-  var avecContenu = PARCOURS.filter(function (c) { return c.rappels.length || c.exercices.length; });
-
-  // étiquette de chapitre sur chaque exercice
-  PARCOURS.forEach(function (c) {
-    c.exercices.forEach(function (n) {
-      var d = exDetails(n); if (!d) { return; }
-      var sum = d.querySelector('summary'); if (!sum || sum.querySelector('.chap-tag')) { return; }
-      var tag = document.createElement('span');
-      tag.className = 'chap-tag';
-      tag.textContent = c.label.split(' · ')[0] + ' · ' + c.court;
-      tag.title = c.label;
-      var st = sum.querySelector('.exercise-stars');
-      sum.insertBefore(tag, st || null);
-    });
+  PARCOURS.forEach(function (q, i) { q.num = i + 1; });
+  function quinzaineDe(n) {
+    for (var i = 0; i < PARCOURS.length; i++) { if (PARCOURS[i].exercices.indexOf(n) >= 0) { return PARCOURS[i].num; } }
+    return null;
+  }
+  function frDate(iso) {
+    var p = iso.split('-'); if (p.length !== 3) { return iso; }
+    return parseInt(p[2], 10) + '/' + p[1];
+  }
+  // quinzaine en cours (seulement si les dates sont remplies)
+  var enCours = null;
+  var auj = new Date(); auj.setHours(0, 0, 0, 0);
+  PARCOURS.forEach(function (q) {
+    if (q.debut) { var d = new Date(q.debut + 'T00:00:00'); if (!isNaN(d) && d <= auj) { enCours = q.num; } }
   });
 
-  // filtre
+  // étiquette « Q3 · Solides » sur chaque exercice
+  Object.keys(THEMES).forEach(function (k) {
+    var n = parseInt(k, 10), d = exDetails(n); if (!d) { return; }
+    var sum = d.querySelector('summary'); if (!sum || sum.querySelector('.chap-tag')) { return; }
+    var q = quinzaineDe(n);
+    var tag = document.createElement('span');
+    tag.className = 'chap-tag';
+    tag.textContent = (q ? 'Q' + q + ' · ' : '') + THEMES[n];
+    tag.title = q ? 'Quinzaine ' + q + ' du parcours' : '';
+    sum.insertBefore(tag, sum.querySelector('.exercise-stars') || null);
+  });
+
+  // filtre par quinzaine
   var bar = document.getElementById('chap-filter');
-  var actuel = 'tout';
+  var avecContenu = PARCOURS.filter(function (q) { return q.rappels.length || q.exercices.length; });
   function appliquer(key) {
-    actuel = key;
-    var c = PARCOURS.filter(function (x) { return x.key === key; })[0];
+    var q = key === 'tout' ? null : PARCOURS[parseInt(key, 10) - 1];
     document.querySelectorAll('details.exercise').forEach(function (d) {
-      if (!c) { d.hidden = false; return; }
-      var ok = c.exercices.some(function (n) { return exDetails(n) === d; });
-      d.hidden = !ok;
+      d.hidden = !!q && !q.exercices.some(function (n) { return exDetails(n) === d; });
     });
     document.querySelectorAll('details.course[data-rappel]').forEach(function (d) {
       var k = d.getAttribute('data-rappel');
-      d.hidden = !!c && c.rappels.indexOf(k) < 0 && TOUJOURS.indexOf(k) < 0;
+      var utile = !!q && q.exercices.some(function (n) { return BESOIN[n] === k; });
+      d.hidden = !!q && !utile && q.rappels.indexOf(k) < 0 && TOUJOURS.indexOf(k) < 0;
     });
     bar.querySelectorAll('button').forEach(function (b) {
-      b.setAttribute('aria-pressed', b.getAttribute('data-key') === key ? 'true' : 'false');
+      b.setAttribute('aria-pressed', b.getAttribute('data-key') === String(key) ? 'true' : 'false');
     });
-    try { localStorage.setItem('tpc_chap_filter', key); } catch (e) {}
+    document.querySelectorAll('#parcours-table tbody tr').forEach(function (tr) {
+      tr.classList.toggle('choisie', tr.getAttribute('data-q') === String(key));
+    });
+    try { localStorage.setItem('tpc_q_filter', String(key)); } catch (e) {}
   }
-  function bouton(key, txt) {
+  function bouton(key, txt, titre) {
     var b = document.createElement('button');
-    b.type = 'button'; b.textContent = txt; b.setAttribute('data-key', key);
+    b.type = 'button'; b.textContent = txt; b.setAttribute('data-key', String(key));
+    if (titre) { b.title = titre; }
     b.addEventListener('click', function () { appliquer(key); });
     bar.appendChild(b);
   }
-  bouton('tout', 'Tout afficher');
-  avecContenu.forEach(function (c) { bouton(c.key, c.court); });
+  var lab = document.createElement('span'); lab.className = 'chap-filter-lbl'; lab.textContent = 'Afficher :';
+  bar.appendChild(lab);
+  bouton('tout', 'Tout');
+  avecContenu.forEach(function (q) {
+    bouton(q.num, 'Q' + q.num + (q.num === enCours ? ' •' : ''), q.cours + (q.num === enCours ? ' (en cours)' : ''));
+  });
 
   // tableau du parcours
   function ouvrir(d) {
@@ -2628,51 +2660,59 @@ var TOUJOURS = ['matplotlib'];   // rappels affichés quel que soit le chapitre 
     d.open = true;
     d.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  function lien(txt, d, fait) {
+  function lien(txt, d, fait, suffixe) {
+    var span = document.createElement('span'); span.className = 'item';
     var a = document.createElement('a');
     a.textContent = txt; a.tabIndex = 0;
     if (fait) { a.className = 'done'; a.title = 'Exercice réussi'; }
     a.addEventListener('click', function () { ouvrir(d); });
     a.addEventListener('keydown', function (e) { if (e.key === 'Enter') { ouvrir(d); } });
-    return a;
+    span.appendChild(a);
+    if (suffixe) { var s = document.createElement('span'); s.className = 'theme'; s.textContent = ' (' + suffixe + ')'; span.appendChild(s); }
+    return span;
   }
   function cellule(tr, lbl, remplir) {
     var td = document.createElement('td'); td.setAttribute('data-lbl', lbl);
     remplir(td); tr.appendChild(td);
   }
-  function liste(td, items) {
+  function liste(td, items, sep) {
     if (!items.length) { var v = document.createElement('span'); v.className = 'vide'; v.textContent = '—'; td.appendChild(v); td.classList.add('cell-vide'); return; }
-    items.forEach(function (el, i) { if (i) { td.appendChild(document.createTextNode(', ')); } td.appendChild(el); });
+    items.forEach(function (el, i) { if (i) { td.appendChild(sep === 'br' ? document.createElement('br') : document.createTextNode(', ')); } td.appendChild(el); });
   }
   function dessiner() {
     var box = document.getElementById('parcours-table'); box.innerHTML = '';
     var st = stars();
     var t = document.createElement('table');
-    t.innerHTML = '<thead><tr><th>Chapitre</th><th>Rappels</th><th>Exercices</th><th>En TD (sur papier)</th></tr></thead>';
+    t.innerHTML = '<thead><tr><th>Quinzaine</th><th>En cours de physique</th><th>Rappels</th><th>Exercices</th><th>En TD (sur papier)</th></tr></thead>';
     var tb = document.createElement('tbody');
-    PARCOURS.forEach(function (c) {
-      var tr = document.createElement('tr');
-      var th = document.createElement('td');
-      var strong = document.createElement('strong'); strong.textContent = c.label; th.appendChild(strong);
-      if (c.quand) { var q = document.createElement('span'); q.className = 'quand'; q.textContent = c.quand; th.appendChild(q); }
-      tr.appendChild(th);
-      cellule(tr, 'Rappels', function (td) { liste(td, c.rappels.map(function (k) { return lien(NOMS[k] || k, rappelDetails(k)); })); });
-      cellule(tr, 'Exercices', function (td) { liste(td, c.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n]); })); });
-      cellule(tr, 'En TD', function (td) { if (c.td) { td.textContent = c.td; } else { liste(td, []); } });
+    PARCOURS.forEach(function (q) {
+      var tr = document.createElement('tr'); tr.setAttribute('data-q', String(q.num));
+      if (q.num === enCours) { tr.className = 'en-cours'; }
+      var c0 = document.createElement('td'); c0.className = 'qnum';
+      var b = document.createElement('strong'); b.textContent = 'Q' + q.num; c0.appendChild(b);
+      if (q.debut) { var dd = document.createElement('span'); dd.className = 'quand'; dd.textContent = 'dès le ' + frDate(q.debut); c0.appendChild(dd); }
+      if (q.num === enCours) { var ec = document.createElement('span'); ec.className = 'quand en-cours-lbl'; ec.textContent = 'en cours'; c0.appendChild(ec); }
+      tr.appendChild(c0);
+      cellule(tr, 'Cours', function (td) { td.textContent = q.cours; });
+      cellule(tr, 'Rappels', function (td) { liste(td, q.rappels.map(function (k) { return lien(NOMS[k] || k, rappelDetails(k)); })); });
+      cellule(tr, 'Exercices', function (td) { liste(td, q.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n], (THEMES[n] || '').toLowerCase()); }), 'br'); });
+      cellule(tr, 'En TD', function (td) { if (q.td) { td.textContent = q.td; } else { liste(td, []); } });
       tb.appendChild(tr);
     });
     t.appendChild(tb); box.appendChild(t);
   }
   dessiner();
-  // mise à jour des coches après une exécution réussie
   document.addEventListener('click', function (e) {
-    if (e.target && /^run-\d+$/.test(e.target.id || '')) { setTimeout(dessiner, 4000); setTimeout(dessiner, 12000); }
+    if (e.target && /^run-\d+$/.test(e.target.id || '')) { setTimeout(rafraichir, 4000); setTimeout(rafraichir, 12000); }
   });
+  var actuel = 'tout';
+  function rafraichir() { dessiner(); appliquer(actuel); }
 
-  var init = 'tout';
-  try { init = localStorage.getItem('tpc_chap_filter') || 'tout'; } catch (e) {}
-  if (init !== 'tout' && !avecContenu.some(function (c) { return c.key === init; })) { init = 'tout'; }
-  appliquer(init);
+  try { actuel = localStorage.getItem('tpc_q_filter') || 'tout'; } catch (e) {}
+  if (actuel !== 'tout' && !avecContenu.some(function (q) { return String(q.num) === actuel; })) { actuel = 'tout'; }
+  var appliquerBase = appliquer;
+  appliquer = function (k) { actuel = String(k); appliquerBase(k); };
+  appliquer(actuel);
 })();
 </script>
 </body>
