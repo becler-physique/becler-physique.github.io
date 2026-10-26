@@ -103,12 +103,188 @@
 
     <section id="parcours" class="parcours" aria-labelledby="parcours-title">
       <h3 id="parcours-title">Parcours de l'année</h3>
-      <p class="parcours-intro">Ce qu'il faut faire, semaine par semaine. Clique sur un rappel ou un exercice pour l'ouvrir ; le thème physique de chaque exercice est indiqué entre parenthèses.</p>
+      <p class="parcours-intro">Chaque semaine : on lit un rappel de cours, puis on fait les exercices qui l'appliquent. Clique sur un rappel ou un exercice pour l'ouvrir ; le thème physique de chaque exercice est indiqué entre parenthèses.</p>
       <div id="parcours-table"></div>
     </section>
 
 
     <h3 class="part-title">Rappels de cours</h3>
+
+    <details class="course accordion" data-rappel="euler">
+      <summary>Rappel de cours — la méthode d'Euler explicite</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À résoudre numériquement une équation différentielle du premier ordre, quand on ne sait pas la résoudre à la main :</p>
+      <p class="formula">dy/dt = f(y) &nbsp;&nbsp; avec &nbsp;&nbsp; y(0) = y<sub>0</sub></p>
+
+      <p><strong>L'idée.</strong> On découpe le temps en petits pas de durée <code>dt</code>. Sur un pas très court, la courbe <code>y(t)</code> ressemble à sa tangente. On avance donc en ligne droite, dans la direction donnée par la pente <code>dy/dt = f(y)</code> :</p>
+      <p class="formula">y<sub>n+1</sub> = y<sub>n</sub> + f(y<sub>n</sub>) · dt</p>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 520 300" role="img" aria-label="Un pas de la méthode d'Euler : on part du point (t_n, y_n) et on suit la tangente sur une durée dt, ce qui donne y_(n+1), légèrement écarté de la solution exacte.">
+          <defs>
+            <marker id="fig-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" class="fig-head"/>
+            </marker>
+          </defs>
+          <line class="axis" x1="50" y1="240" x2="510" y2="240" marker-end="url(#fig-arrow)"/>
+          <line class="axis" x1="50" y1="240" x2="50" y2="22" marker-end="url(#fig-arrow)"/>
+          <text x="508" y="256">t</text>
+          <text x="34" y="30">y</text>
+
+          <polyline class="exact" points="50.0,40.0 61.0,49.8 72.0,59.0 83.0,67.9 94.0,76.3 105.0,84.2 116.0,91.8 127.0,99.1 138.0,105.9 149.0,112.5 160.0,118.7 171.0,124.6 182.0,130.2 193.0,135.6 204.0,140.7 215.0,145.5 226.0,150.1 237.0,154.5 248.0,158.7 259.0,162.7 270.0,166.4 281.0,170.0 292.0,173.4 303.0,176.7 314.0,179.8 325.0,182.7 336.0,185.5 347.0,188.2 358.0,190.7 369.0,193.1 380.0,195.4 391.0,197.6 402.0,199.6 413.0,201.6 424.0,203.5 435.0,205.2 446.0,206.9 457.0,208.6 468.0,210.1 479.0,211.5 490.0,212.9"/>
+          <text class="lab-exact" x="112" y="52">solution exacte</text>
+
+          <line class="guide" x1="182.0" y1="240" x2="182.0" y2="130.2"/>
+          <line class="guide" x1="358.0" y1="240" x2="358.0" y2="190.7"/>
+          <line class="tangent" x1="182.0" y1="130.2" x2="358.0" y2="218.0"/>
+
+          <circle class="pt-exact" cx="358.0" cy="190.7" r="4.5"/>
+          <circle class="pt-euler" cx="182.0" cy="130.2" r="4.5"/>
+          <circle class="pt-euler" cx="358.0" cy="218.0" r="4.5"/>
+
+          <text x="172" y="152" text-anchor="end">y<tspan dy="4" font-size="10">n</tspan></text>
+          <text class="lab-tan" x="192" y="224">tangente : pente f(y<tspan dy="4" font-size="10">n</tspan><tspan dy="-4">)</tspan></text>
+          <text x="370.0" y="223.0">y<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4"> (Euler)</tspan></text>
+          <text class="lab-exact" x="345" y="171">valeur exacte y(t<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4">)</tspan></text>
+
+          <line class="tick" x1="182.0" y1="236" x2="182.0" y2="244"/>
+          <line class="tick" x1="358.0" y1="236" x2="358.0" y2="244"/>
+          <text x="182.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n</tspan></text>
+          <text x="358.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n+1</tspan></text>
+
+          <line class="tick" x1="182.0" y1="270" x2="358.0" y2="270" marker-start="url(#fig-arrow)" marker-end="url(#fig-arrow)"/>
+          <text x="270.0" y="290" text-anchor="middle">dt</text>
+        </svg>
+        <figcaption>Un pas d'Euler : on part de <code>y<sub>n</sub></code> et on suit la tangente pendant <code>dt</code>. On arrive en <code>y<sub>n+1</sub></code>, un peu à côté de la solution exacte (ici l'écart est exagéré par un grand pas).</figcaption>
+      </figure>
+
+      <p><strong>L'algorithme.</strong></p>
+      <ol>
+        <li>On part de la condition initiale <code>y<sub>0</sub></code>.</li>
+        <li>On calcule la pente <code>f(y)</code> avec la valeur actuelle de <code>y</code>.</li>
+        <li>On avance d'un pas : <code>y</code> devient <code>y + pente × dt</code>.</li>
+        <li>On recommence autant de fois qu'il y a de pas de temps : c'est une boucle <code>for</code>.</li>
+      </ol>
+      <pre class="course-code">y = y0                  # condition initiale
+for i in range(n):      # n pas de temps
+    pente = f(y)        # dy/dt avec la valeur actuelle de y
+    y = y + pente * dt  # on avance le long de la tangente</pre>
+
+      <p><strong>Un exemple à la main.</strong> Pour <code>dy/dt = −y</code> avec <code>y(0) = 1</code> et <code>dt = 0,1</code> :</p>
+      <p class="formula">y<sub>1</sub> = 1 + (−1) × 0,1 = 0,9 &nbsp;&nbsp;&nbsp; y<sub>2</sub> = 0,9 + (−0,9) × 0,1 = 0,81</p>
+      <p>La valeur exacte est <code>y(0,2) = e<sup>−0,2</sup> ≈ 0,819</code> : l'écart est petit, mais bien réel.</p>
+
+      <p><strong>Précision.</strong> Plus <code>dt</code> est petit, plus le résultat est précis, mais plus il faut de pas. Avec Euler, diviser <code>dt</code> par 10 divise l'erreur par 10 environ.</p>
+
+      <p><strong>Exercices 1 à 5.</strong> Dans l'exercice 1, l'inconnue est la vitesse <code>v</code> de la bille. À toi d'identifier la fonction <code>f(v)</code> à partir de l'équation du mouvement.</p>
+      </div>
+    </details>
+
+    <details class="course accordion" data-rappel="solve">
+      <summary>Rappel de cours — systèmes linéaires et numpy.linalg.solve</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À résoudre un système de <code>n</code> équations linéaires indépendantes à <code>n</code> inconnues : lois des nœuds d'un circuit, réseau de résistances hydrauliques… À la main, c'est pénible dès trois inconnues.</p>
+
+      <p><strong>L'idée.</strong> On écrit le système sous forme matricielle :</p>
+      <p class="formula">A X = B</p>
+      <ul>
+        <li><code>X</code> : les <code>n</code> inconnues, rangées dans un ordre choisi une fois pour toutes ;</li>
+        <li><code>A</code> : la matrice <code>n × n</code> des coefficients. Ligne <code>i</code> = équation <code>i</code> ; colonne <code>j</code> = coefficient de l'inconnue <code>j</code> (0 si elle n'apparaît pas) ;</li>
+        <li><code>B</code> : les <code>n</code> seconds membres, c'est-à-dire les termes sans inconnue.</li>
+      </ul>
+
+      <figure>
+        <svg class="fig" viewBox="0 0 420 125" role="img" aria-label="Le système 2x + y = 5, x − y = 1 s'écrit AX = B : la ligne i de A contient les coefficients de l'équation i, la colonne j ceux de l'inconnue j.">
+<defs><marker id="fig-arrow-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fig-head"/></marker></defs>
+<text x="6" y="50" style="font-size:17px"><tspan class="lab-tan">2x</tspan> + <tspan class="lab-exact">y</tspan> = 5</text>
+<text x="6" y="90" style="font-size:17px"><tspan class="lab-tan">x</tspan> − <tspan class="lab-exact">y</tspan> = 1</text>
+<line class="axis" x1="104" y1="64" x2="136" y2="64" marker-end="url(#fig-arrow-s)"/>
+<text x="162" y="70" text-anchor="middle" style="font-size:17px">A =</text>
+<polyline class="axis" points="190,34 184,34 184,98 190,98"/>
+<text x="204" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">2</text>
+<text x="204" y="90" text-anchor="middle" style="font-size:17px" class="lab-tan">1</text>
+<text x="240" y="56" text-anchor="middle" style="font-size:17px" class="lab-exact">1</text>
+<text x="240" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">−1</text>
+<polyline class="axis" points="258,34 264,34 264,98 258,98"/>
+<text x="292" y="70" text-anchor="middle" style="font-size:17px">X =</text>
+<polyline class="axis" points="318,34 312,34 312,98 318,98"/>
+<text x="326" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">x</text>
+<text x="326" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">y</text>
+<polyline class="axis" points="334,34 340,34 340,98 334,98"/>
+<text x="368" y="70" text-anchor="middle" style="font-size:17px">B =</text>
+<polyline class="axis" points="394,34 388,34 388,98 394,98"/>
+<text x="401" y="56" text-anchor="middle" style="font-size:17px">5</text>
+<text x="401" y="90" text-anchor="middle" style="font-size:17px">1</text>
+<polyline class="axis" points="408,34 414,34 414,98 408,98"/>
+<text x="222" y="120" text-anchor="middle" class="lab-tan" style="font-size:14px">colonne de x</text>
+</svg>
+        <figcaption>Le système, écrit avec les inconnues à gauche dans l'ordre (x, y), se lit directement ligne par ligne.</figcaption>
+      </figure>
+
+      <p><strong>La méthode.</strong></p>
+      <ol>
+        <li>Écrire chaque équation avec toutes les inconnues à gauche, toujours dans le même ordre, et les termes connus à droite.</li>
+        <li>Recopier les coefficients ligne par ligne dans <code>A</code>, sans oublier les 0, et les seconds membres dans <code>B</code>.</li>
+        <li>Appeler <code>solve</code>.</li>
+      </ol>
+      <pre class="course-code">import numpy as np
+A = np.array([[2, 1],         # 2x + y = 5
+              [1, -1]])       #  x − y = 1
+B = np.array([5, 1])
+x, y = np.linalg.solve(A, B)  # x = 2.0 et y = 1.0</pre>
+
+      <p><strong>Spécification (fournie au concours).</strong> <code>np.linalg.solve(A, B)</code> renvoie le tableau <code>X</code> tel que <code>AX = B</code>, où <code>A</code> est un tableau carré <code>n × n</code> et <code>B</code> un tableau de <code>n</code> nombres. Si les équations ne sont pas indépendantes, il n'y a pas de solution unique : erreur <code>LinAlgError: Singular matrix</code>.</p>
+
+      <p><strong>Pièges.</strong> Un 0 oublié, une erreur de signe en passant un terme d'un côté à l'autre, ou une équation de trop qui se déduit des autres (la matrice devient singulière). On vérifie en reportant la solution dans une équation : <code>2 × 2 + 1 = 5</code>.</p>
+
+      <p><strong>Exercice 6.</strong> Les inconnues sont les potentiels des nœuds d'un circuit. À toi d'écrire la loi des nœuds en chaque nœud, puis de la ranger sous la forme <code>AX = B</code>.</p>
+      </div>
+    </details>
+
+    <details class="course accordion" data-rappel="odeint">
+      <summary>Rappel de cours — systèmes différentiels et odeint</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> Euler, tel que vous allez l'utiliser dans les cinq premiers exercices, ne traite que les équations <strong>d'ordre 1</strong> (une seule dérivée). Beaucoup de situations physiques — un pendule, un oscillateur — sont pourtant régies par des équations <strong>d'ordre 2 ou plus</strong> (elles contiennent une dérivée seconde, voire davantage). On transforme alors l'équation d'ordre <code>n</code> en un <strong>système de <code>n</code> équations d'ordre 1</strong>, que l'on résout avec une fonction toute prête de Python : <code>odeint</code>.</p>
+
+      <p><strong>L'idée : transformer.</strong> Pour une équation d'ordre 2 du type <code>x'' = f(x, x', t)</code>, on introduit une nouvelle inconnue <code>y = x'</code>. L'équation d'ordre 2 devient alors un système de deux équations d'ordre 1 :</p>
+      <p class="formula">x' = y &nbsp;&nbsp;&nbsp; y' = f(x, y, t)</p>
+      <p>Chaque dérivée seconde « coûte » ainsi une variable supplémentaire : une équation d'ordre 2 donne un système de 2 équations, une équation d'ordre 3 un système de 3 équations, etc.</p>
+
+      <p><strong>Un exemple de transformation.</strong> Pour un pendule pesant, <code>J·θ'' = −M·g·d·sin(θ)</code> (moment d'inertie <code>J</code>, masse <code>M</code>, distance <code>d</code> de l'axe au centre de masse), on pose <code>ω = θ'</code> :</p>
+      <p class="formula">θ' = ω &nbsp;&nbsp;&nbsp; ω' = −(Mgd/J)·sin(θ)</p>
+
+      <p><strong>Utiliser odeint.</strong> Plutôt que de coder soi-même la boucle d'Euler sur ce système, on peut appeler <code>odeint</code>, qui est à la fois plus précis (elle ajuste automatiquement son pas de temps) et plus rapide. Trois étapes :</p>
+      <ol>
+        <li>Écrire une fonction qui renvoie le vecteur des dérivées, à partir de l'état actuel et du temps.</li>
+        <li>Définir les instants auxquels on veut connaître la solution.</li>
+        <li>Appeler <code>odeint</code> avec cette fonction, l'état initial, et ces instants.</li>
+      </ol>
+      <pre class="course-code">from scipy.integrate import odeint
+import numpy as np
+
+omega0 = 2.0  # pulsation propre (rad/s)
+
+def derivees(Y, t):
+    y1, y2 = Y              # y1 = x, y2 = x'
+    dy1_dt = y2
+    dy2_dt = -omega0**2 * y1
+    return [dy1_dt, dy2_dt]
+
+Y0 = [1.0, 0.0]                 # x(0) = 1, x'(0) = 0
+t = np.linspace(0, 10, 1000)    # instants auxquels on veut la solution
+
+solution = odeint(derivees, Y0, t)
+x = solution[:, 0]   # x(t)  : première colonne
+v = solution[:, 1]   # x'(t) : deuxième colonne</pre>
+
+      <p><strong>Pourquoi pas Euler « à la main » ?</strong> Le principe est le même (avancer pas à pas), mais <code>odeint</code> utilise une méthode bien plus précise qu'Euler à pas constant, avec un pas ajusté automatiquement. En pratique, on code soi-même la boucle d'Euler pour comprendre le principe ; dès qu'une bibliothèque est disponible, on utilise plutôt <code>odeint</code>.</p>
+
+      <p><strong>Exercices 7 et 8.</strong> Il faudra identifier le système d'équations d'ordre 1 à partir de l'équation physique, écrire la fonction <code>derivees</code>, puis appeler <code>odeint</code> avec les bonnes conditions initiales.</p>
+      </div>
+    </details>
 
     <details class="course accordion" data-rappel="matplotlib">
       <summary>Rappel de cours — tracer des courbes avec matplotlib</summary>
@@ -213,182 +389,6 @@ plt.show()</textarea>
       </ol>
 
       <p><strong>Pour les exercices.</strong> Presque tous les exercices de la page tracent des courbes. L'exercice 9 réunit les trois situations : courbes de fonctions du temps, courbe paramétrée et nuage de points comparé à une formule.</p>
-      </div>
-    </details>
-
-    <details class="course accordion" data-rappel="euler">
-      <summary>Rappel de cours — la méthode d'Euler explicite</summary>
-      <div class="accordion-body">
-
-      <p><strong>À quoi ça sert ?</strong> À résoudre numériquement une équation différentielle du premier ordre, quand on ne sait pas la résoudre à la main :</p>
-      <p class="formula">dy/dt = f(y) &nbsp;&nbsp; avec &nbsp;&nbsp; y(0) = y<sub>0</sub></p>
-
-      <p><strong>L'idée.</strong> On découpe le temps en petits pas de durée <code>dt</code>. Sur un pas très court, la courbe <code>y(t)</code> ressemble à sa tangente. On avance donc en ligne droite, dans la direction donnée par la pente <code>dy/dt = f(y)</code> :</p>
-      <p class="formula">y<sub>n+1</sub> = y<sub>n</sub> + f(y<sub>n</sub>) · dt</p>
-
-      <figure>
-        <svg class="fig" viewBox="0 0 520 300" role="img" aria-label="Un pas de la méthode d'Euler : on part du point (t_n, y_n) et on suit la tangente sur une durée dt, ce qui donne y_(n+1), légèrement écarté de la solution exacte.">
-          <defs>
-            <marker id="fig-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" class="fig-head"/>
-            </marker>
-          </defs>
-          <line class="axis" x1="50" y1="240" x2="510" y2="240" marker-end="url(#fig-arrow)"/>
-          <line class="axis" x1="50" y1="240" x2="50" y2="22" marker-end="url(#fig-arrow)"/>
-          <text x="508" y="256">t</text>
-          <text x="34" y="30">y</text>
-
-          <polyline class="exact" points="50.0,40.0 61.0,49.8 72.0,59.0 83.0,67.9 94.0,76.3 105.0,84.2 116.0,91.8 127.0,99.1 138.0,105.9 149.0,112.5 160.0,118.7 171.0,124.6 182.0,130.2 193.0,135.6 204.0,140.7 215.0,145.5 226.0,150.1 237.0,154.5 248.0,158.7 259.0,162.7 270.0,166.4 281.0,170.0 292.0,173.4 303.0,176.7 314.0,179.8 325.0,182.7 336.0,185.5 347.0,188.2 358.0,190.7 369.0,193.1 380.0,195.4 391.0,197.6 402.0,199.6 413.0,201.6 424.0,203.5 435.0,205.2 446.0,206.9 457.0,208.6 468.0,210.1 479.0,211.5 490.0,212.9"/>
-          <text class="lab-exact" x="112" y="52">solution exacte</text>
-
-          <line class="guide" x1="182.0" y1="240" x2="182.0" y2="130.2"/>
-          <line class="guide" x1="358.0" y1="240" x2="358.0" y2="190.7"/>
-          <line class="tangent" x1="182.0" y1="130.2" x2="358.0" y2="218.0"/>
-
-          <circle class="pt-exact" cx="358.0" cy="190.7" r="4.5"/>
-          <circle class="pt-euler" cx="182.0" cy="130.2" r="4.5"/>
-          <circle class="pt-euler" cx="358.0" cy="218.0" r="4.5"/>
-
-          <text x="172" y="152" text-anchor="end">y<tspan dy="4" font-size="10">n</tspan></text>
-          <text class="lab-tan" x="192" y="224">tangente : pente f(y<tspan dy="4" font-size="10">n</tspan><tspan dy="-4">)</tspan></text>
-          <text x="370.0" y="223.0">y<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4"> (Euler)</tspan></text>
-          <text class="lab-exact" x="345" y="171">valeur exacte y(t<tspan dy="4" font-size="10">n+1</tspan><tspan dy="-4">)</tspan></text>
-
-          <line class="tick" x1="182.0" y1="236" x2="182.0" y2="244"/>
-          <line class="tick" x1="358.0" y1="236" x2="358.0" y2="244"/>
-          <text x="182.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n</tspan></text>
-          <text x="358.0" y="260" text-anchor="middle">t<tspan dy="4" font-size="10">n+1</tspan></text>
-
-          <line class="tick" x1="182.0" y1="270" x2="358.0" y2="270" marker-start="url(#fig-arrow)" marker-end="url(#fig-arrow)"/>
-          <text x="270.0" y="290" text-anchor="middle">dt</text>
-        </svg>
-        <figcaption>Un pas d'Euler : on part de <code>y<sub>n</sub></code> et on suit la tangente pendant <code>dt</code>. On arrive en <code>y<sub>n+1</sub></code>, un peu à côté de la solution exacte (ici l'écart est exagéré par un grand pas).</figcaption>
-      </figure>
-
-      <p><strong>L'algorithme.</strong></p>
-      <ol>
-        <li>On part de la condition initiale <code>y<sub>0</sub></code>.</li>
-        <li>On calcule la pente <code>f(y)</code> avec la valeur actuelle de <code>y</code>.</li>
-        <li>On avance d'un pas : <code>y</code> devient <code>y + pente × dt</code>.</li>
-        <li>On recommence autant de fois qu'il y a de pas de temps : c'est une boucle <code>for</code>.</li>
-      </ol>
-      <pre class="course-code">y = y0                  # condition initiale
-for i in range(n):      # n pas de temps
-    pente = f(y)        # dy/dt avec la valeur actuelle de y
-    y = y + pente * dt  # on avance le long de la tangente</pre>
-
-      <p><strong>Un exemple à la main.</strong> Pour <code>dy/dt = −y</code> avec <code>y(0) = 1</code> et <code>dt = 0,1</code> :</p>
-      <p class="formula">y<sub>1</sub> = 1 + (−1) × 0,1 = 0,9 &nbsp;&nbsp;&nbsp; y<sub>2</sub> = 0,9 + (−0,9) × 0,1 = 0,81</p>
-      <p>La valeur exacte est <code>y(0,2) = e<sup>−0,2</sup> ≈ 0,819</code> : l'écart est petit, mais bien réel.</p>
-
-      <p><strong>Précision.</strong> Plus <code>dt</code> est petit, plus le résultat est précis, mais plus il faut de pas. Avec Euler, diviser <code>dt</code> par 10 divise l'erreur par 10 environ.</p>
-
-      <p><strong>Exercices 1 à 4 et 6.</strong> Dans l'exercice 1, l'inconnue est la vitesse <code>v</code> de la bille. À toi d'identifier la fonction <code>f(v)</code> à partir de l'équation du mouvement.</p>
-      </div>
-    </details>
-
-    <details class="course accordion" data-rappel="solve">
-      <summary>Rappel de cours — systèmes linéaires et numpy.linalg.solve</summary>
-      <div class="accordion-body">
-
-      <p><strong>À quoi ça sert ?</strong> À résoudre un système de <code>n</code> équations linéaires indépendantes à <code>n</code> inconnues : lois des nœuds d'un circuit, réseau de résistances hydrauliques… À la main, c'est pénible dès trois inconnues.</p>
-
-      <p><strong>L'idée.</strong> On écrit le système sous forme matricielle :</p>
-      <p class="formula">A X = B</p>
-      <ul>
-        <li><code>X</code> : les <code>n</code> inconnues, rangées dans un ordre choisi une fois pour toutes ;</li>
-        <li><code>A</code> : la matrice <code>n × n</code> des coefficients. Ligne <code>i</code> = équation <code>i</code> ; colonne <code>j</code> = coefficient de l'inconnue <code>j</code> (0 si elle n'apparaît pas) ;</li>
-        <li><code>B</code> : les <code>n</code> seconds membres, c'est-à-dire les termes sans inconnue.</li>
-      </ul>
-
-      <figure>
-        <svg class="fig" viewBox="0 0 420 125" role="img" aria-label="Le système 2x + y = 5, x − y = 1 s'écrit AX = B : la ligne i de A contient les coefficients de l'équation i, la colonne j ceux de l'inconnue j.">
-<defs><marker id="fig-arrow-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fig-head"/></marker></defs>
-<text x="6" y="50" style="font-size:17px"><tspan class="lab-tan">2x</tspan> + <tspan class="lab-exact">y</tspan> = 5</text>
-<text x="6" y="90" style="font-size:17px"><tspan class="lab-tan">x</tspan> − <tspan class="lab-exact">y</tspan> = 1</text>
-<line class="axis" x1="104" y1="64" x2="136" y2="64" marker-end="url(#fig-arrow-s)"/>
-<text x="162" y="70" text-anchor="middle" style="font-size:17px">A =</text>
-<polyline class="axis" points="190,34 184,34 184,98 190,98"/>
-<text x="204" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">2</text>
-<text x="204" y="90" text-anchor="middle" style="font-size:17px" class="lab-tan">1</text>
-<text x="240" y="56" text-anchor="middle" style="font-size:17px" class="lab-exact">1</text>
-<text x="240" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">−1</text>
-<polyline class="axis" points="258,34 264,34 264,98 258,98"/>
-<text x="292" y="70" text-anchor="middle" style="font-size:17px">X =</text>
-<polyline class="axis" points="318,34 312,34 312,98 318,98"/>
-<text x="326" y="56" text-anchor="middle" style="font-size:17px" class="lab-tan">x</text>
-<text x="326" y="90" text-anchor="middle" style="font-size:17px" class="lab-exact">y</text>
-<polyline class="axis" points="334,34 340,34 340,98 334,98"/>
-<text x="368" y="70" text-anchor="middle" style="font-size:17px">B =</text>
-<polyline class="axis" points="394,34 388,34 388,98 394,98"/>
-<text x="401" y="56" text-anchor="middle" style="font-size:17px">5</text>
-<text x="401" y="90" text-anchor="middle" style="font-size:17px">1</text>
-<polyline class="axis" points="408,34 414,34 414,98 408,98"/>
-<text x="222" y="120" text-anchor="middle" class="lab-tan" style="font-size:14px">colonne de x</text>
-</svg>
-        <figcaption>Le système, écrit avec les inconnues à gauche dans l'ordre (x, y), se lit directement ligne par ligne.</figcaption>
-      </figure>
-
-      <p><strong>La méthode.</strong></p>
-      <ol>
-        <li>Écrire chaque équation avec toutes les inconnues à gauche, toujours dans le même ordre, et les termes connus à droite.</li>
-        <li>Recopier les coefficients ligne par ligne dans <code>A</code>, sans oublier les 0, et les seconds membres dans <code>B</code>.</li>
-        <li>Appeler <code>solve</code>.</li>
-      </ol>
-      <pre class="course-code">import numpy as np
-A = np.array([[2, 1],         # 2x + y = 5
-              [1, -1]])       #  x − y = 1
-B = np.array([5, 1])
-x, y = np.linalg.solve(A, B)  # x = 2.0 et y = 1.0</pre>
-
-      <p><strong>Spécification (fournie au concours).</strong> <code>np.linalg.solve(A, B)</code> renvoie le tableau <code>X</code> tel que <code>AX = B</code>, où <code>A</code> est un tableau carré <code>n × n</code> et <code>B</code> un tableau de <code>n</code> nombres. Si les équations ne sont pas indépendantes, il n'y a pas de solution unique : erreur <code>LinAlgError: Singular matrix</code>.</p>
-
-      <p><strong>Pièges.</strong> Un 0 oublié, une erreur de signe en passant un terme d'un côté à l'autre, ou une équation de trop qui se déduit des autres (la matrice devient singulière). On vérifie en reportant la solution dans une équation : <code>2 × 2 + 1 = 5</code>.</p>
-
-      <p><strong>Exercice 5.</strong> Les inconnues sont les potentiels des nœuds d'un circuit. À toi d'écrire la loi des nœuds en chaque nœud, puis de la ranger sous la forme <code>AX = B</code>.</p>
-      </div>
-    </details>
-
-    <details class="course accordion" data-rappel="odeint">
-      <summary>Rappel de cours — systèmes différentiels et odeint</summary>
-      <div class="accordion-body">
-
-      <p><strong>À quoi ça sert ?</strong> Euler, tel que vous allez l'utiliser dans les cinq premiers exercices, ne traite que les équations <strong>d'ordre 1</strong> (une seule dérivée). Beaucoup de situations physiques — un pendule, un oscillateur — sont pourtant régies par des équations <strong>d'ordre 2 ou plus</strong> (elles contiennent une dérivée seconde, voire davantage). On transforme alors l'équation d'ordre <code>n</code> en un <strong>système de <code>n</code> équations d'ordre 1</strong>, que l'on résout avec une fonction toute prête de Python : <code>odeint</code>.</p>
-
-      <p><strong>L'idée : transformer.</strong> Pour une équation d'ordre 2 du type <code>x'' = f(x, x', t)</code>, on introduit une nouvelle inconnue <code>y = x'</code>. L'équation d'ordre 2 devient alors un système de deux équations d'ordre 1 :</p>
-      <p class="formula">x' = y &nbsp;&nbsp;&nbsp; y' = f(x, y, t)</p>
-      <p>Chaque dérivée seconde « coûte » ainsi une variable supplémentaire : une équation d'ordre 2 donne un système de 2 équations, une équation d'ordre 3 un système de 3 équations, etc.</p>
-
-      <p><strong>Un exemple de transformation.</strong> Pour un pendule pesant, <code>J·θ'' = −M·g·d·sin(θ)</code> (moment d'inertie <code>J</code>, masse <code>M</code>, distance <code>d</code> de l'axe au centre de masse), on pose <code>ω = θ'</code> :</p>
-      <p class="formula">θ' = ω &nbsp;&nbsp;&nbsp; ω' = −(Mgd/J)·sin(θ)</p>
-
-      <p><strong>Utiliser odeint.</strong> Plutôt que de coder soi-même la boucle d'Euler sur ce système, on peut appeler <code>odeint</code>, qui est à la fois plus précis (elle ajuste automatiquement son pas de temps) et plus rapide. Trois étapes :</p>
-      <ol>
-        <li>Écrire une fonction qui renvoie le vecteur des dérivées, à partir de l'état actuel et du temps.</li>
-        <li>Définir les instants auxquels on veut connaître la solution.</li>
-        <li>Appeler <code>odeint</code> avec cette fonction, l'état initial, et ces instants.</li>
-      </ol>
-      <pre class="course-code">from scipy.integrate import odeint
-import numpy as np
-
-omega0 = 2.0  # pulsation propre (rad/s)
-
-def derivees(Y, t):
-    y1, y2 = Y              # y1 = x, y2 = x'
-    dy1_dt = y2
-    dy2_dt = -omega0**2 * y1
-    return [dy1_dt, dy2_dt]
-
-Y0 = [1.0, 0.0]                 # x(0) = 1, x'(0) = 0
-t = np.linspace(0, 10, 1000)    # instants auxquels on veut la solution
-
-solution = odeint(derivees, Y0, t)
-x = solution[:, 0]   # x(t)  : première colonne
-v = solution[:, 1]   # x'(t) : deuxième colonne</pre>
-
-      <p><strong>Pourquoi pas Euler « à la main » ?</strong> Le principe est le même (avancer pas à pas), mais <code>odeint</code> utilise une méthode bien plus précise qu'Euler à pas constant, avec un pas ajusté automatiquement. En pratique, on code soi-même la boucle d'Euler pour comprendre le principe ; dès qu'une bibliothèque est disponible, on utilise plutôt <code>odeint</code>.</p>
-
-      <p><strong>Exercices 7 et 8.</strong> Il faudra identifier le système d'équations d'ordre 1 à partir de l'équation physique, écrire la fonction <code>derivees</code>, puis appeler <code>odeint</code> avec les bonnes conditions initiales.</p>
       </div>
     </details>
 
@@ -753,7 +753,77 @@ print("u =", u, "V  à t =", t, "s")</textarea>
     </details>
 
     <details class="exercise accordion">
-      <summary>Exercice 5 — Convertisseur numérique-analogique R-2R (système linéaire, solve) <span class="chap-tag">Électricité</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <summary>Exercice 5 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide) <span class="chap-tag">Solides</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Un disque homogène, de moment d'inertie <code>J</code> par rapport à son axe de rotation <code>Δ</code>, est lancé à la vitesse angulaire <code>ω₀</code> puis livré à lui-même : un couple de frottement visqueux, proportionnel à <code>ω</code> (<code>M_f = −f·ω</code>, avec <code>f</code> un coefficient de frottement constant), le freine progressivement. Le théorème du moment cinétique scalaire donne :</p>
+        <p><code>dω/dt = −(f/J)·ω</code></p>
+        <p>Cette équation a, exceptionnellement, une solution exacte simple : <code>ω(t) = ω₀·exp(−(f/J)·t)</code> — ce qui va permettre ici de <strong>mesurer précisément l'erreur commise par la méthode d'Euler</strong>, plutôt que de simplement l'estimer comme dans les exercices précédents.</p>
+        <p>Avec <code>J = 0,4 kg·m²</code>, <code>f = 1,0 N·m·s</code>, <code>ω₀ = 50 rad/s</code>, calculez par la méthode d'Euler la vitesse angulaire à <code>t = 2 s</code>, pour <strong>deux pas de temps différents</strong> : <code>dt = 0,1 s</code> et <code>dt = 0,01 s</code> (dix fois plus petit). Comparez chaque résultat à la valeur exacte, et vérifiez que diviser <code>dt</code> par 10 divise bien l'erreur par environ 10, comme annoncé dans le rappel de cours.</p>
+      </div>
+
+      <textarea id="code-5" spellcheck="false" style="min-height: 420px;">import math
+
+J = 0.4        # moment d'inertie du disque (kg.m^2)
+f = 1.0        # coefficient de frottement visqueux (N.m.s)
+omega0 = 50.0  # vitesse angulaire initiale (rad/s)
+t_final = 2.0  # instant auquel on évalue omega (s)
+
+def euler_omega(dt):
+    n = round(t_final / dt)
+    omega = omega0
+    for i in range(n):
+        # Complétez : calcul de domega/dt à partir de la formule, puis mise à jour (Euler explicite)
+        domega_dt = ...
+        omega = ...
+    return omega
+
+exact = omega0 * math.exp(-(f / J) * t_final)
+
+omega_a = euler_omega(0.1)
+omega_b = euler_omega(0.01)
+
+# Complétez : écart (valeur absolue) entre chaque résultat et la valeur exacte
+erreur_a = ...
+erreur_b = ...
+
+# Complétez : rapport entre la plus grande erreur et la plus petite
+rapport = ...
+
+print("omega exact =", exact, "rad/s")
+print("omega (dt=0.1) =", omega_a, " erreur =", erreur_a)
+print("omega (dt=0.01) =", omega_b, " erreur =", erreur_b)
+print("rapport des erreurs =", rapport)</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-5" disabled>Exécuter et vérifier</button>
+        <span id="status-5" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-5" class="exercise-output" hidden></pre>
+      <details class="solution" id="solution-5" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">def euler_omega(dt):
+    n = round(t_final / dt)
+    omega = omega0
+    for i in range(n):
+        domega_dt = -(f / J) * omega
+        omega = omega + domega_dt * dt
+    return omega
+
+erreur_a = abs(omega_a - exact)
+erreur_b = abs(omega_b - exact)
+rapport = erreur_a / erreur_b</pre>
+          <p>La boucle d'Euler est la même que dans les exercices précédents, simplement placée dans une fonction pour pouvoir l'appeler deux fois avec des pas différents. L'erreur est l'écart absolu entre la valeur calculée et la valeur exacte ; le rapport compare l'erreur du pas large à celle du pas fin.</p>
+          <p>Le programme donne <code>erreur(dt=0,1) ≈ 0,178 rad/s</code>, <code>erreur(dt=0,01) ≈ 0,0207 rad/s</code>, soit un rapport proche de <code>8,6</code> — assez proche de 10 pour confirmer la règle « diviser <code>dt</code> par 10 divise l'erreur par environ 10 », sans être exactement 10 car on n'est pas encore complètement dans le régime où cette proportionnalité est exacte (il faudrait un pas encore plus petit pour s'en approcher davantage).</p>
+          <p>Remarque : ce calcul n'a été possible que parce que l'équation a une solution exacte connue ici. En pratique (comme pour les exercices précédents), on ne connaît en général pas cette solution : on ne peut donc pas mesurer l'erreur directement, mais cette étude justifie pourquoi on fait confiance à Euler pour un pas suffisamment petit.</p>
+        </div>
+      </details>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 6 — Convertisseur numérique-analogique R-2R (système linéaire, solve) <span class="chap-tag">Électricité</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
       <div class="accordion-body">
       <div class="statement">
         <p>Un ordinateur manipule des nombres binaires ; pour faire vibrer un haut-parleur, il faut les transformer en tension. C'est le rôle d'un <strong>convertisseur numérique-analogique</strong> (CNA). Le plus simple est le réseau « R-2R » ci-dessous, ici à 3 bits.</p>
@@ -786,7 +856,7 @@ print("u =", u, "V  à t =", t, "s")</textarea>
         <p>Le programme trace <code>Vs</code> en fonction de <code>N</code>. Quelle loi simple observe-t-on ? Quelle est la plus petite variation de tension que ce CNA sait produire ?</p>
       </div>
 
-      <textarea id="code-5" spellcheck="false" style="min-height: 900px;">import numpy as np
+      <textarea id="code-6" spellcheck="false" style="min-height: 900px;">import numpy as np
 import matplotlib.pyplot as plt
 
 E = 5.0        # tension de référence (V)
@@ -829,12 +899,12 @@ for N in codes:
 </textarea>
 
       <div class="exercise-controls">
-        <button id="run-5" disabled>Exécuter et vérifier</button>
-        <span id="status-5" class="exercise-status">Chargement de l'environnement Python…</span>
+        <button id="run-6" disabled>Exécuter et vérifier</button>
+        <span id="status-6" class="exercise-status">Chargement de l'environnement Python…</span>
       </div>
-      <pre id="output-5" class="exercise-output" hidden></pre>
-      <div class="mpl-out" id="figs-5"></div>
-      <details class="solution" id="solution-5" hidden>
+      <pre id="output-6" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-6"></div>
+      <details class="solution" id="solution-6" hidden>
         <summary>Voir la solution</summary>
         <div class="solution-body">
           <pre class="solution-code">    A = np.array([[2/R, -1/R, 0],
@@ -850,76 +920,6 @@ for N in codes:
           • nœud 2 : <code>(V2 − b2·E)/(2R) + (V2 − V1)/R = 0</code> (aucun courant vers la sortie).</p>
           <p>Le 0 de la première ligne est indispensable : <code>V2</code> n'apparaît pas au nœud 0. On peut aussi multiplier chaque équation par <code>2R</code> : <code>A = [[4, −2, 0], [−2, 5, −2], [0, −2, 3]]</code> et <code>B = [b0·E, b1·E, b2·E]</code>, à condition de multiplier les deux membres.</p>
           <p>On obtient <code>Vs = E·N/8</code> : 0 ; 0,625 ; 1,25 ; … ; 4,375 V. La sortie est <strong>proportionnelle au nombre binaire</strong>, ce qui est exactement ce qu'on attend d'un CNA. La plus petite variation vaut <code>E/8 = 0,625 V</code>. Avec <code>n</code> bits, elle vaut <code>E/2ⁿ</code> : un CNA audio de 16 bits descend à 76 µV… mais son réseau compte 16 nœuds, et seule la résolution numérique reste raisonnable.</p>
-        </div>
-      </details>
-      </div>
-    </details>
-
-    <details class="exercise accordion">
-      <summary>Exercice 6 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide) <span class="chap-tag">Solides</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
-      <div class="accordion-body">
-      <div class="statement">
-        <p>Un disque homogène, de moment d'inertie <code>J</code> par rapport à son axe de rotation <code>Δ</code>, est lancé à la vitesse angulaire <code>ω₀</code> puis livré à lui-même : un couple de frottement visqueux, proportionnel à <code>ω</code> (<code>M_f = −f·ω</code>, avec <code>f</code> un coefficient de frottement constant), le freine progressivement. Le théorème du moment cinétique scalaire donne :</p>
-        <p><code>dω/dt = −(f/J)·ω</code></p>
-        <p>Cette équation a, exceptionnellement, une solution exacte simple : <code>ω(t) = ω₀·exp(−(f/J)·t)</code> — ce qui va permettre ici de <strong>mesurer précisément l'erreur commise par la méthode d'Euler</strong>, plutôt que de simplement l'estimer comme dans les exercices précédents.</p>
-        <p>Avec <code>J = 0,4 kg·m²</code>, <code>f = 1,0 N·m·s</code>, <code>ω₀ = 50 rad/s</code>, calculez par la méthode d'Euler la vitesse angulaire à <code>t = 2 s</code>, pour <strong>deux pas de temps différents</strong> : <code>dt = 0,1 s</code> et <code>dt = 0,01 s</code> (dix fois plus petit). Comparez chaque résultat à la valeur exacte, et vérifiez que diviser <code>dt</code> par 10 divise bien l'erreur par environ 10, comme annoncé dans le rappel de cours.</p>
-      </div>
-
-      <textarea id="code-6" spellcheck="false" style="min-height: 420px;">import math
-
-J = 0.4        # moment d'inertie du disque (kg.m^2)
-f = 1.0        # coefficient de frottement visqueux (N.m.s)
-omega0 = 50.0  # vitesse angulaire initiale (rad/s)
-t_final = 2.0  # instant auquel on évalue omega (s)
-
-def euler_omega(dt):
-    n = round(t_final / dt)
-    omega = omega0
-    for i in range(n):
-        # Complétez : calcul de domega/dt à partir de la formule, puis mise à jour (Euler explicite)
-        domega_dt = ...
-        omega = ...
-    return omega
-
-exact = omega0 * math.exp(-(f / J) * t_final)
-
-omega_a = euler_omega(0.1)
-omega_b = euler_omega(0.01)
-
-# Complétez : écart (valeur absolue) entre chaque résultat et la valeur exacte
-erreur_a = ...
-erreur_b = ...
-
-# Complétez : rapport entre la plus grande erreur et la plus petite
-rapport = ...
-
-print("omega exact =", exact, "rad/s")
-print("omega (dt=0.1) =", omega_a, " erreur =", erreur_a)
-print("omega (dt=0.01) =", omega_b, " erreur =", erreur_b)
-print("rapport des erreurs =", rapport)</textarea>
-
-      <div class="exercise-controls">
-        <button id="run-6" disabled>Exécuter et vérifier</button>
-        <span id="status-6" class="exercise-status">Chargement de l'environnement Python…</span>
-      </div>
-      <pre id="output-6" class="exercise-output" hidden></pre>
-      <details class="solution" id="solution-6" hidden>
-        <summary>Voir la solution</summary>
-        <div class="solution-body">
-          <pre class="solution-code">def euler_omega(dt):
-    n = round(t_final / dt)
-    omega = omega0
-    for i in range(n):
-        domega_dt = -(f / J) * omega
-        omega = omega + domega_dt * dt
-    return omega
-
-erreur_a = abs(omega_a - exact)
-erreur_b = abs(omega_b - exact)
-rapport = erreur_a / erreur_b</pre>
-          <p>La boucle d'Euler est la même que dans les exercices précédents, simplement placée dans une fonction pour pouvoir l'appeler deux fois avec des pas différents. L'erreur est l'écart absolu entre la valeur calculée et la valeur exacte ; le rapport compare l'erreur du pas large à celle du pas fin.</p>
-          <p>Le programme donne <code>erreur(dt=0,1) ≈ 0,178 rad/s</code>, <code>erreur(dt=0,01) ≈ 0,0207 rad/s</code>, soit un rapport proche de <code>8,6</code> — assez proche de 10 pour confirmer la règle « diviser <code>dt</code> par 10 divise l'erreur par environ 10 », sans être exactement 10 car on n'est pas encore complètement dans le régime où cette proportionnalité est exacte (il faudrait un pas encore plus petit pour s'en approcher davantage).</p>
-          <p>Remarque : ce calcul n'a été possible que parce que l'équation a une solution exacte connue ici. En pratique (comme pour les exercices précédents), on ne connaît en général pas cette solution : on ne peut donc pas mesurer l'erreur directement, mais cette étude justifie pourquoi on fait confiance à Euler pour un pas suffisamment petit.</p>
         </div>
       </details>
       </div>
@@ -2048,15 +2048,22 @@ def run_student(code, ns, limit=500000):
 `;
 
   // Un exercice = un numéro, le nom de la variable à récupérer, et une fonction de vérification.
-  // Renumérotation des exercices (octobre 2026) : conversion des étoiles déjà gagnées
+  // Renumérotations des exercices (octobre 2026) : conversion des étoiles déjà gagnées
   (function () {
     try {
-      if (localStorage.getItem('tpc_num_v') === '2') { return; }
-      var M = { 4: 6, 5: 4, 6: 7, 7: 8, 8: 9, 9: 12, 10: 5, 11: 10, 12: 11 };
-      var old = JSON.parse(localStorage.getItem('tpc_stars') || '{}') || {}, neu = {};
-      Object.keys(old).forEach(function (k) { neu[M[k] || k] = old[k]; });
-      localStorage.setItem('tpc_stars', JSON.stringify(neu));
-      localStorage.setItem('tpc_num_v', '2');
+      var v = localStorage.getItem('tpc_num_v') || '1';
+      if (v === '3') { return; }
+      var etapes = [];
+      if (v === '1') { etapes.push({ 4: 6, 5: 4, 6: 7, 7: 8, 8: 9, 9: 12, 10: 5, 11: 10, 12: 11 }); }
+      etapes.push({ 5: 6, 6: 5 });
+      var st = JSON.parse(localStorage.getItem('tpc_stars') || '{}') || {};
+      etapes.forEach(function (M) {
+        var neu = {};
+        Object.keys(st).forEach(function (k) { neu[M[k] || k] = st[k]; });
+        st = neu;
+      });
+      localStorage.setItem('tpc_stars', JSON.stringify(st));
+      localStorage.setItem('tpc_num_v', '3');
     } catch (e) { /* stockage indisponible : rien à convertir */ }
   })();
 
@@ -2119,9 +2126,9 @@ def run_student(code, ns, limit=500000):
       }
     },
     {
-      n: 6,
+      n: 5,
       varName: 'rapport',
-      title: "Exercice 6 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide)",
+      title: "Exercice 5 — Freinage d'un disque en rotation : précision de la méthode d'Euler (mécanique du solide)",
       stars: 2,
       check: function (rapport) {
         var J = 0.4, f = 1.0, omega0 = 50.0, t_final = 2.0;
@@ -2251,8 +2258,8 @@ def run_student(code, ns, limit=500000):
       figures: true
     },
     {
-      n: 5,
-      title: "Exercice 5 — Convertisseur numérique-analogique R-2R (système linéaire, solve)",
+      n: 6,
+      title: "Exercice 6 — Convertisseur numérique-analogique R-2R (système linéaire, solve)",
       stars: 2,
       packages: ['numpy', 'matplotlib'],
       pyCheck: 'check_ex10',
@@ -2564,34 +2571,34 @@ def run_student(code, ns, limit=500000):
 
 <script>
 /* ==== Parcours de l'année : À METTRE À JOUR CHAQUE ANNÉE (seul endroit à modifier) ====
+   Une ligne par semaine : un rappel de cours et les exercices qui l'appliquent.
    debut     : date de début de la semaine, au format 'AAAA-MM-JJ' (facultatif).
                Si les dates sont remplies, la semaine en cours est mise en évidence.
-   cours     : ce qui est traité en cours de physique pendant la semaine
-   rappels   : clés des rappels (matplotlib, euler, odeint, dichotomie, solve, rectangles, derivee)
-   exercices : numéros des exercices de la page
-   td        : question Python sur papier dans le TD                                       */
+   rappel    : clé du rappel (euler, solve, odeint, matplotlib, rectangles, derivee, dichotomie)
+   exercices : numéros des exercices de la page                                            */
 var PARCOURS = [
-  { debut: '', cours: 'Reprises de 1re année', rappels: ['matplotlib', 'euler'], exercices: [1, 2, 3], td: '' },
-  { debut: '', cours: 'Ch. 1 · Filtrage', rappels: ['solve', 'rectangles'], exercices: [4, 5], td: 'méthode des rectangles (valeur efficace)' },
-  { debut: '', cours: 'Ch. 2 · Moment cinétique', rappels: ['derivee'], exercices: [], td: 'dérivée numérique (palet)' },
-  { debut: '', cours: "Ch. 3 · Mouvement d'un solide", rappels: ['odeint'], exercices: [6, 7], td: 'méthode des rectangles' },
-  { debut: '', cours: "Ch. 3 · Mouvement d'un solide (suite)", rappels: [], exercices: [8, 9], td: '' },
-  { debut: '', cours: 'Ch. 4-5 · Fluides', rappels: [], exercices: [10, 11], td: 'numpy.linalg.solve (réseau microfluidique)' },
-  { debut: '', cours: "Ch. 6 · Écoulement autour d'un obstacle", rappels: ['dichotomie'], exercices: [12], td: '' },
-  { debut: '', cours: 'Second principe', rappels: [], exercices: [], td: 'Monte-Carlo (incertitude sur une efficacité)' },
-  { debut: '', cours: 'Électrostatique', rappels: [], exercices: [], td: 'superposition (chaîne de charges)' }
+  { debut: '', rappel: 'euler', exercices: [1, 2] },
+  { debut: '', rappel: 'euler', exercices: [3, 4] },
+  { debut: '', rappel: 'euler', exercices: [5] },
+  { debut: '', rappel: 'solve', exercices: [6] },
+  { debut: '', rappel: 'odeint', exercices: [7, 8] },
+  { debut: '', rappel: 'matplotlib', exercices: [9] },
+  { debut: '', rappel: 'rectangles', exercices: [10] },
+  { debut: '', rappel: 'derivee', exercices: [11] },
+  { debut: '', rappel: 'dichotomie', exercices: [12] }
 ];
 /* Thème physique de chaque exercice (affiché entre parenthèses dans le tableau) */
 var THEMES = {
-  1: 'Mécanique · 1re année', 2: 'Électricité · 1re année', 3: 'Thermique · 1re année',
-  4: 'Filtrage', 5: 'Électricité', 6: 'Solides', 7: 'Solides', 8: 'Solides', 9: 'Solides',
-  10: 'Fluides', 11: 'Fluides', 12: 'Fluides'
+  1: 'mécanique, 1re année', 2: 'électricité, 1re année', 3: 'thermique, 1re année',
+  4: 'filtrage', 5: 'solides', 6: 'électricité', 7: 'solides', 8: 'solides', 9: 'solides',
+  10: 'fluides', 11: 'fluides', 12: 'fluides'
 };
 /* ==== fin de la partie à mettre à jour ==== */
 
 (function () {
-  var NOMS = { euler: 'Euler', odeint: 'odeint', matplotlib: 'matplotlib', dichotomie: 'dichotomie',
-               solve: 'solve', rectangles: 'rectangles', derivee: 'dérivée numérique' };
+  var NOMS = { euler: "méthode d'Euler", odeint: 'odeint (systèmes différentiels)', matplotlib: 'tracer des courbes (matplotlib)',
+               dichotomie: 'méthode dichotomique', solve: 'systèmes linéaires (solve)', rectangles: 'méthode des rectangles',
+               derivee: 'dérivée numérique' };
   function exDetails(n) {
     var ta = document.getElementById('code-' + n);
     return ta ? ta.closest('details.exercise') : null;
@@ -2641,7 +2648,7 @@ var THEMES = {
     box.innerHTML = '';
     var st = stars();
     var t = document.createElement('table');
-    t.innerHTML = '<thead><tr><th>Semaine</th><th>En cours de physique</th><th>Rappels</th><th>Exercices</th><th>En TD (sur papier)</th></tr></thead>';
+    t.innerHTML = '<thead><tr><th>Semaine</th><th>Rappel de cours</th><th>Exercices</th></tr></thead>';
     var tb = document.createElement('tbody');
     PARCOURS.forEach(function (q) {
       var tr = document.createElement('tr');
@@ -2651,10 +2658,8 @@ var THEMES = {
       if (q.debut) { var dd = document.createElement('span'); dd.className = 'quand'; dd.textContent = 'dès le ' + frDate(q.debut); c0.appendChild(dd); }
       if (q.num === enCours) { var ec = document.createElement('span'); ec.className = 'quand en-cours-lbl'; ec.textContent = 'en cours'; c0.appendChild(ec); }
       tr.appendChild(c0);
-      cellule(tr, 'Cours', function (td) { td.textContent = q.cours; });
-      cellule(tr, 'Rappels', function (td) { liste(td, q.rappels.map(function (k) { return lien(NOMS[k] || k, rappelDetails(k)); })); });
-      cellule(tr, 'Exercices', function (td) { liste(td, q.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n], (THEMES[n] || '').toLowerCase()); }), 'br'); });
-      cellule(tr, 'En TD', function (td) { if (q.td) { td.textContent = q.td; } else { liste(td, []); } });
+      cellule(tr, 'Rappel', function (td) { liste(td, [lien(NOMS[q.rappel] || q.rappel, rappelDetails(q.rappel))]); });
+      cellule(tr, 'Exercices', function (td) { liste(td, q.exercices.map(function (n) { return lien('Ex. ' + n, exDetails(n), !!st[n], (THEMES[n] || '')); }), 'br'); });
       tb.appendChild(tr);
     });
     t.appendChild(tb); box.appendChild(t);
