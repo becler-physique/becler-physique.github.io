@@ -1593,6 +1593,187 @@ v_scipy = bisect(f, a, b, xtol=1e-6)</pre>
       </div>
     </details>
 
+
+    <details class="exercise accordion">
+      <summary>Exercice 13 — Viscosité de l'eau dans un tube capillaire (incertitude composée, Monte-Carlo) <span class="chap-tag">Fluides</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Pour mesurer la viscosité de l'eau, on la fait s'écouler d'un réservoir à travers un tube capillaire horizontal. On recueille un volume <code>V</code> pendant une durée <code>t</code>. Le dénivelé <code>h</code> entre la surface libre du réservoir et la sortie du tube impose la différence de pression <code>ΔP = ρgh</code>, et la loi de Poiseuille donne :</p>
+        <p><code>η = πa⁴·ΔP/(8L·Q)</code> &nbsp;&nbsp; avec &nbsp;&nbsp; <code>Q = V/t</code></p>
+        <p>Les mesures :</p>
+        <ul>
+          <li>rayon intérieur du tube <code>a = 0,40 mm</code>, d'incertitude-type 0,01 mm (donnée du fabricant) ;</li>
+          <li>longueur du tube <code>L = 20,0 cm</code>, lue sur une règle à ± 1 mm ;</li>
+          <li>dénivelé <code>h = 10,0 cm</code>, lu à ± 2 mm (la surface libre bouge un peu) ;</li>
+          <li>volume recueilli <code>V = 10,0 mL</code>, lu sur une éprouvette à ± 0,2 mL ;</li>
+          <li>durée <code>t = 203 s</code>, d'incertitude-type 2 s (déclenchement du chronomètre).</li>
+        </ul>
+        <p>Complétez les « ... » :</p>
+        <ol>
+          <li>dans la fonction <code>simulation</code>, les tirages de <code>L</code>, <code>h</code>, <code>V</code> et <code>t</code> (choisissez la loi de chacun d'après le rappel de cours), puis le calcul de <code>η</code> ;</li>
+          <li>la moyenne <code>eta_moy</code> et l'incertitude-type <code>u_eta</code> ;</li>
+          <li>l'écart normalisé <code>z</code> entre la mesure et la viscosité tabulée de l'eau à 20 °C, <code>1,00·10⁻³ Pa·s</code>.</li>
+        </ol>
+        <p>Écrivez le résultat avec un nombre adapté de chiffres significatifs. La mesure est-elle compatible avec la valeur tabulée ? Le programme affiche ensuite la contribution de chaque mesure : laquelle domine, et pourquoi ? Que faudrait-il améliorer en priorité ?</p>
+      </div>
+
+      <textarea id="code-13" spellcheck="false" style="min-height: 1000px;">import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+rho, g = 1000.0, 9.81      # eau (valeurs sans incertitude)
+N = 100000                 # nombre de tirages
+
+def simulation(u_a, D_L, D_h, D_V, u_t):
+    """Renvoie N valeurs simulées de eta.
+    u_a, u_t      : incertitudes-types (loi normale)
+    D_L, D_h, D_V : demi-largeurs des intervalles de lecture (loi uniforme)"""
+    a = np.random.normal(0.40e-3, u_a, N)    # rayon du tube : 0,40 mm (déjà écrit)
+    L = ...                                  # Complétez : longueur du tube, 20,0 cm
+    h = ...                                  # Complétez : dénivelé, 10,0 cm
+    V = ...                                  # Complétez : volume recueilli, 10,0 mL
+    t = ...                                  # Complétez : durée, 203 s
+    return ...                               # Complétez : eta (loi de Poiseuille)
+
+# 1. Toutes les incertitudes à la fois
+eta = simulation(0.01e-3, 1e-3, 2e-3, 0.2e-6, 2.0)
+eta_moy = ...              # Complétez : moyenne des tirages
+u_eta = ...                # Complétez : incertitude-type
+print("eta =", eta_moy, "Pa.s ; u(eta) =", u_eta, "Pa.s")
+plt.hist(eta * 1000, bins=50)
+plt.xlabel("eta (mPa.s)")
+plt.ylabel("nombre de tirages")
+
+# 2. Contribution de chaque mesure : une seule incertitude non nulle (déjà écrit)
+print("seulement a :", np.std(simulation(0.01e-3, 0, 0, 0, 0)))
+print("seulement L :", np.std(simulation(0, 1e-3, 0, 0, 0)))
+print("seulement h :", np.std(simulation(0, 0, 2e-3, 0, 0)))
+print("seulement V :", np.std(simulation(0, 0, 0, 0.2e-6, 0)))
+print("seulement t :", np.std(simulation(0, 0, 0, 0, 2.0)))
+
+# 3. Comparaison à la valeur tabulée pour l'eau à 20 °C
+eta_tab = 1.00e-3
+z = ...                    # Complétez : écart normalisé
+print("écart normalisé : z =", z)
+</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-13" disabled>Exécuter et vérifier</button>
+        <span id="status-13" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-13" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-13"></div>
+      <details class="solution" id="solution-13" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">    L = np.random.uniform(0.200 - D_L, 0.200 + D_L, N)
+    h = np.random.uniform(0.100 - D_h, 0.100 + D_h, N)
+    V = np.random.uniform(10.0e-6 - D_V, 10.0e-6 + D_V, N)
+    t = np.random.normal(203, u_t, N)
+    Q = V / t
+    DP = rho * g * h
+    return math.pi * a**4 * DP / (8 * L * Q)
+
+eta_moy = np.mean(eta)
+u_eta = np.std(eta)
+z = abs(eta_moy - eta_tab) / u_eta</pre>
+          <p>Pour <code>L</code>, <code>h</code> et <code>V</code>, on ne connaît qu'un intervalle de lecture : loi uniforme. Pour <code>a</code> et <code>t</code>, l'incertitude-type est connue : loi normale. Attention aux unités : 10,0 mL = 10,0·10⁻⁶ m³.</p>
+          <p>On obtient <code>u(η) ≈ 0,10·10⁻³ Pa·s</code>, d'où <code>η = (1,0 ± 0,1)·10⁻³ Pa·s</code>. L'écart normalisé vaut quelques centièmes, bien moins que 2 : la mesure est compatible avec la valeur tabulée.</p>
+          <p><strong>Contributions</strong> : le rayon donne à lui seul <code>u(η) ≈ 0,10·10⁻³ Pa·s</code>, les autres mesures seulement 0,003 à 0,012·10⁻³ Pa·s. Comme <code>η ∝ a⁴</code>, une incertitude relative de 2,5 % sur <code>a</code> devient 10 % sur <code>η</code>. Inutile de mieux chronométrer : il faut un tube dont le rayon est mieux connu, ou l'étalonner avec un liquide de viscosité connue.</p>
+        </div>
+      </details>
+      </div>
+    </details>
+
+    <details class="exercise accordion">
+      <summary>Exercice 14 — Coefficient de traînée d'une sphère en soufflerie (régression linéaire, Monte-Carlo) <span class="chap-tag">Fluides</span> <span class="exercise-stars" aria-hidden="true">★★</span></summary>
+      <div class="accordion-body">
+      <div class="statement">
+        <p>Dans une soufflerie, une sphère de diamètre 10 cm est placée dans un écoulement d'air de vitesse <code>U</code>. Une balance mesure la traînée <code>F</code> pour six vitesses. Dans le domaine de nombres de Reynolds exploré (de 3·10⁴ à 1,3·10⁵), on attend une traînée quadratique, à <code>Cx</code> constant :</p>
+        <p><code>F = ½·ρ·S·Cx·U²</code>, &nbsp; soit &nbsp; <code>F = a·U²</code> &nbsp; avec &nbsp; <code>a = ρ·S·Cx/2</code></p>
+        <p>On ajuste donc <code>F</code> en fonction de <code>U²</code> par une droite <code>F = a·U² + b</code>, et on vérifie que <code>b</code> est compatible avec 0. Incertitudes-types : 0,2 m/s sur chaque vitesse (anémomètre) et 0,005 N sur chaque force (balance).</p>
+        <p>Complétez les « ... » :</p>
+        <ol>
+          <li>la régression linéaire, avec <code>np.polyfit</code> ;</li>
+          <li>dans la fonction <code>simulation</code>, les tirages des vitesses et des forces (les deux sont incertaines), puis la régression sur chaque série simulée ;</li>
+          <li><code>Cx</code> et son incertitude-type <code>u_Cx</code>.</li>
+        </ol>
+        <p>Écrivez <code>Cx</code> avec son incertitude. <code>b</code> est-il compatible avec 0 ? Le programme compare enfin les deux sources d'incertitude : laquelle domine <code>u(a)</code>, et pourquoi ?</p>
+      </div>
+
+      <textarea id="code-14" spellcheck="false" style="min-height: 1000px;">import numpy as np
+import matplotlib.pyplot as plt
+
+rho = 1.20                      # masse volumique de l'air (kg/m^3)
+S = np.pi * 0.050**2            # maître-couple de la sphère de diamètre 10 cm (m^2)
+
+# Mesures en soufflerie
+U = np.array([5.0, 8.0, 11.0, 14.0, 17.0, 20.0])          # vitesses (m/s)
+F = np.array([0.058, 0.131, 0.262, 0.410, 0.620, 0.842])  # traînées (N)
+u_U = 0.2                       # incertitude-type sur chaque vitesse (m/s)
+u_F = 0.005                     # incertitude-type sur chaque force (N)
+
+# 1. Régression linéaire : F = a·U² + b
+a, b = ...                      # Complétez
+plt.plot(U**2, F, "o", label="mesures")
+plt.plot(U**2, a * U**2 + b, label="droite de régression")
+plt.xlabel("U² (m²/s²)")
+plt.ylabel("F (N)")
+plt.legend()
+plt.grid()
+
+# 2. Monte-Carlo : N séries de mesures simulées
+def simulation(u_U, u_F, N=5000):
+    pentes = []
+    ordonnees = []
+    for i in range(N):
+        U_sim = ...             # Complétez : une vitesse tirée autour de chaque mesure
+        F_sim = ...             # Complétez : une force tirée autour de chaque mesure
+        p = ...                 # Complétez : régression sur la série simulée
+        pentes.append(p[0])
+        ordonnees.append(p[1])
+    return np.array(pentes), np.array(ordonnees)
+
+pentes, ordonnees = simulation(u_U, u_F)
+u_a = np.std(pentes)
+u_b = np.std(ordonnees)
+print("a =", a, "; u(a) =", u_a)
+print("b =", b, "N ; u(b) =", u_b, "N")
+
+# 3. Coefficient de traînée : a = rho·S·Cx/2
+Cx = ...                        # Complétez
+u_Cx = ...                      # Complétez
+print("Cx =", Cx, "; u(Cx) =", u_Cx)
+
+# 4. Quelle incertitude domine ? (déjà écrit)
+print("u(a) avec seulement l'incertitude sur U :", np.std(simulation(u_U, 0, N=2000)[0]))
+print("u(a) avec seulement l'incertitude sur F :", np.std(simulation(0, u_F, N=2000)[0]))
+</textarea>
+
+      <div class="exercise-controls">
+        <button id="run-14" disabled>Exécuter et vérifier</button>
+        <span id="status-14" class="exercise-status">Chargement de l'environnement Python…</span>
+      </div>
+      <pre id="output-14" class="exercise-output" hidden></pre>
+      <div class="mpl-out" id="figs-14"></div>
+      <details class="solution" id="solution-14" hidden>
+        <summary>Voir la solution</summary>
+        <div class="solution-body">
+          <pre class="solution-code">a, b = np.polyfit(U**2, F, 1)
+
+        U_sim = np.random.normal(U, u_U)
+        F_sim = np.random.normal(F, u_F)
+        p = np.polyfit(U_sim**2, F_sim, 1)
+
+Cx = 2 * a / (rho * S)
+u_Cx = 2 * u_a / (rho * S)</pre>
+          <p>Les vitesses sont tirées, puis élevées au carré dans la régression : ce sont les mesures de <code>U</code> qui sont incertaines, pas directement <code>U²</code>. Comme <code>Cx</code> est proportionnel à <code>a</code>, son incertitude relative est celle de <code>a</code>.</p>
+          <p>On obtient <code>a ≈ 2,11·10⁻³ kg/m</code>, <code>u(a) ≈ 0,04·10⁻³ kg/m</code>, d'où <code>Cx = 0,45 ± 0,01</code> : c'est la valeur attendue pour une sphère dans ce domaine de nombres de Reynolds. L'ordonnée à l'origine, <code>b ≈ 0,002 N</code> avec <code>u(b) ≈ 0,007 N</code>, est compatible avec 0 : le modèle quadratique est validé.</p>
+          <p><strong>Contributions</strong> : l'incertitude sur la vitesse donne <code>u(a) ≈ 4·10⁻⁵ kg/m</code>, celle sur la force seulement <code>1,6·10⁻⁵ kg/m</code>. La vitesse intervient au carré, et 0,2 m/s représentent 4 % de la plus petite vitesse, soit 8 % sur <code>U²</code>. C'est l'anémomètre qu'il faut améliorer.</p>
+        </div>
+      </details>
+      </div>
+    </details>
   </main>
 
   <aside class="leaderboard">
@@ -2098,6 +2279,195 @@ def check_ex12(ns, err=None):
     if err is not None:
         raise err
     return rep(True, "Correct : η ≈ " + format(eta * 1000, ".2f").replace(".", ",") + "·10⁻³ Pa·s, c'est bien de l'eau.\nLa dérivée centrée est la plus précise (erreur ∝ h²), avec un optimum vers h ≈ 10⁻⁵ ; en dessous, les erreurs d'arrondi l'emportent.\nLes points Q(z) sont alignés avec l'origine : Q ∝ z, comme le prévoit la loi de Poiseuille. La dispersion vient de l'arrondi des mesures au millimètre, amplifié par la dérivation.")
+
+def check_ex13(ns, err=None):
+    import json, math
+    import numpy as np
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+    def num(x):
+        try:
+            return math.isfinite(float(x))
+        except Exception:
+            return False
+
+    if isinstance(err, SyntaxError):
+        raise err
+    rho, g = 1000.0, 9.81
+    a0, L0, h0, V0, t0 = 0.40e-3, 0.200, 0.100, 10.0e-6, 203.0
+    e0 = math.pi * a0**4 * rho * g * h0 * t0 / (8 * L0 * V0)
+
+    sim = ns.get("simulation")
+    if not callable(sim):
+        if err is not None:
+            raise err
+        return rep(False, "La fonction simulation n'est pas définie : ne modifie pas sa première ligne.")
+
+    def run(*args):
+        r = sim(*args)
+        if r is Ellipsis:
+            raise ValueError("ELLIPSIS")
+        return np.asarray(r, dtype=float).ravel()
+
+    # 1. formule, sans aucune incertitude
+    try:
+        r = run(0, 0, 0, 0, 0)
+    except Exception as e:
+        if str(e) == "ELLIPSIS":
+            return rep(False, "La fonction simulation renvoie encore « ... » : complète les tirages de L, h, V et t, puis la ligne return (η = πa⁴ΔP/(8LQ), avec ΔP = ρgh et Q = V/t).")
+        if "llipsis" in str(e) or "ellipsis" in str(e):
+            return rep(False, "Il reste des « ... » dans la fonction simulation : chaque grandeur mesurée doit être un tableau de N tirages.")
+        return rep(False, "La fonction simulation s'arrête sur une erreur : " + type(e).__name__ + " : " + str(e))
+    if r.size == 0 or not np.all(np.isfinite(r)):
+        return rep(False, "La fonction simulation doit renvoyer un tableau de N valeurs de η.")
+    m = float(np.mean(r))
+    if abs(m - e0) > 1e-6 * e0:
+        if abs(m - e0 / a0**2) < 1e-3 * e0 / a0**2:
+            return rep(False, "η doit contenir a⁴ (loi de Poiseuille), et non a².")
+        if abs(m * 8 - e0) < 1e-6 * e0 or abs(m / 8 - e0) < 1e-6 * e0:
+            return rep(False, "Il manque le facteur 8 (ou il est mal placé) : η = πa⁴ΔP/(8LQ).")
+        return rep(False, "Sans incertitude, ta fonction donne η = " + format(m, ".4e") + " Pa·s au lieu de " + format(e0, ".4e") + " Pa·s. Vérifie la formule : η = πa⁴ΔP/(8LQ), avec ΔP = ρgh et Q = V/t, et les unités (m, m³, s).")
+
+    # 2. chaque tirage, une incertitude à la fois
+    tests = [("L", (0, 1e-3, 0, 0, 0), 1e-3 / L0, "uniforme"),
+             ("h", (0, 0, 2e-3, 0, 0), 2e-3 / h0, "uniforme"),
+             ("V", (0, 0, 0, 0.2e-6, 0), 0.2e-6 / V0, "uniforme"),
+             ("t", (0, 0, 0, 0, 2.0), 2.0 / t0, "normale")]
+    for nom, args, rel, loi in tests:
+        try:
+            s = float(np.std(run(*args))) / e0
+        except Exception as e:
+            return rep(False, "La fonction simulation s'arrête sur une erreur : " + type(e).__name__ + " : " + str(e))
+        attendu = rel / math.sqrt(3) if loi == "uniforme" else rel
+        if abs(s - attendu) < 0.05 * attendu:
+            continue
+        if s < 1e-12:
+            return rep(False, "La grandeur " + nom + " n'est pas tirée au hasard : son tirage doit utiliser son incertitude (" + ("demi-largeur D_" + nom if loi == "uniforme" else "incertitude-type u_t") + ").")
+        if loi == "uniforme" and abs(s - rel) < 0.05 * rel:
+            return rep(False, "Pour " + nom + ", on ne connaît qu'un intervalle de lecture : il faut une loi uniforme, np.random.uniform(valeur − D_" + nom + ", valeur + D_" + nom + ", N), et non une loi normale.")
+        if loi == "uniforme" and abs(s - 2 * attendu) < 0.1 * attendu:
+            return rep(False, "Pour " + nom + ", l'intervalle de tirage est deux fois trop large : D_" + nom + " est une demi-largeur, l'intervalle va de valeur − D_" + nom + " à valeur + D_" + nom + ".")
+        return rep(False, "Le tirage de " + nom + " n'est pas correct (" + ("loi uniforme sur [valeur − D_" + nom + ", valeur + D_" + nom + "]" if loi == "uniforme" else "loi normale de moyenne 203 s et d'écart-type u_t") + ").")
+
+    # 3. moyenne, incertitude-type, écart normalisé
+    eta = ns.get("eta")
+    em, ue, z = ns.get("eta_moy"), ns.get("u_eta"), ns.get("z")
+    if em is Ellipsis or ue is Ellipsis:
+        return rep(False, "La simulation est juste. Complète eta_moy et u_eta avec np.mean et np.std.")
+    if not (num(em) and num(ue)):
+        if err is not None:
+            raise err
+        return rep(False, "eta_moy et u_eta doivent être des nombres : np.mean(eta) et np.std(eta).")
+    em, ue = float(em), float(ue)
+    try:
+        ok = abs(em - float(np.mean(eta))) < 1e-9 * e0 and abs(ue - float(np.std(eta))) < 1e-3 * ue
+    except Exception:
+        ok = False
+    if not ok:
+        return rep(False, "eta_moy et u_eta doivent être la moyenne et l'écart-type des tirages : np.mean(eta) et np.std(eta).")
+    if z is Ellipsis:
+        return rep(False, "Il reste l'écart normalisé z = |eta_moy − eta_tab| / u_eta.")
+    if not num(z):
+        if err is not None:
+            raise err
+        return rep(False, "z doit être un nombre : z = abs(eta_moy - eta_tab) / u_eta.")
+    if abs(float(z) - abs(em - 1.00e-3) / ue) > 1e-6:
+        return rep(False, "z n'est pas correct : z = |eta_moy − eta_tab| / u_eta (valeur absolue, divisée par l'incertitude-type).")
+    if err is not None:
+        raise err
+    return rep(True, "Correct : η = (1,0 ± 0,1)·10⁻³ Pa·s, et z ≈ " + format(float(z), ".2f").replace(".", ",") + " < 2 : la mesure est compatible avec la viscosité de l'eau.\nLe rayon du tube domine largement : η est proportionnelle à a⁴, donc une incertitude relative de 2,5 % sur a en donne 10 % sur η. Les autres mesures ne contribuent qu'à 1 % environ chacune : pour améliorer la mesure, il faut un tube dont le rayon est mieux connu.")
+
+
+def check_ex14(ns, err=None):
+    import json, math
+    import numpy as np
+
+    def rep(ok, text):
+        return json.dumps({"ok": ok, "text": text})
+    def num(x):
+        try:
+            return math.isfinite(float(x))
+        except Exception:
+            return False
+
+    if isinstance(err, SyntaxError):
+        raise err
+    rho = 1.20
+    S = math.pi * 0.050**2
+    U = np.array([5.0, 8.0, 11.0, 14.0, 17.0, 20.0])
+    F = np.array([0.058, 0.131, 0.262, 0.410, 0.620, 0.842])
+    a0, b0 = np.polyfit(U**2, F, 1)
+
+    # 1. régression
+    a, b = ns.get("a"), ns.get("b")
+    if not (num(a) and num(b)):
+        if err is not None and "unpack" not in str(err) and "Ellipsis" not in str(err):
+            raise err
+        return rep(False, "Commence par la régression : a, b = np.polyfit(x, y, 1), avec x = U² et y = F.")
+    a, b = float(a), float(b)
+    if abs(a - a0) > 1e-9 or abs(b - b0) > 1e-9:
+        a1 = np.polyfit(U, F, 1)[0]
+        if abs(a - a1) < 1e-9:
+            return rep(False, "Le modèle est F = a·U² + b : la régression porte sur U² (et non U) en abscisse.")
+        a2 = np.polyfit(F, U**2, 1)[0]
+        if abs(a - a2) < 1e-6 * abs(a2):
+            return rep(False, "Abscisses et ordonnées sont échangées : np.polyfit(x, y, 1) avec x = U² et y = F.")
+        return rep(False, "La régression n'est pas correcte : a, b = np.polyfit(U**2, F, 1).")
+
+    # 2. simulation
+    sim = ns.get("simulation")
+    if not callable(sim):
+        if err is not None:
+            raise err
+        return rep(False, "La fonction simulation n'est pas définie : ne modifie pas sa première ligne.")
+    def run(uU, uF):
+        r = sim(uU, uF, N=1500)
+        P = np.asarray(r[0], dtype=float)
+        return P
+    try:
+        Pt = run(0.2, 0.005)
+    except Exception as e:
+        s = str(e)
+        if "llipsis" in s or "ellipsis" in s or "not subscriptable" in s:
+            return rep(False, "La régression est juste. Complète maintenant la boucle de simulation : U_sim, F_sim, puis p = np.polyfit(...) sur la série simulée.")
+        return rep(False, "La fonction simulation s'arrête sur une erreur : " + type(e).__name__ + " : " + s)
+    if Pt.size == 0 or not np.all(np.isfinite(Pt)):
+        return rep(False, "La fonction simulation doit renvoyer les tableaux des pentes et des ordonnées à l'origine.")
+    if abs(float(np.mean(Pt)) - a0) > 0.1 * a0:
+        if abs(float(np.mean(Pt)) - np.polyfit(U, F, 1)[0]) < 0.1 * abs(np.polyfit(U, F, 1)[0]):
+            return rep(False, "Dans la boucle, la régression doit porter sur U_sim² et F_sim : p = np.polyfit(U_sim**2, F_sim, 1).")
+        return rep(False, "Les pentes simulées ne sont pas centrées sur a : vérifie p = np.polyfit(U_sim**2, F_sim, 1).")
+    sU = float(np.std(run(0.2, 0)))
+    sF = float(np.std(run(0, 0.005)))
+    refU, refF = 4.1e-5, 1.6e-5
+    if sU < 1e-12:
+        return rep(False, "Les vitesses ne sont pas tirées au hasard : U_sim = np.random.normal(U, u_U), une valeur autour de chaque mesure.")
+    if sF < 1e-12:
+        return rep(False, "Les forces ne sont pas tirées au hasard : F_sim = np.random.normal(F, u_F), une valeur autour de chaque mesure.")
+    if abs(sU - refU) > 0.2 * refU:
+        return rep(False, "Le tirage des vitesses ne donne pas la bonne dispersion : U_sim = np.random.normal(U, u_U), avec l'incertitude-type u_U passée en argument de la fonction.")
+    if abs(sF - refF) > 0.2 * refF:
+        return rep(False, "Le tirage des forces ne donne pas la bonne dispersion : F_sim = np.random.normal(F, u_F), avec l'incertitude-type u_F passée en argument de la fonction.")
+
+    # 3. Cx
+    Cx, uCx, ua = ns.get("Cx"), ns.get("u_Cx"), ns.get("u_a")
+    if Cx is Ellipsis or uCx is Ellipsis:
+        return rep(False, "La simulation est juste. Il reste Cx et u(Cx) : de a = ρ·S·Cx/2, on tire Cx = 2a/(ρS) ; u(Cx) s'obtient de même à partir de u(a).")
+    if not (num(Cx) and num(uCx) and num(ua)):
+        if err is not None:
+            raise err
+        return rep(False, "Cx et u_Cx doivent être des nombres.")
+    Cx, uCx, ua = float(Cx), float(uCx), float(ua)
+    if abs(Cx - 2 * a / (rho * S)) > 1e-6:
+        if abs(Cx - a / (rho * S)) < 1e-6:
+            return rep(False, "Il manque le facteur 2 : a = ρ·S·Cx/2, donc Cx = 2a/(ρS).")
+        return rep(False, "Cx n'est pas correct : de a = ρ·S·Cx/2, on tire Cx = 2a/(ρS).")
+    if abs(uCx - 2 * ua / (rho * S)) > 0.02 * abs(2 * ua / (rho * S)):
+        return rep(False, "u(Cx) n'est pas correct : Cx est proportionnel à a, donc u(Cx) = 2·u(a)/(ρS).")
+    if err is not None:
+        raise err
+    return rep(True, "Correct : Cx = 0,45 ± 0,01, la valeur attendue pour une sphère dans ce domaine de nombres de Reynolds. L'ordonnée à l'origine b est compatible avec 0 (|b|/u(b) ≈ 0,3) : le modèle de traînée quadratique est validé.\nC'est l'incertitude sur la vitesse qui domine : U intervient au carré, et 0,2 m/s représentent 4 % de la plus petite vitesse, donc 8 % sur U².")
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
 <script>
@@ -2393,6 +2763,22 @@ def run_student(code, ns, limit=500000):
       stars: 2,
       packages: ['numpy', 'matplotlib'],
       pyCheck: 'check_ex12',
+      figures: true
+    },
+    {
+      n: 13,
+      title: "Exercice 13 — Viscosité de l'eau dans un tube capillaire (incertitude composée, Monte-Carlo)",
+      stars: 2,
+      packages: ['numpy', 'matplotlib'],
+      pyCheck: 'check_ex13',
+      figures: true
+    },
+    {
+      n: 14,
+      title: "Exercice 14 — Coefficient de traînée d'une sphère en soufflerie (régression linéaire, Monte-Carlo)",
+      stars: 2,
+      packages: ['numpy', 'matplotlib'],
+      pyCheck: 'check_ex14',
       figures: true
     }
   ];
