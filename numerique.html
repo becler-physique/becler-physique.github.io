@@ -569,6 +569,120 @@ x = bisect(f, a, b, xtol=1e-6)   # racine de f dans [a, b], à 1e-6 près
       </div>
     </details>
 
+    <details class="course accordion" data-rappel="mc_incert">
+      <summary>Rappel de cours — incertitude-type composée par la méthode de Monte-Carlo</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> Une grandeur <code>G</code> se calcule à partir de grandeurs mesurées <code>x</code>, <code>y</code>… dont on connaît les incertitudes-types. La simulation de Monte-Carlo donne l'incertitude-type <code>u(G)</code> sans formule de propagation, quelle que soit la relation entre <code>G</code> et les mesures.</p>
+
+      <p><strong>L'idée.</strong> On refait l'expérience <code>N</code> fois sur ordinateur. À chaque fois, on tire au hasard une valeur de chaque grandeur mesurée, compatible avec sa mesure et son incertitude, puis on calcule <code>G</code>. Les <code>N</code> valeurs de <code>G</code> se dispersent :</p>
+      <p class="formula">valeur de G = moyenne des tirages &nbsp;&nbsp;&nbsp; u(G) = écart-type des tirages</p>
+
+      <p><strong>Quelle loi de tirage ?</strong></p>
+      <table class="mpl-table">
+        <tr><td>incertitude-type <code>u</code> connue (série de mesures, notice de l'appareil)</td><td>loi normale : <code>np.random.normal(x, u, N)</code></td></tr>
+        <tr><td>seulement un intervalle <code>[x − Δ, x + Δ]</code> (lecture sur une graduation, tolérance)</td><td>loi uniforme : <code>np.random.uniform(x - Δ, x + Δ, N)</code></td></tr>
+      </table>
+
+      <p><strong>Spécifications (fournies au concours).</strong> <code>np.random.normal(m, s, N)</code> renvoie un tableau de <code>N</code> tirages d'une loi normale de moyenne <code>m</code> et d'écart-type <code>s</code> ; <code>np.random.uniform(a, b, N)</code>, un tableau de <code>N</code> tirages uniformes entre <code>a</code> et <code>b</code>. <code>np.mean(T)</code> et <code>np.std(T)</code> donnent la moyenne et l'écart-type du tableau <code>T</code> ; <code>plt.hist(T, bins=50)</code> trace son histogramme en 50 classes.</p>
+
+      <p><strong>Un exemple à exécuter.</strong> Le viscosimètre à chute de bille du TD : <code>η = 2R²(ρ<sub>a</sub> − ρ<sub>g</sub>)g·t/(9d)</code>, avec le rayon <code>R</code> de la bille, la distance <code>d</code> entre les repères et la durée <code>t</code> de la chute.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-4" spellcheck="false" style="min-height: 480px;">import numpy as np
+import matplotlib.pyplot as plt
+
+rho_a, rho_g, g = 7800.0, 1260.0, 9.81   # données (sans incertitude)
+N = 100000                               # nombre de tirages
+
+# Chaque mesure est tirée N fois au hasard, selon sa loi
+R = np.random.normal(1.50e-3, 0.01e-3, N)   # rayon : 1,50 mm, u = 0,01 mm
+d = np.random.uniform(0.198, 0.202, N)      # distance : 20,0 cm lue à ± 2 mm près
+t = np.random.normal(8.7, 0.2, N)           # durée : 8,7 s, u = 0,2 s
+
+# La formule s'applique aux N tirages d'un coup (calcul élément par élément)
+eta = 2 * R**2 * (rho_a - rho_g) * g * t / (9 * d)
+
+print("eta moyen =", np.mean(eta), "Pa.s")
+print("u(eta)    =", np.std(eta), "Pa.s")
+
+plt.hist(eta, bins=50)
+plt.xlabel("eta (Pa.s)")
+plt.ylabel("nombre de tirages")
+</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="4" disabled>Exécuter</button>
+          <span class="exercise-status" id="demo-status-4">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-4"></div>
+      </div>
+
+      <p><strong>Lecture du résultat.</strong> On trouve <code>u(η) ≈ 0,04 Pa·s</code> : on écrit <code>η = (1,40 ± 0,04) Pa·s</code>, avec une incertitude-type à un ou deux chiffres significatifs et la valeur arrondie à la même décimale. L'histogramme a la forme d'une cloche.</p>
+
+      <p><strong>Comparer les contributions.</strong> On annule une incertitude (par exemple 0,2 → 0 pour <code>t</code>) et on relance. Sans l'incertitude sur <code>t</code>, <code>u(η)</code> tombe à 0,02 Pa·s ; sans celle sur <code>R</code>, elle ne descend qu'à 0,03 Pa·s. C'est donc le chronométrage qu'il faut améliorer en priorité, par exemple en allongeant la distance de chute.</p>
+
+      <p><strong>Pièges.</strong> Un <code>N</code> trop petit : le résultat change d'une exécution à l'autre (prendre <code>N ≥ 10⁴</code>). Une demi-largeur <code>Δ</code> utilisée comme écart-type d'une loi normale : l'incertitude est surestimée. Une fonction de <code>math</code> appliquée à un tableau : utiliser <code>np.sqrt</code>, <code>np.cos</code>…</p>
+      </div>
+    </details>
+
+    <details class="course accordion" data-rappel="mc_regr">
+      <summary>Rappel de cours — régression linéaire et incertitudes sur les paramètres (Monte-Carlo)</summary>
+      <div class="accordion-body">
+
+      <p><strong>À quoi ça sert ?</strong> À ajuster des mesures par une droite <code>y = a·x + b</code>, puis à évaluer les incertitudes-types <code>u(a)</code> et <code>u(b)</code>, que la régression seule ne donne pas.</p>
+
+      <p><strong>La régression.</strong> <code>np.polyfit(x, y, 1)</code> renvoie le tableau <code>[a, b]</code> des coefficients de la droite qui passe au plus près des points (le <code>1</code> est le degré du polynôme) :</p>
+      <pre class="course-code">a, b = np.polyfit(x, y, 1)   # x, y : tableaux de mêmes longueurs</pre>
+
+      <p><strong>L'idée de Monte-Carlo.</strong> Les mesures auraient pu sortir un peu différentes. On simule <code>N</code> séries de mesures : chaque <code>y<sub>i</sub></code> est tiré au hasard autour de sa valeur mesurée, avec son incertitude-type <code>u(y<sub>i</sub>)</code>. On refait la régression sur chaque série. Les <code>N</code> pentes obtenues se dispersent :</p>
+      <p class="formula">u(a) = écart-type des N pentes &nbsp;&nbsp;&nbsp; u(b) = écart-type des N ordonnées à l'origine</p>
+      <p>Avec des tableaux, <code>np.random.normal(y, u_y)</code> tire une valeur autour de chaque point : c'est une nouvelle série de mesures. Si les <code>x<sub>i</sub></code> sont aussi incertains, on les tire de la même façon.</p>
+
+      <p><strong>Un exemple à exécuter.</strong> En régime de Stokes, la vitesse limite d'une bille vérifie <code>v = a·R²</code> avec <code>a = 2(ρ<sub>a</sub> − ρ<sub>g</sub>)g/(9η)</code>. On a mesuré <code>v</code> pour cinq billes, à 3 % près.</p>
+      <div class="mpl-demo">
+        <textarea id="demo-5" spellcheck="false" style="min-height: 600px;">import numpy as np
+import matplotlib.pyplot as plt
+
+# Mesures : vitesse limite de billes d'acier de rayons différents, dans la glycérine
+R = np.array([1.0, 1.5, 2.0, 2.5, 3.0]) * 1e-3     # rayons (m)
+v = np.array([1.04, 2.24, 4.12, 6.25, 9.30]) * 1e-2   # vitesses limites (m/s)
+u_v = 0.03 * v                                      # incertitudes-types sur v (3 %)
+x = R**2                                            # modèle : v = a·R² + b
+
+# 1. Régression sur les mesures
+a, b = np.polyfit(x, v, 1)
+
+# 2. Monte-Carlo : N séries de mesures simulées, une régression par série
+N = 5000
+pentes = []
+ordonnees = []
+for i in range(N):
+    v_sim = np.random.normal(v, u_v)     # une valeur tirée autour de chaque mesure
+    p = np.polyfit(x, v_sim, 1)          # p[0] : pente, p[1] : ordonnée à l'origine
+    pentes.append(p[0])
+    ordonnees.append(p[1])
+
+print("a =", a, "m^-1.s^-1 ; u(a) =", np.std(pentes))
+print("b =", b, "m/s ; u(b) =", np.std(ordonnees))
+print("écarts normalisés :", (v - (a * x + b)) / u_v)
+
+plt.hist(pentes, bins=50)
+plt.xlabel("pente a (m^-1.s^-1)")
+plt.ylabel("nombre de séries")
+</textarea>
+        <div class="exercise-controls">
+          <button class="demo-run" data-demo="5" disabled>Exécuter</button>
+          <span class="exercise-status" id="demo-status-5">Chargement de l'environnement Python…</span>
+        </div>
+        <div class="mpl-out" id="demo-out-5"></div>
+      </div>
+
+      <p><strong>Lecture du résultat.</strong> On trouve <code>a = (1,03 ± 0,03)·10⁴ m⁻¹·s⁻¹</code>, d'où <code>η = 2(ρ<sub>a</sub> − ρ<sub>g</sub>)g/(9a) ≈ 1,39 Pa·s</code>, à 3 % près comme <code>a</code>. L'ordonnée à l'origine vaut <code>b = (−0,04 ± 0,09) cm/s</code> : elle est compatible avec 0, comme le prévoit le modèle.</p>
+
+      <p><strong>Valider le modèle.</strong> Avant d'exploiter <code>a</code> et <code>b</code>, on vérifie que la droite passe par les points, aux incertitudes près : les écarts normalisés <code>(y<sub>i</sub> − (a·x<sub>i</sub> + b))/u(y<sub>i</sub>)</code> doivent rester inférieurs à 2 environ. Le coefficient R² seul ne permet pas de conclure.</p>
+      <p>Le programme les affiche : ils sont ici compris entre −0,8 et 1,6, le modèle convient.</p>
+      </div>
+    </details>
+
     <h3 class="part-title">Exercices</h3>
 
     <details class="exercise accordion">
@@ -2574,7 +2688,8 @@ def run_student(code, ns, limit=500000):
    Une ligne par semaine : un rappel de cours et les exercices qui l'appliquent.
    debut     : date de début de la semaine, au format 'AAAA-MM-JJ' (facultatif).
                Si les dates sont remplies, la semaine en cours est mise en évidence.
-   rappel    : clé du rappel (euler, solve, odeint, matplotlib, rectangles, derivee, dichotomie)
+   rappel    : clé du rappel (euler, solve, odeint, matplotlib, rectangles, derivee, dichotomie,
+               mc_incert, mc_regr)
    exercices : numéros des exercices de la page                                            */
 var PARCOURS = [
   { debut: '2026-09-01', rappel: 'euler', exercices: [1, 2] },
@@ -2585,7 +2700,9 @@ var PARCOURS = [
   { debut: '2026-10-05', rappel: 'matplotlib', exercices: [9] },
   { debut: '2026-10-12', rappel: 'rectangles', exercices: [10] },
   { debut: '', rappel: 'derivee', exercices: [11] },
-  { debut: '', rappel: 'dichotomie', exercices: [12] }
+  { debut: '', rappel: 'dichotomie', exercices: [12] },
+  { debut: '', rappel: 'mc_incert', exercices: [] },
+  { debut: '', rappel: 'mc_regr', exercices: [] }
 ];
 /* Thème physique de chaque exercice (affiché entre parenthèses dans le tableau) */
 var THEMES = {
@@ -2598,7 +2715,8 @@ var THEMES = {
 (function () {
   var NOMS = { euler: "méthode d'Euler", odeint: 'odeint (systèmes différentiels)', matplotlib: 'tracer des courbes (matplotlib)',
                dichotomie: 'méthode dichotomique', solve: 'systèmes linéaires (solve)', rectangles: 'méthode des rectangles',
-               derivee: 'dérivée numérique' };
+               derivee: 'dérivée numérique', mc_incert: 'incertitude composée (Monte-Carlo)',
+               mc_regr: 'régression linéaire (Monte-Carlo)' };
   function exDetails(n) {
     var ta = document.getElementById('code-' + n);
     return ta ? ta.closest('details.exercise') : null;
