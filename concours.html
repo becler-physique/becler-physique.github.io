@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPGE TPC — Concours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="auth-overlay" class="auth-overlay">
+  <form id="auth-form">
+    <label for="auth-pass">Mot de passe</label>
+    <input type="password" id="auth-pass" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="auth-toggle"><input type="checkbox" id="auth-toggle"> Afficher le mot de passe</label>
+    <button type="submit">Entrer</button>
+    <p id="auth-error" class="auth-error" hidden>Mot de passe incorrect.</p>
+  </form>
+</div>
+
+<div id="site-content" hidden>
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <span class="brand-title">CPGE TPC</span>
+    <span class="site-subtitle">Lycée La Martinière Diderot, Lyon</span>
+  </a>
+  <nav class="top-nav" aria-label="Pages du site">
+    <a href="index.html"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="12" rx="10" ry="4.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg></span><span>Physique</span></a>
+    <a href="numerique.html"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 7 3 12 8 17"/><polyline points="16 7 21 12 16 17"/></svg></span><span class="lbl-full">Compétences numériques</span><span class="lbl-short">Numérique</span></a>
+    <a href="concours.html" class="current" aria-current="page"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5 12 5l10 4.5L12 14z"/><path d="M6 11.3V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.7"/><path d="M22 9.5V15"/></svg></span><span>Concours</span></a>
+    <a href="culture.html"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.5.4.8 1 .8 1.7V16h5.6v-.5c0-.7.3-1.3.8-1.7A6 6 0 0 0 12 3z"/></svg></span><span class="lbl-full">Culture scientifique</span><span class="lbl-short">Culture</span></a>
+  </nav>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" aria-label="Sur cette page">
+    <p class="sidebar-label">Sur cette page</p>
+    <ul>
+      <li><a href="#calendrier">Calendrier</a></li>
+      <li><a href="#ecoles">Écoles</a></li>
+      <li><a href="#epreuves">Épreuves</a></li>
+      <li><a href="#mode-emploi">Mode d'emploi</a></li>
+      <li><a href="#dossier">Sur dossier</a></li>
+      <li><a href="#anciens">Les anciens</a></li>
+      <li><a href="#liens">Liens</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1>Concours <span id="session-annee"></span></h1>
+      <p>En TPC, il n'y a qu'un concours : le <strong>Concours Commun INP (CCINP)</strong>, filière TPC, auquel on s'inscrit sur SCEI. Il ouvre les portes d'une quinzaine d'écoles d'ingénieurs, surtout en chimie, procédés et matériaux, plus quelques écoles « en banque » qui utilisent les mêmes écrits.</p>
+    </div>
+
+    <div class="countdown" id="countdown" aria-live="polite"></div>
+
+    <!-- ================= CALENDRIER ================= -->
+    <section id="calendrier">
+      <h2 class="section-title"><span class="kicker">01</span>Calendrier de l'année</h2>
+      <p class="note" id="cal-note"></p>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+
+    <!-- ================= ÉCOLES ================= -->
+    <section id="ecoles">
+      <h2 class="section-title"><span class="kicker">02</span>Les écoles accessibles</h2>
+      <p class="note">Places offertes en filière TPC (règlement 2026, à confirmer par l'arrêté annuel). Cliquer sur un domaine pour filtrer, sur un nom pour aller sur le site de l'école.</p>
+
+      <div class="filters">
+        <div class="seg" id="filtre-domaine" role="group" aria-label="Filtrer par domaine"></div>
+        <div class="seg seg-voie" id="filtre-voie" role="group" aria-label="Filtrer par voie"></div>
+      </div>
+
+      <table class="devoirs ecoles-table">
+        <thead>
+          <tr><th>École</th><th>Ville</th><th>Domaines</th><th class="num">Places TPC</th></tr>
+        </thead>
+        <tbody id="ecoles-body"></tbody>
+      </table>
+      <p class="legend" id="ecoles-total"></p>
+      <p class="note small"><span class="voie-badge banque">banque</span> École en <strong>banque d'épreuves</strong> : elle utilise les écrits CCINP mais recrute à part (oral ou entretien propre, frais propres). Il faut la <strong>cocher séparément</strong> lors de l'inscription sur SCEI.</p>
+    </section>
+
+    <!-- ================= ÉPREUVES ================= -->
+    <section id="epreuves">
+      <h2 class="section-title"><span class="kicker">03</span>Les épreuves de la filière TPC</h2>
+
+      <div class="epr-grid">
+        <div class="box">
+          <h3>Écrits <span class="muted-inline">— admissibilité</span></h3>
+          <table class="coef" id="coef-ecrits"></table>
+        </div>
+        <div class="box">
+          <h3>Oraux <span class="muted-inline">— admission</span></h3>
+          <table class="coef" id="coef-oraux"></table>
+        </div>
+      </div>
+
+      <div class="callouts">
+        <div class="callout">
+          <p class="callout-title">TIPE</p>
+          <p>Oral de 30 min : 15 min de présentation, 15 min d'échange. Thème 2026-2027 : <strong>« Sobriété, efficacité, optimisation »</strong>. Le travail est déposé sur SCEI en trois étapes (voir le calendrier) et doit être validé par le professeur encadrant.</p>
+        </div>
+        <div class="callout">
+          <p class="callout-title">Grands admissibles</p>
+          <p>Les meilleurs à l'écrit peuvent être déclarés « grands admissibles » : ils sont dispensés des oraux CCINP et du TIPE <em>pour les écoles du concours</em>. Pas pour les écoles en banque, qui gardent leurs oraux.</p>
+        </div>
+        <div class="callout">
+          <p class="callout-title">Bonus « 3/2 »</p>
+          <p>Un élève inscrit pour la première fois en 2<sup>e</sup> année reçoit <strong>70 points</strong> de bonification à l'admission CCINP.</p>
+        </div>
+      </div>
+      <p class="note small">Durées et coefficients du règlement 2026, à confirmer pour 2027. Une LV B facultative (1 h, coef. 2) peut être ajoutée à l'écrit : seuls les points au-dessus de 10 comptent.</p>
+    </section>
+
+    <!-- ================= MODE D'EMPLOI ================= -->
+    <section id="mode-emploi">
+      <h2 class="section-title"><span class="kicker">04</span>Comment ça marche</h2>
+      <ol class="steps">
+        <li>
+          <p class="step-title">S'inscrire sur SCEI <span class="when">décembre → janvier</span></p>
+          <p>Créer son dossier sur <a href="https://www.scei-concours.fr" target="_blank" rel="noopener">scei-concours.fr</a>, choisir le <strong>CCINP filière TPC</strong>, puis cocher <strong>à part</strong> chaque école en banque qui intéresse (EIL, ESCOM, ITECH, Groupe INSA). Chacune a ses propres frais (de 20 à 105 €, réduits pour les boursiers dans certaines écoles).</p>
+        </li>
+        <li>
+          <p class="step-title">Payer et déposer les pièces <span class="when">mi-janvier</span></p>
+          <p>Frais communs : <strong>240 €</strong>, gratuits pour les boursiers (déposer l'attestation de bourse). Certaines écoles en banque ont des frais en plus. Une inscription non payée n'est pas valide.</p>
+        </li>
+        <li>
+          <p class="step-title">Préparer le TIPE <span class="when">janvier → juin</span></p>
+          <p>Trois étapes de dépôt sur SCEI : titre, motivation et MCOT en janvier ; présentation (pdf) et DOT avant début juin ; validation par le professeur mi-juin. Une étape non faite à temps ne peut plus être rattrapée.</p>
+        </li>
+        <li>
+          <p class="step-title">Écrits, puis oraux <span class="when">avril → juin</span></p>
+          <p>Les écrits ont lieu sur 4 jours fin avril. Les résultats d'admissibilité tombent début juin, les oraux TPC et le TIPE se passent fin juin. Le jour et l'heure de passage sont donnés sur SCEI : il faut s'y connecter l'avant-veille.</p>
+        </li>
+        <li>
+          <p class="step-title">Classer ses vœux <span class="when">1<sup>er</sup> mars → fin juillet</span></p>
+          <p>Classer <strong>toutes</strong> les écoles qu'on accepterait d'intégrer, dans l'ordre de ses <strong>vraies</strong> préférences. Le classement des autres candidats ne dépend pas de vos vœux : il n'y a rien à calculer. Une école non classée est une école à laquelle on renonce.</p>
+        </li>
+        <li>
+          <p class="step-title">Répondre aux propositions <span class="when">fin juillet → début septembre</span></p>
+          <p>Une seule proposition par tour. On répond <strong>OUI DÉFINITIF</strong> (on accepte et on sort de la procédure), <strong>OUI MAIS</strong> (on garde la place en espérant mieux au tour suivant) ou on renonce. On ne peut ensuite plus obtenir une école classée plus bas que celle proposée.</p>
+        </li>
+      </ol>
+
+      <div class="pitfalls">
+        <p class="callout-title">Les pièges classiques</p>
+        <ul>
+          <li>Oublier de cocher les écoles en banque à l'inscription : impossible de les ajouter après la clôture.</li>
+          <li>Ne pas faire de liste de vœux, même pour une seule école : c'est une démission.</li>
+          <li>Ne pas répondre à une proposition dans les délais (48 h environ) : c'est une démission de toutes les écoles. Attention aux vacances sans réseau fin juillet.</li>
+          <li>Classer ses vœux « stratégiquement » plutôt que par vraie préférence.</li>
+          <li>Rater une étape TIPE ou oublier de demander la validation au professeur.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= ÉCOLES SUR DOSSIER ================= -->
+    <section id="dossier">
+      <h2 class="section-title"><span class="kicker">05</span>Écoles sur dossier</h2>
+      <p class="note">Hors SCEI : des écoles recrutent aussi les élèves de CPGE sur dossier (et parfois entretien), avec leur propre calendrier. Une bonne solution de sécurité, à préparer dès l'hiver.</p>
+      <div class="cards" id="dossier-list"></div>
+    </section>
+
+    <!-- ================= ANCIENS ================= -->
+    <section id="anciens">
+      <h2 class="section-title"><span class="kicker">06</span>Où sont allés les anciens</h2>
+      <div id="anciens-stats"></div>
+      <div id="anciens-list"></div>
+    </section>
+
+    <!-- ================= LIENS ================= -->
+    <section id="liens">
+      <h2 class="section-title"><span class="kicker">07</span>Liens officiels</h2>
+      <ul class="res">
+        <li><a href="https://www.concours-commun-inp.fr" target="_blank" rel="noopener">Concours Commun INP : règlement, sujets, rapports de jury, statistiques</a></li>
+        <li><a href="https://www.scei-concours.fr" target="_blank" rel="noopener">SCEI : inscriptions, TIPE, vœux et propositions</a></li>
+        <li><a href="https://www.groupe-insa.fr/preparer/comment-candidater/les-procedures/integrer-le-groupe-insa-en-3e-annee/2-annees-de-cpge-hors-prepa-ats" target="_blank" rel="noopener">Groupe INSA : admission après deux ans de CPGE</a></li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <p>Site personnel — mis à jour au fil de l'année. Les informations officielles font foi.</p>
+</footer>
+
+</div>
+
+<script>
+/* =================================================================
+   DONNÉES À METTRE À JOUR CHAQUE ANNÉE
+   -----------------------------------------------------------------
+   Dates : 'AAAA-MM-JJ' ou 'AAAA-MM-JJTHH:MM' (heure de Paris).
+   confirme: true  → date officielle publiée
+   confirme: false → date estimée (affichée avec « ≈ »)
+   ================================================================= */
+var SESSION = 2027;
+
+var CALENDRIER = [
+  { debut: '2026-12-07T10:00', fin: '2027-01-11T17:00', titre: 'Inscriptions sur SCEI', type: 'inscription', confirme: false,
+    detail: "CCINP filière TPC, et cocher à part les écoles en banque." },
+  { debut: '2027-01-11T17:01', fin: '2027-01-19T17:00', titre: 'Paiement et pièces justificatives', type: 'inscription', confirme: false,
+    detail: "Attestation de bourse à déposer pour l'exonération." },
+  { debut: '2027-01-14T09:00', fin: '2027-02-04T14:00', titre: 'TIPE — étape 1', type: 'tipe', confirme: false,
+    detail: "Professeur encadrant, titre, motivation, MCOT." },
+  { debut: '2027-02-24T09:00', fin: '2027-06-08T14:00', titre: 'TIPE — étape 2', type: 'tipe', confirme: false,
+    detail: "Présentation (pdf) et DOT à déposer." },
+  { debut: '2027-03-01', fin: '2027-07-23T12:00', titre: 'Liste de vœux', type: 'voeux', confirme: false,
+    detail: "Modifiable jusqu'à la clôture, obligatoire." },
+  { debut: '2027-03-25T14:00', titre: 'Convocations aux écrits', type: 'info', confirme: false },
+  { debut: '2027-04-19', fin: '2027-04-22', titre: 'Épreuves écrites', type: 'ecrit', confirme: true,
+    detail: "4 jours : maths, physique, chimie, français-philo, informatique, LVA, modélisation." },
+  { debut: '2027-06-02T18:00', titre: "Résultats d'admissibilité", type: 'resultat', confirme: false },
+  { debut: '2027-06-10T09:00', fin: '2027-06-18T14:00', titre: 'TIPE — étape 3', type: 'tipe', confirme: false,
+    detail: "Validation des livrables par le professeur." },
+  { debut: '2027-06-15T14:00', titre: 'Dates de passage des oraux en ligne', type: 'info', confirme: false },
+  { debut: '2027-06-21', fin: '2027-06-22', titre: 'Oral de TIPE', type: 'oral', confirme: false },
+  { debut: '2027-06-23', fin: '2027-06-24', titre: 'Oraux CCINP TPC', type: 'oral', confirme: false },
+  { debut: '2027-07-21T20:00', titre: "Résultats d'admission", type: 'resultat', confirme: false },
+  { debut: '2027-07-27T14:00', titre: "1re proposition d'intégration", type: 'voeux', confirme: false,
+    detail: "Réponse sous 48 h environ, sinon démission." },
+  { debut: '2027-07-30T14:00', fin: '2027-09-05T14:00', titre: 'Propositions suivantes', type: 'voeux', confirme: false,
+    detail: "Fin juillet, fin août, début septembre : répondre à chaque tour." }
+];
+
+/* domaines : chimie, procedes, materiaux, energie, numerique, bio
+   voie : 'concours' (écoles du CCINP) ou 'banque' (écoles en banque d'épreuves) */
+var ECOLES = [
+  { nom: 'Chimie ParisTech – PSL', ville: 'Paris', domaines: ['chimie'], places: 2, voie: 'concours', url: 'https://www.chimieparistech.psl.eu' },
+  { nom: 'Clermont Auvergne INP – Sigma', ville: 'Clermont-Ferrand', domaines: ['chimie', 'materiaux'], places: 2, voie: 'concours', url: 'https://www.clermont-auvergne-inp.fr' },
+  { nom: 'CPE Lyon', ville: 'Villeurbanne', domaines: ['chimie', 'procedes'], places: 2, voie: 'concours', url: 'https://www.cpe.fr' },
+  { nom: 'ECPM Strasbourg', ville: 'Strasbourg', domaines: ['chimie', 'materiaux'], places: 3, voie: 'concours', url: 'https://ecpm.unistra.fr' },
+  { nom: 'ENSCL Lille', ville: 'Lille', domaines: ['chimie'], places: 1, voie: 'concours', url: 'https://www.ensc-lille.fr' },
+  { nom: 'ENSCM Montpellier', ville: 'Montpellier', domaines: ['chimie'], places: 2, voie: 'concours', url: 'https://www.enscm.fr' },
+  { nom: 'ENSCMu Mulhouse', ville: 'Mulhouse', domaines: ['chimie'], places: 2, voie: 'concours', url: 'https://www.enscmu.uha.fr' },
+  { nom: 'ENSGTI Pau', ville: 'Pau', domaines: ['procedes', 'energie'], places: 3, voie: 'concours', url: 'https://ensgti.univ-pau.fr' },
+  { nom: 'ENSICAEN', ville: 'Caen', domaines: ['chimie', 'materiaux', 'numerique'], places: 2, voie: 'concours', url: 'https://www.ensicaen.fr' },
+  { nom: 'Grenoble INP – Pagora', ville: 'Grenoble', domaines: ['materiaux', 'procedes'], places: 2, voie: 'concours', url: 'https://pagora.grenoble-inp.fr' },
+  { nom: 'Lorraine INP – ENSEM', ville: 'Nancy', domaines: ['energie'], places: 2, voie: 'concours', url: 'https://ensem.univ-lorraine.fr' },
+  { nom: 'Lorraine INP – ENSIC', ville: 'Nancy', domaines: ['procedes', 'chimie'], places: 2, voie: 'concours', url: 'https://ensic.univ-lorraine.fr' },
+  { nom: 'SeaTech Toulon', ville: 'Toulon', domaines: ['materiaux', 'numerique'], places: 2, voie: 'concours', url: 'https://seatech.univ-tln.fr' },
+  { nom: 'Toulouse INP – ENSIACET', ville: 'Toulouse', domaines: ['chimie', 'procedes', 'materiaux'], places: 1, voie: 'concours', url: 'https://www.ensiacet.fr' },
+  { nom: "EIL Côte d'Opale", ville: 'Calais', domaines: ['numerique', 'energie'], places: 10, voie: 'banque', url: 'https://eilco.univ-littoral.fr',
+    remarque: 'oral d’entretien propre' },
+  { nom: 'ESCOM Chimie', ville: 'Compiègne', domaines: ['chimie'], places: 3, voie: 'banque', url: 'https://www.escom.fr',
+    remarque: 'entretien propre' },
+  { nom: 'ITECH Lyon', ville: 'Écully', domaines: ['chimie', 'materiaux'], places: 3, voie: 'banque', url: 'https://www.itech.fr',
+    remarque: 'entretien propre' },
+  { nom: 'Groupe INSA – Biotechnologies-santé', ville: 'Réseau INSA', domaines: ['bio'], places: 20, partage: true, voie: 'banque', url: 'https://www.groupe-insa.fr',
+    remarque: '20 places partagées avec MP, MPI, PC, PSI ; écrits CCINP + dossier + entretien' }
+];
+
+var DOMAINES = {
+  chimie: 'Chimie', procedes: 'Procédés', materiaux: 'Matériaux',
+  energie: 'Énergie', numerique: 'Numérique', bio: 'Biotech-santé'
+};
+
+var COEF_ECRITS = [
+  ['Mathématiques', '4 h', 10], ['Physique', '4 h', 12], ['Chimie', '4 h', 12],
+  ['Français-philosophie', '4 h', 9], ['Modélisation', '4 h', 7],
+  ['Informatique', '3 h', 4], ['Langue vivante A', '3 h', 4]
+];
+var COEF_ORAUX = [
+  ['Physique <em>ou</em> chimie (tirage)', '30 + 30 min', 9], ['TP physique <em>ou</em> chimie', '≈ 3 h', 9],
+  ['Mathématiques', '30 + 30 min', 8], ['TIPE', '30 min', 8], ['Langue vivante A', '30 + 30 min', 6]
+];
+
+/* -----------------------------------------------------------------
+   ÉCOLES SUR DOSSIER : à compléter.
+   Copier le modèle ci-dessous (sans les //) autant de fois que nécessaire.
+   ----------------------------------------------------------------- */
+var ECOLES_DOSSIER = [
+  // { nom: "Nom de l'école", ville: "Ville", domaine: "Chimie, matériaux…",
+  //   calendrier: "Candidature de janvier à mars", url: "https://…",
+  //   remarque: "Entretien en avril" },
+];
+
+/* -----------------------------------------------------------------
+   OÙ SONT ALLÉS LES ANCIENS : une ligne par école et par année.
+   nb = nombre d'élèves (1 si omis). Pas de noms d'élèves.
+   ----------------------------------------------------------------- */
+var ANCIENS = [
+  // { annee: 2026, ecole: "Toulouse INP – ENSIACET", nb: 1 },
+  // { annee: 2026, ecole: "CPE Lyon", nb: 2 },
+];
+</script>
+
+<script>
+/* ======================= Affichage (rien à modifier) ======================= */
+(function () {
+  var MOIS = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var JOUR = 86400000;
+
+  function parse(s, finDeJour) {
+    var p = s.split('T'), d = p[0].split('-').map(Number), h = p[1] ? p[1].split(':').map(Number) : null;
+    if (h) return new Date(d[0], d[1] - 1, d[2], h[0], h[1]);
+    return finDeJour ? new Date(d[0], d[1] - 1, d[2], 23, 59) : new Date(d[0], d[1] - 1, d[2], 0, 0);
+  }
+  function hasTime(s) { return s.indexOf('T') > 0; }
+  function jour(s) { var d = parse(s); return d.getDate() + (d.getDate() === 1 ? 'er' : '') + ' ' + MOIS[d.getMonth()]; }
+  function heure(s) { if (!hasTime(s)) return ''; var t = s.split('T')[1].split(':'); return ' ' + Number(t[0]) + ' h' + (t[1] !== '00' ? ' ' + t[1] : ''); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  document.getElementById('session-annee').textContent = SESSION;
+
+  /* ---------- Calendrier ---------- */
+  var now = new Date();
+  var items = CALENDRIER.map(function (e) {
+    var a = parse(e.debut), b = e.fin ? parse(e.fin, true) : (hasTime(e.debut) ? a : parse(e.debut, true));
+    var st = b < now ? 'past' : (a <= now ? 'now' : 'future');
+    return { e: e, a: a, b: b, st: st };
+  }).sort(function (x, y) { return x.a - y.a; });
+
+  var firstFuture = null;
+  items.forEach(function (it) { if (!firstFuture && it.st === 'future') firstFuture = it; });
+
+  var nonConf = CALENDRIER.some(function (e) { return !e.confirme; });
+  document.getElementById('cal-note').innerHTML =
+    'Session ' + SESSION + '. ' + (nonConf
+      ? 'Les dates marquées <span class="approx">≈</span> sont estimées d\'après la session précédente et seront confirmées par le règlement officiel.'
+      : 'Toutes les dates sont officielles.');
+
+  var html = items.map(function (it) {
+    var e = it.e;
+    var date = jour(e.debut) + (e.fin ? ' → ' + jour(e.fin) : '') + (!e.fin ? heure(e.debut) : '');
+    var cls = 'tl-item tl-' + it.st + ' tl-type-' + (e.type || 'info') + (it === firstFuture ? ' tl-next' : '');
+    var tag = '';
+    if (it.st === 'now') tag = '<span class="tl-tag now">en cours</span>';
+    else if (it === firstFuture) tag = '<span class="tl-tag next">prochaine étape</span>';
+    return '<li class="' + cls + '">' +
+      '<span class="tl-date">' + (e.confirme ? '' : '<span class="approx" title="date estimée">≈</span>') + date + '</span>' +
+      '<div class="tl-body"><p class="tl-title">' + esc(e.titre) + tag + '</p>' +
+      (e.detail ? '<p class="tl-detail">' + esc(e.detail) + '</p>' : '') + '</div></li>';
+  }).join('');
+  document.getElementById('timeline').innerHTML = html;
+
+  /* ---------- Compte à rebours : prochaine échéance (ouverture ou clôture) ---------- */
+  var points = [];
+  items.forEach(function (it) {
+    var e = it.e;
+    var guichet = ['inscription', 'voeux', 'tipe'].indexOf(e.type) >= 0;
+    if (it.a > now) points.push({ t: it.a, quoi: e.fin ? (guichet ? 'Ouverture' : 'Début') : '', e: e, s: e.debut });
+    if (e.fin && it.b > now && it.a <= now) points.push({ t: it.b, quoi: guichet ? 'Clôture' : 'Fin', e: e, s: e.fin });
+  });
+  points.sort(function (x, y) { return x.t - y.t; });
+  var cd = document.getElementById('countdown');
+  if (points.length) {
+    var p = points[0];
+    var j = Math.ceil((new Date(p.t.getFullYear(), p.t.getMonth(), p.t.getDate()) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / JOUR);
+    var quand = j <= 0 ? "aujourd'hui" : (j === 1 ? 'demain' : 'dans <strong>' + j + '</strong> jours');
+    var enCours = items.filter(function (it) { return it.st === 'now'; }).map(function (it) { return esc(it.e.titre); });
+    cd.innerHTML =
+      '<div class="cd-num">' + (j <= 0 ? '0' : j) + '<span>j</span></div>' +
+      '<div class="cd-text"><p class="cd-label">Prochaine échéance</p>' +
+      '<p class="cd-what">' + (p.quoi ? p.quoi + ' : ' : '') + esc(p.e.titre) + '</p>' +
+      '<p class="cd-when">' + quand + ', le ' + (p.e.confirme ? '' : '≈ ') + jour(p.s) + heure(p.s) + '</p>' +
+      (enCours.length ? '<p class="cd-now">En ce moment : ' + enCours.join(' · ') + '</p>' : '') +
+      '</div>';
+  } else {
+    cd.innerHTML = '<div class="cd-text"><p class="cd-label">Session ' + SESSION + ' terminée</p><p class="cd-what">Le calendrier de la session suivante sera bientôt en ligne.</p></div>';
+  }
+
+  /* ---------- Tableau des écoles ---------- */
+  var fDom = 'tous', fVoie = 'toutes';
+  var segD = document.getElementById('filtre-domaine'), segV = document.getElementById('filtre-voie');
+  function bouton(val, label, actif) { return '<button type="button" data-v="' + val + '"' + (actif ? ' class="on"' : '') + '>' + label + '</button>'; }
+  segD.innerHTML = bouton('tous', 'Tous', true) + Object.keys(DOMAINES).map(function (k) { return bouton(k, DOMAINES[k]); }).join('');
+  segV.innerHTML = bouton('toutes', 'Toutes', true) + bouton('concours', 'Concours CCINP') + bouton('banque', 'Banque');
+
+  function rendEcoles() {
+    var rows = ECOLES.filter(function (s) {
+      return (fDom === 'tous' || s.domaines.indexOf(fDom) >= 0) && (fVoie === 'toutes' || s.voie === fVoie);
+    });
+    document.getElementById('ecoles-body').innerHTML = rows.map(function (s) {
+      return '<tr>' +
+        '<td><a class="name" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' +
+        (s.voie === 'banque' ? ' <span class="voie-badge banque">banque</span>' : '') +
+        (s.remarque ? '<span class="ecole-rq">' + esc(s.remarque) + '</span>' : '') + '</td>' +
+        '<td class="ville">' + esc(s.ville) + '</td>' +
+        '<td>' + s.domaines.map(function (d) { return '<span class="dom">' + DOMAINES[d] + '</span>'; }).join('') + '</td>' +
+        '<td class="num"><span class="places">' + s.places + (s.partage ? '*' : '') + '</span></td></tr>';
+    }).join('') || '<tr><td colspan="4" class="placeholder">Aucune école pour ce filtre.</td></tr>';
+    var tot = rows.filter(function (s) { return !s.partage; }).reduce(function (a, s) { return a + s.places; }, 0);
+    var part = rows.some(function (s) { return s.partage; });
+    document.getElementById('ecoles-total').innerHTML = rows.length + ' école' + (rows.length > 1 ? 's' : '') +
+      ' · <strong>' + tot + '</strong> places TPC' + (part ? ' + places INSA partagées (*)' : '');
+  }
+  function clic(seg, set) {
+    seg.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button'); if (!b) return;
+      seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      set(b.getAttribute('data-v')); rendEcoles();
+    });
+  }
+  clic(segD, function (v) { fDom = v; });
+  clic(segV, function (v) { fVoie = v; });
+  rendEcoles();
+
+  /* ---------- Coefficients ---------- */
+  function rendCoef(id, lignes, totalLabel) {
+    var max = Math.max.apply(null, lignes.map(function (l) { return l[2]; }));
+    var tot = lignes.reduce(function (a, l) { return a + l[2]; }, 0);
+    document.getElementById(id).innerHTML = '<tbody>' + lignes.map(function (l) {
+      return '<tr><td class="c-ep">' + l[0] + '<span class="c-dur">' + l[1] + '</span></td>' +
+        '<td class="c-bar"><span style="width:' + (100 * l[2] / max).toFixed(0) + '%"></span></td>' +
+        '<td class="c-val">' + l[2] + '</td></tr>';
+    }).join('') + '<tr class="c-tot"><td>' + totalLabel + '</td><td></td><td class="c-val">' + tot + '</td></tr></tbody>';
+  }
+  rendCoef('coef-ecrits', COEF_ECRITS, 'Total');
+  rendCoef('coef-oraux', COEF_ORAUX, 'Total oral');
+
+  /* ---------- Écoles sur dossier ---------- */
+  var dl = document.getElementById('dossier-list');
+  if (!ECOLES_DOSSIER.length) {
+    dl.outerHTML = '<p class="soon-note">Rubrique en cours de rédaction.</p>';
+  } else {
+    dl.innerHTML = ECOLES_DOSSIER.map(function (s) {
+      return '<div class="card"><div class="card-head"><h3>' +
+        (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' : esc(s.nom)) + '</h3></div>' +
+        (s.ville || s.domaine ? '<p class="dos-meta">' + esc([s.ville, s.domaine].filter(Boolean).join(' · ')) + '</p>' : '') +
+        (s.calendrier ? '<p class="dos-cal">' + esc(s.calendrier) + '</p>' : '') +
+        (s.remarque ? '<p class="dos-rq">' + esc(s.remarque) + '</p>' : '') + '</div>';
+    }).join('');
+  }
+
+  /* ---------- Anciens ---------- */
+  var st = document.getElementById('anciens-stats'), li = document.getElementById('anciens-list');
+  if (!ANCIENS.length) {
+    st.innerHTML = '<p class="soon-note">Les premières intégrations seront ajoutées après les résultats de cette année.</p>';
+  } else {
+    var parAn = {}, parEcole = {}, total = 0;
+    ANCIENS.forEach(function (a) {
+      var n = a.nb || 1; total += n;
+      (parAn[a.annee] = parAn[a.annee] || []).push({ ecole: a.ecole, nb: n });
+      parEcole[a.ecole] = (parEcole[a.ecole] || 0) + n;
+    });
+    var annees = Object.keys(parAn).sort(function (x, y) { return y - x; });
+    var top = Object.keys(parEcole).sort(function (x, y) { return parEcole[y] - parEcole[x] || x.localeCompare(y); });
+    var max = parEcole[top[0]];
+    st.innerHTML = '<p class="note">Depuis ' + annees[annees.length - 1] + ' : <strong>' + total + '</strong> élève' + (total > 1 ? 's' : '') +
+      ' dans <strong>' + top.length + '</strong> école' + (top.length > 1 ? 's' : '') + '.</p>' +
+      '<div class="box anciens-top"><h3>Écoles les plus intégrées</h3><table class="coef"><tbody>' +
+      top.slice(0, 8).map(function (e) {
+        return '<tr><td class="c-ep">' + esc(e) + '</td><td class="c-bar"><span style="width:' + (100 * parEcole[e] / max).toFixed(0) +
+          '%"></span></td><td class="c-val">' + parEcole[e] + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    li.innerHTML = annees.map(function (y) {
+      var l = parAn[y].sort(function (a, b) { return b.nb - a.nb || a.ecole.localeCompare(b.ecole); });
+      var n = l.reduce(function (a, x) { return a + x.nb; }, 0);
+      return '<div class="annee-row"><p class="annee">' + y + '<span>' + n + ' élève' + (n > 1 ? 's' : '') + '</span></p><div class="chips static">' +
+        l.map(function (x) { return '<span class="chip">' + esc(x.ecole) + (x.nb > 1 ? ' <b>×' + x.nb + '</b>' : '') + '</span>'; }).join('') +
+        '</div></div>';
+    }).join('');
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var PASS = "tpc";
+  var overlay = document.getElementById('auth-overlay');
+  var content = document.getElementById('site-content');
+  var form = document.getElementById('auth-form');
+  var input = document.getElementById('auth-pass');
+  var error = document.getElementById('auth-error');
+  var toggle = document.getElementById('auth-toggle');
+
+  toggle.addEventListener('change', function () {
+    input.type = toggle.checked ? 'text' : 'password';
+  });
+
+  if (localStorage.getItem('tpc_auth') === 'ok') {
+    overlay.hidden = true;
+    content.hidden = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value === PASS) {
+      localStorage.setItem('tpc_auth', 'ok');
+      overlay.hidden = true;
+      content.hidden = false;
+    } else {
+      error.hidden = false;
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+</script>
+
+<script>
+/* Sommaire : met en évidence la rubrique visible à l'écran */
+(function () {
+  var links = document.querySelectorAll('nav.sidebar a[href^="#"]');
+  if (!('IntersectionObserver' in window) || !links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var a = byId[e.target.id];
+      if (!a) return;
+      links.forEach(function (l) { l.classList.remove('active'); });
+      a.classList.add('active');
+      var ul = a.closest('ul');
+      if (ul && ul.scrollWidth > ul.clientWidth) {
+        ul.scrollTo({ left: a.offsetLeft - (ul.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+      }
+    });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  Object.keys(byId).forEach(function (id) {
+    var s = document.getElementById(id);
+    if (s) obs.observe(s);
+  });
+})();
+</script>
+
+</body>
+</html>

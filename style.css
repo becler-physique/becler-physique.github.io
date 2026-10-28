@@ -1,5 +1,5 @@
 /* =========================================================
-   CPGE TPC — feuille de style commune aux trois pages
+   CPGE TPC — feuille de style commune aux quatre pages
    ========================================================= */
 :root {
   --paper: #fafaf7;
@@ -944,4 +944,229 @@ details.course.accordion > .accordion-body { padding-top: 14px; }
 @media (max-width: 720px) {
   .tipe-form { padding: 16px 14px; }
   .tipe-form .field-row { grid-template-columns: 1fr; }
+}
+
+
+/* =========================================================
+   Page Concours
+   ========================================================= */
+.muted-inline { color: var(--muted); font-weight: 400; }
+.note.small { font-size: 0.85rem; }
+.approx { color: var(--muted); margin-right: 3px; }
+
+/* Compte à rebours */
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 8px 0 48px;
+  padding: 18px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+}
+.cd-num {
+  font-family: var(--mono);
+  font-size: 2.6rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--accent);
+  min-width: 2.2ch;
+  text-align: right;
+}
+.cd-num span { font-size: 0.95rem; margin-left: 3px; color: var(--muted); }
+.cd-text p { margin: 0; }
+.cd-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cd-what { font-size: 1.12rem; font-weight: 700; line-height: 1.3; margin: 2px 0 !important; }
+.cd-when { color: var(--ink); }
+.cd-now { font-size: 0.88rem; color: var(--muted); margin-top: 6px !important; }
+
+/* Frise chronologique */
+ol.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+ol.timeline::before {
+  content: "";
+  position: absolute;
+  left: 172px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--border);
+}
+.tl-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 32px; padding: 7px 0; position: relative; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: 168px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--faint);
+}
+.tl-date { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: right; padding-top: 3px; white-space: nowrap; }
+.tl-body p { margin: 0; }
+.tl-title { font-weight: 600; }
+.tl-detail { font-size: 0.9rem; color: var(--muted); }
+.tl-tag {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: 10px;
+  padding: 1px 7px;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+.tl-tag.next { color: var(--accent); background: var(--accent-soft); }
+.tl-tag.now { color: #ffffff; background: var(--accent); }
+.tl-type-ecrit::before, .tl-type-oral::before { border-color: var(--accent); background: var(--accent); }
+.tl-type-ecrit .tl-title, .tl-type-oral .tl-title { color: var(--accent); }
+.tl-past { opacity: 0.45; }
+.tl-past::before { background: var(--faint); border-color: var(--faint); }
+.tl-now::before, .tl-next::before { box-shadow: 0 0 0 4px var(--accent-soft); border-color: var(--accent); }
+
+/* Filtres */
+.filters { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin: 0 0 12px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  padding: 5px 11px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.seg button:hover { border-color: var(--accent); color: var(--accent); }
+.seg button.on { background: var(--accent); border-color: var(--accent); color: #ffffff; }
+
+/* Tableau des écoles */
+.ecoles-table .num { text-align: right; }
+.ecoles-table a.name { color: var(--ink); font-weight: 600; }
+.ecoles-table a.name:hover { color: var(--accent); }
+.ecoles-table .ville { color: var(--muted); white-space: nowrap; }
+.ecole-rq { display: block; font-size: 0.82rem; color: var(--muted); }
+.dom {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0 6px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+}
+.places { font-family: var(--mono); font-weight: 500; font-size: 1rem; }
+.voie-badge {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0 5px;
+  border: 1px solid var(--faint);
+  color: var(--muted);
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+
+/* Épreuves */
+.epr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+table.coef { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+table.coef td { padding: 4px 0; vertical-align: middle; }
+.c-ep { padding-right: 10px !important; }
+.c-dur { display: block; font-family: var(--mono); font-size: 0.7rem; color: var(--faint); line-height: 1.2; }
+.c-bar { width: 34%; }
+.c-bar span { display: block; height: 8px; background: var(--accent); opacity: 0.75; }
+.c-val { font-family: var(--mono); text-align: right; width: 2.5em; }
+.c-tot td { border-top: 1px solid var(--border); padding-top: 8px; font-weight: 600; }
+.callouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0 12px; }
+.callout, .pitfalls { background: var(--accent-soft); padding: 14px 16px; font-size: 0.92rem; }
+.callout p { margin: 0; }
+.callout-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 6px !important;
+}
+
+/* Mode d'emploi */
+ol.steps { list-style: none; margin: 0 0 24px; padding: 0; counter-reset: st; }
+ol.steps li { counter-increment: st; position: relative; padding: 0 0 16px 46px; }
+ol.steps li::before {
+  content: counter(st);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: var(--card);
+}
+ol.steps p { margin: 0; }
+.step-title { font-weight: 700; padding-top: 2px; }
+.when { font-family: var(--mono); font-size: 0.74rem; font-weight: 400; color: var(--muted); margin-left: 8px; }
+.pitfalls { background: #fbf5ec; border-left: 3px solid #b5782b; }
+.pitfalls .callout-title { color: #8a5a1c; }
+.pitfalls ul { margin: 0; padding-left: 18px; }
+.pitfalls li { margin-bottom: 4px; }
+
+/* Écoles sur dossier */
+.dos-meta { color: var(--muted); font-size: 0.88rem; margin: 0 0 6px; }
+.dos-cal { font-family: var(--mono); font-size: 0.8rem; margin: 0 0 6px; }
+.dos-rq { font-size: 0.9rem; margin: 0; }
+
+/* Anciens */
+.anciens-top { margin: 0 0 22px; max-width: 520px; }
+.annee-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 10px 0; border-top: 1px solid var(--border); }
+.annee { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 1rem; }
+.annee span { display: block; font-size: 0.72rem; font-weight: 400; color: var(--muted); }
+.chips.static .chip {
+  display: inline-flex;
+  padding: 4px 11px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+.chip b { font-family: var(--mono); font-weight: 500; color: var(--accent); margin-left: 4px; }
+
+@media (max-width: 720px) {
+  .countdown { gap: 16px; padding: 14px 16px; margin-bottom: 36px; }
+  .cd-num { font-size: 2.1rem; }
+
+  ol.timeline::before { left: 5px; }
+  .tl-item { grid-template-columns: 1fr; padding: 6px 0 8px 26px; }
+  .tl-item::before { left: 0; top: 11px; }
+  .tl-date { text-align: left; padding: 0; font-size: 0.76rem; }
+
+  .filters { flex-direction: column; }
+  .ecoles-table tr { display: grid !important; grid-template-columns: 1fr auto; gap: 2px 12px; }
+  .ecoles-table td:nth-child(1) { grid-column: 1; }
+  .ecoles-table td:nth-child(2) { grid-column: 1; grid-row: 2; font-size: 0.88rem; }
+  .ecoles-table td:nth-child(3) { grid-column: 1; grid-row: 3; }
+  .ecoles-table td.num { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+
+  .epr-grid, .callouts { grid-template-columns: 1fr; }
+  .annee-row { grid-template-columns: 1fr; gap: 6px; }
+}
+
+/* Quatre onglets sur petit téléphone : on retire les icônes */
+@media (max-width: 400px) {
+  nav.top-nav .icon { display: none; }
+  nav.top-nav { font-size: 0.78rem; }
 }
