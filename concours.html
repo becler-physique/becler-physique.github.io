@@ -162,8 +162,21 @@
     <!-- ================= ÉCOLES SUR DOSSIER ================= -->
     <section id="dossier">
       <h2 class="section-title"><span class="kicker">05</span>Écoles sur dossier</h2>
-      <p class="note">Hors SCEI : des écoles recrutent aussi les élèves de CPGE sur dossier (et parfois entretien), avec leur propre calendrier. Une bonne solution de sécurité, à préparer dès l'hiver.</p>
-      <div class="cards" id="dossier-list"></div>
+      <p class="note">Hors SCEI : ces écoles recrutent les élèves de TPC sur dossier (souvent avec un entretien), chacune avec son propre calendrier. Une bonne solution de sécurité, à préparer dès l'hiver.</p>
+
+      <div class="filters">
+        <div class="seg" id="dos-filtre-domaine" role="group" aria-label="Filtrer par domaine"></div>
+        <div class="seg seg-voie" id="dos-filtre-voie" role="group" aria-label="Filtrer par voie"></div>
+      </div>
+
+      <table class="devoirs ecoles-table dossier-table">
+        <thead>
+          <tr><th>École</th><th>Ville</th><th>Domaines</th><th>Candidature</th></tr>
+        </thead>
+        <tbody id="dossier-body"></tbody>
+      </table>
+      <p class="legend" id="dossier-total"></p>
+      <p class="note small"><span class="voie-badge alt">alternance</span> Formation en <strong>apprentissage</strong> : l'admission n'est définitive qu'une fois le contrat signé avec une entreprise, qu'il faut chercher soi-même dès le printemps.</p>
     </section>
 
     <!-- ================= ANCIENS ================= -->
@@ -257,7 +270,8 @@ var ECOLES = [
 
 var DOMAINES = {
   chimie: 'Chimie', procedes: 'Procédés', materiaux: 'Matériaux',
-  energie: 'Énergie', numerique: 'Numérique', bio: 'Biotech-santé'
+  energie: 'Énergie', numerique: 'Numérique', bio: 'Biotech-santé',
+  mecanique: 'Mécanique', environnement: 'Eau-environnement', construction: 'Construction'
 };
 
 var COEF_ECRITS = [
@@ -271,13 +285,26 @@ var COEF_ORAUX = [
 ];
 
 /* -----------------------------------------------------------------
-   ÉCOLES SUR DOSSIER : à compléter.
-   Copier le modèle ci-dessous (sans les //) autant de fois que nécessaire.
+   ÉCOLES SUR DOSSIER
+   voie : 'dossier' ou 'alternance'
+   calendrier : laisser '' tant que ce n'est pas connu (« à compléter » s'affiche)
    ----------------------------------------------------------------- */
 var ECOLES_DOSSIER = [
-  // { nom: "Nom de l'école", ville: "Ville", domaine: "Chimie, matériaux…",
-  //   calendrier: "Candidature de janvier à mars", url: "https://…",
-  //   remarque: "Entretien en avril" },
+  { nom: 'Grenoble INP – Ense3', ville: 'Grenoble', domaines: ['energie', 'environnement', 'mecanique'], voie: 'dossier',
+    url: 'https://ense3.grenoble-inp.fr', remarque: 'énergie, eau, environnement', calendrier: '' },
+  { nom: 'Lorraine INP – ENSTIB', ville: 'Épinal', domaines: ['construction', 'materiaux'], voie: 'dossier',
+    url: 'https://enstib.univ-lorraine.fr', remarque: 'le bois : matériau, construction, industrie', calendrier: '' },
+  { nom: 'ENSIL-ENSCI', ville: 'Limoges', domaines: ['materiaux', 'environnement', 'construction'], voie: 'dossier',
+    url: 'https://www.ensil-ensci.unilim.fr', remarque: 'céramique, matériaux, eau-environnement, génie civil', calendrier: '' },
+  { nom: 'UTC Compiègne', ville: 'Compiègne', domaines: ['procedes', 'bio', 'mecanique', 'numerique'], voie: 'dossier',
+    url: 'https://www.utc.fr', remarque: 'recrutement commun aux 3 UT : dossier + entretien', calendrier: '≈ fin janvier → avril, entretiens mars-mai' },
+  { nom: 'UTT Troyes', ville: 'Troyes', domaines: ['materiaux', 'mecanique', 'numerique'], voie: 'dossier',
+    url: 'https://www.utt.fr', remarque: 'recrutement commun aux 3 UT : dossier + entretien', calendrier: '≈ fin janvier → avril, entretiens mars-mai' },
+  { nom: 'UTBM', ville: 'Belfort-Montbéliard', domaines: ['energie', 'mecanique', 'numerique'], voie: 'dossier',
+    url: 'https://www.utbm.fr', remarque: 'recrutement commun aux 3 UT : dossier + entretien', calendrier: '≈ fin janvier → avril, entretiens mars-mai' },
+  { nom: 'ISTP', ville: 'Saint-Étienne', domaines: ['energie', 'mecanique', 'numerique'], voie: 'alternance',
+    url: 'https://www.istp-france.com', remarque: 'diplômes Mines Saint-Étienne ou Arts et Métiers ; dossier, tests écrits (dispense possible pour le 1er quart de la classe), entretien',
+    calendrier: 'tests et entretiens d’avril à juillet' }
 ];
 
 /* -----------------------------------------------------------------
@@ -365,41 +392,68 @@ var ANCIENS = [
     cd.innerHTML = '<div class="cd-text"><p class="cd-label">Session ' + SESSION + ' terminée</p><p class="cd-what">Le calendrier de la session suivante sera bientôt en ligne.</p></div>';
   }
 
-  /* ---------- Tableau des écoles ---------- */
-  var fDom = 'tous', fVoie = 'toutes';
-  var segD = document.getElementById('filtre-domaine'), segV = document.getElementById('filtre-voie');
+  /* ---------- Tableaux d'écoles (concours et dossier) ---------- */
   function bouton(val, label, actif) { return '<button type="button" data-v="' + val + '"' + (actif ? ' class="on"' : '') + '>' + label + '</button>'; }
-  segD.innerHTML = bouton('tous', 'Tous', true) + Object.keys(DOMAINES).map(function (k) { return bouton(k, DOMAINES[k]); }).join('');
-  segV.innerHTML = bouton('toutes', 'Toutes', true) + bouton('concours', 'Concours CCINP') + bouton('banque', 'Banque');
+  var BADGE = { banque: 'banque', alternance: 'alternance' };
+  var BADGE_CLS = { banque: 'banque', alternance: 'alt' };
 
-  function rendEcoles() {
-    var rows = ECOLES.filter(function (s) {
-      return (fDom === 'tous' || s.domaines.indexOf(fDom) >= 0) && (fVoie === 'toutes' || s.voie === fVoie);
-    });
-    document.getElementById('ecoles-body').innerHTML = rows.map(function (s) {
-      return '<tr>' +
-        '<td><a class="name" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' +
-        (s.voie === 'banque' ? ' <span class="voie-badge banque">banque</span>' : '') +
-        (s.remarque ? '<span class="ecole-rq">' + esc(s.remarque) + '</span>' : '') + '</td>' +
-        '<td class="ville">' + esc(s.ville) + '</td>' +
-        '<td>' + s.domaines.map(function (d) { return '<span class="dom">' + DOMAINES[d] + '</span>'; }).join('') + '</td>' +
-        '<td class="num"><span class="places">' + s.places + (s.partage ? '*' : '') + '</span></td></tr>';
-    }).join('') || '<tr><td colspan="4" class="placeholder">Aucune école pour ce filtre.</td></tr>';
-    var tot = rows.filter(function (s) { return !s.partage; }).reduce(function (a, s) { return a + s.places; }, 0);
-    var part = rows.some(function (s) { return s.partage; });
-    document.getElementById('ecoles-total').innerHTML = rows.length + ' école' + (rows.length > 1 ? 's' : '') +
-      ' · <strong>' + tot + '</strong> places TPC' + (part ? ' + places INSA partagées (*)' : '');
+  function tableauEcoles(cfg) {
+    var fDom = 'tous', fVoie = 'toutes';
+    var segD = document.getElementById(cfg.segD), segV = document.getElementById(cfg.segV);
+    var doms = Object.keys(DOMAINES).filter(function (k) { return cfg.data.some(function (s) { return s.domaines.indexOf(k) >= 0; }); });
+    segD.innerHTML = bouton('tous', 'Tous', true) + doms.map(function (k) { return bouton(k, DOMAINES[k]); }).join('');
+    segV.innerHTML = bouton('toutes', 'Toutes', true) + cfg.voies.map(function (v) { return bouton(v[0], v[1]); }).join('');
+
+    function rend() {
+      var rows = cfg.data.filter(function (s) {
+        return (fDom === 'tous' || s.domaines.indexOf(fDom) >= 0) && (fVoie === 'toutes' || s.voie === fVoie);
+      });
+      document.getElementById(cfg.body).innerHTML = rows.map(function (s) {
+        return '<tr>' +
+          '<td><a class="name" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' +
+          (BADGE[s.voie] ? ' <span class="voie-badge ' + BADGE_CLS[s.voie] + '">' + BADGE[s.voie] + '</span>' : '') +
+          (s.remarque ? '<span class="ecole-rq">' + esc(s.remarque) + '</span>' : '') + '</td>' +
+          '<td class="ville">' + esc(s.ville) + '</td>' +
+          '<td>' + s.domaines.map(function (d) { return '<span class="dom">' + DOMAINES[d] + '</span>'; }).join('') + '</td>' +
+          cfg.derniere(s) + '</tr>';
+      }).join('') || '<tr><td colspan="4" class="placeholder">Aucune école pour ce filtre.</td></tr>';
+      document.getElementById(cfg.total).innerHTML = cfg.resume(rows);
+    }
+    function clic(seg, set) {
+      seg.addEventListener('click', function (ev) {
+        var b = ev.target.closest('button'); if (!b) return;
+        seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        set(b.getAttribute('data-v')); rend();
+      });
+    }
+    clic(segD, function (v) { fDom = v; });
+    clic(segV, function (v) { fVoie = v; });
+    rend();
   }
-  function clic(seg, set) {
-    seg.addEventListener('click', function (ev) {
-      var b = ev.target.closest('button'); if (!b) return;
-      seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
-      set(b.getAttribute('data-v')); rendEcoles();
-    });
-  }
-  clic(segD, function (v) { fDom = v; });
-  clic(segV, function (v) { fVoie = v; });
-  rendEcoles();
+  function nEcoles(rows) { return rows.length + ' école' + (rows.length > 1 ? 's' : ''); }
+
+  tableauEcoles({
+    data: ECOLES, segD: 'filtre-domaine', segV: 'filtre-voie', body: 'ecoles-body', total: 'ecoles-total',
+    voies: [['concours', 'Concours CCINP'], ['banque', 'Banque']],
+    derniere: function (s) { return '<td class="num"><span class="places">' + s.places + (s.partage ? '*' : '') + '</span></td>'; },
+    resume: function (rows) {
+      var tot = rows.filter(function (s) { return !s.partage; }).reduce(function (a, s) { return a + s.places; }, 0);
+      var part = rows.some(function (s) { return s.partage; });
+      return nEcoles(rows) + ' · <strong>' + tot + '</strong> places TPC' + (part ? ' + places INSA partagées (*)' : '');
+    }
+  });
+
+  tableauEcoles({
+    data: ECOLES_DOSSIER, segD: 'dos-filtre-domaine', segV: 'dos-filtre-voie', body: 'dossier-body', total: 'dossier-total',
+    voies: [['dossier', 'Sur dossier'], ['alternance', 'Alternance']],
+    derniere: function (s) {
+      return '<td class="cal">' + (s.calendrier ? esc(s.calendrier) : '<span class="placeholder">à compléter</span>') + '</td>';
+    },
+    resume: function (rows) {
+      var alt = rows.filter(function (s) { return s.voie === 'alternance'; }).length;
+      return nEcoles(rows) + (alt && alt < rows.length ? ' dont ' + alt + ' en alternance' : (alt ? ' en alternance' : ''));
+    }
+  });
 
   /* ---------- Coefficients ---------- */
   function rendCoef(id, lignes, totalLabel) {
@@ -413,20 +467,6 @@ var ANCIENS = [
   }
   rendCoef('coef-ecrits', COEF_ECRITS, 'Total');
   rendCoef('coef-oraux', COEF_ORAUX, 'Total oral');
-
-  /* ---------- Écoles sur dossier ---------- */
-  var dl = document.getElementById('dossier-list');
-  if (!ECOLES_DOSSIER.length) {
-    dl.outerHTML = '<p class="soon-note">Rubrique en cours de rédaction.</p>';
-  } else {
-    dl.innerHTML = ECOLES_DOSSIER.map(function (s) {
-      return '<div class="card"><div class="card-head"><h3>' +
-        (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' : esc(s.nom)) + '</h3></div>' +
-        (s.ville || s.domaine ? '<p class="dos-meta">' + esc([s.ville, s.domaine].filter(Boolean).join(' · ')) + '</p>' : '') +
-        (s.calendrier ? '<p class="dos-cal">' + esc(s.calendrier) + '</p>' : '') +
-        (s.remarque ? '<p class="dos-rq">' + esc(s.remarque) + '</p>' : '') + '</div>';
-    }).join('');
-  }
 
   /* ---------- Anciens ---------- */
   var st = document.getElementById('anciens-stats'), li = document.getElementById('anciens-list');
