@@ -1179,3 +1179,4 @@ ol.steps p { margin: 0; }
 .ecole-liste summary { cursor: pointer; color: var(--accent); font-family: var(--mono); font-size: 0.74rem; }
 .ecole-liste ul { margin: 6px 0 2px; padding-left: 18px; color: var(--ink); }
 .ecole-liste li { margin-bottom: 2px; }
+.voie-badge.verif { border-style: dashed; color: var(--faint); border-color: var(--faint); }

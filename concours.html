@@ -289,6 +289,7 @@ var COEF_ORAUX = [
    ÉCOLES SUR DOSSIER
    voie : 'dossier' ou 'alternance'
    calendrier : laisser '' tant que ce n'est pas connu (« à compléter » s'affiche)
+   verifier: true → affiche l'étiquette « à vérifier » (supprimer la ligne une fois vérifié)
    ----------------------------------------------------------------- */
 var ECOLES_DOSSIER = [
   { nom: 'ESPCI Paris – PSL', ville: 'Paris', domaines: ['physique', 'chimie', 'bio'], voie: 'dossier',
@@ -301,6 +302,10 @@ var ECOLES_DOSSIER = [
             'Marseille : Matériaux', 'Montpellier : Génie biologique et agroalimentaire', 'Nice Sophia : Génie biologique',
             'Orléans : Génie industriel (cosmétique, pharmacie, agroalimentaire)', 'Orléans : Matériaux, mécanique, mécatronique',
             'Sorbonne : Matériaux'] },
+  { nom: 'Institut d’Optique (SupOptique)', ville: 'Palaiseau', domaines: ['physique', 'numerique'], voie: 'dossier', verifier: true,
+    url: 'https://www.institutoptique.fr', remarque: 'optique, photonique ; admission sur titres pour les TPC', calendrier: '' },
+  { nom: 'ENSI Poitiers', ville: 'Poitiers', domaines: ['energie', 'environnement', 'construction'], voie: 'dossier', verifier: true,
+    url: 'https://ensip.univ-poitiers.fr', remarque: 'énergie, eau, génie civil ; pas de places TPC au CCINP, donc sur dossier', calendrier: '' },
   { nom: 'Grenoble INP – Ense3', ville: 'Grenoble', domaines: ['energie', 'environnement', 'mecanique'], voie: 'dossier',
     url: 'https://ense3.grenoble-inp.fr', remarque: 'énergie, eau, environnement', calendrier: '' },
   { nom: 'Lorraine INP – ENSTIB', ville: 'Épinal', domaines: ['construction', 'materiaux'], voie: 'dossier',
@@ -315,7 +320,9 @@ var ECOLES_DOSSIER = [
     url: 'https://www.utbm.fr', remarque: 'recrutement commun aux 3 UT : dossier + entretien', calendrier: '≈ fin janvier → avril, entretiens mars-mai' },
   { nom: 'ISTP', ville: 'Saint-Étienne', domaines: ['energie', 'mecanique', 'numerique'], voie: 'alternance',
     url: 'https://www.istp-france.com', remarque: 'diplômes Mines Saint-Étienne ou Arts et Métiers ; dossier, tests écrits (dispense possible pour le 1er quart de la classe), entretien',
-    calendrier: 'tests et entretiens d’avril à juillet' }
+    calendrier: 'tests et entretiens d’avril à juillet' },
+  { nom: 'CESI École d’ingénieurs', ville: 'Plusieurs campus', domaines: ['numerique', 'mecanique', 'construction'], voie: 'alternance', verifier: true,
+    url: 'https://www.cesi.fr', remarque: 'concours CESI : dossier, tests et entretien ; en alternance ou sous statut étudiant', calendrier: '' }
 ];
 
 /* -----------------------------------------------------------------
@@ -423,6 +430,7 @@ var ANCIENS = [
         return '<tr>' +
           '<td><a class="name" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + '</a>' +
           (BADGE[s.voie] ? ' <span class="voie-badge ' + BADGE_CLS[s.voie] + '">' + BADGE[s.voie] + '</span>' : '') +
+          (s.verifier ? ' <span class="voie-badge verif">à vérifier</span>' : '') +
           (s.remarque ? '<span class="ecole-rq">' + esc(s.remarque) + '</span>' : '') +
           (s.liste ? '<details class="ecole-liste"><summary>' + s.liste.length + ' spécialités ouvertes aux TPC</summary><ul>' +
             s.liste.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>' : '') + '</td>' +
